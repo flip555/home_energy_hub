@@ -1,0 +1,71 @@
+name: "Bug report"
+description: "Report a bug with the integration"
+labels: "Bug"
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      ## Reporting a Bug? 🐛
+
+      - **First**, please check if a similar issue is already reported. Avoid creating duplicates.
+      - **Fill out** the template below with all required details. It helps us address your issue faster.
+      - **Important**: Issues without reproduction steps or necessary details might be closed without further investigation.
+      
+- type: input
+  attributes:
+    label: "BMS Version 🔄"
+    description: "Specify the version of the BMS you are using."
+  validations:
+    required: true
+  
+- type: dropdown
+  attributes:
+    label: "Connection Method 🌐"
+    description: "How is the BMS connected to your system?"
+    options:
+      - "USB-RS485"
+      - "ESP8266"
+      - "ESP32"
+      - "Other (please specify)"
+  validations:
+    required: true
+
+- type: checkboxes
+  attributes:
+    label: "Pre-submission Checklist ✅"
+    options:
+      - label: This issue is focused on a single problem (For multiple issues, create separate reports).
+        required: true
+      - label: I've checked for [existing issues](https://github.com/flip555/seplos_bms_ha/issues?q=is%3Aissue+label%3A%22Bug%22) and confirmed mine is unique.
+        required: true
+
+- type: textarea
+  attributes:
+    label: "What's happening? 🤔"
+    description: "Provide a clear and concise description of the issue."
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: "Steps to Reproduce 🔍"
+    description: "Detailed steps are essential. Issues without reproducible steps might be closed without further investigation."
+    value: |
+      1.
+      2.
+      3.
+      ...
+
+
+- type: textarea
+  attributes:
+    label: "Debug logs 📜"
+    description: "Include everything from the startup of Home Assistant until you encounter the issue. [Learn how to enable debug logs](https://www.home-assistant.io/integrations/logger/)."
+    render: text
+
+
+- type: textarea
+  attributes:
+    label: "Diagnostics dump 📦"
+    description: "Drag and drop the diagnostics dump file here. [More about diagnostics](https://www.home-assistant.io/integrations/diagnostics/)."
