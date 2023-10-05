@@ -22,70 +22,70 @@ _LOGGER = logging.getLogger(__name__)
 
 async def generate_sensors(hass, region, entry, async_add_entities):
     async def async_update_data():
-        url = "https://api.octopus.energy/v1/products/AGILE-FLEX-22-11-25/electricity-tariffs/E-1R-AGILE-FLEX-22-11-25-J/standard-unit-rates/?page_size=500"
+        url = "https://api.octopus.energy/v1/products/AGILE-FLEX-22-11-25/electricity-tariffs/E-1R-AGILE-FLEX-22-11-25-J/standard-unit-rates/?page_size=100"
         time_price_list = []  # Initialize an empty list to store times and prices
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
 
-                    time_price_list = []
-                    future_negative_prices = []
-                    now = datetime.now(timezone.utc)
-                    cutoff_time = now - timedelta(hours=24)
+        async with aiohttp.ClientSession() as session, session.get(url) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+
+                time_price_list = []
+                future_negative_prices = []
+                now = datetime.now(timezone.utc)
+                cutoff_time = now - timedelta(hours=24)
+                
+                for item in data.get("results", []):
+                    time = item.get("valid_from")  # Extract the 'valid_from' time
+                    price = item.get("value_inc_vat")  # Extract the 'value_inc_vat' price
+
+                    time_as_datetime = datetime.fromisoformat(time)
+
+                    if time_as_datetime > cutoff_time:  # Remove prices older than 24 hours
+                        if time is not None and price is not None:
+                            time_price_list.append((time, price))
+
+                            if time_as_datetime > now and price < 0:  # Include future prices that are negative
+                                future_negative_prices.append((time, price))
+                
+                time_price_list.sort()
+                current_price = next_price = previous_price = None
+
+                for i, (time, price) in enumerate(time_price_list):
+                    time_as_datetime = datetime.fromisoformat(time)
+
+                    if time_as_datetime > now:
+                        next_price = price
+                        break  # exit the loop as we've found the next price
                     
-                    for item in data.get("results", []):
-                        time = item.get("valid_from")  # Extract the 'valid_from' time
-                        price = item.get("value_inc_vat")  # Extract the 'value_inc_vat' price
+                    previous_price = current_price  # store the last "current" price as "previous" before updating "current"
+                    current_price = price  # update the "current" price
 
-                        time_as_datetime = datetime.fromisoformat(time)
+                timestamps = [x[0] for x in time_price_list]
+                prices = [x[1] for x in time_price_list]
 
-                        if time_as_datetime > cutoff_time:  # Remove prices older than 24 hours
-                            if time is not None and price is not None:
-                                time_price_list.append((time, price))
+                plunge_timestamps = [x[0] for x in future_negative_prices]
+                plunge_prices = [x[1] for x in future_negative_prices]
 
-                                if time_as_datetime > now and price < 0:  # Include future prices that are negative
-                                    future_negative_prices.append((time, price))
-                    
-                    time_price_list.sort()
-                    current_price = next_price = previous_price = None
+                return {
+                    'prices': {
+                        'current': current_price,
+                        'next': next_price,
+                        'previous': previous_price
+                    },
+                    'full_json': {
+                        'timestamps': timestamps,
+                        'prices': prices
+                    },
+                    'future_negative_prices': {
+                        'timestamps': plunge_timestamps,
+                        'prices': plunge_prices
+                    },
+                }
 
-                    for i, (time, price) in enumerate(time_price_list):
-                        time_as_datetime = datetime.fromisoformat(time)
-
-                        if time_as_datetime > now:
-                            next_price = price
-                            break  # exit the loop as we've found the next price
-                        
-                        previous_price = current_price  # store the last "current" price as "previous" before updating "current"
-                        current_price = price  # update the "current" price
-
-                    timestamps = [x[0] for x in time_price_list]
-                    prices = [x[1] for x in time_price_list]
-
-                    plunge_timestamps = [x[0] for x in future_negative_prices]
-                    plunge_prices = [x[1] for x in future_negative_prices]
-
-                    return {
-                        'prices': {
-                            'current': current_price,
-                            'next': next_price,
-                            'previous': previous_price
-                        },
-                        'full_json': {
-                            'timestamps': timestamps,
-                            'prices': prices
-                        },
-                        'future_negative_prices': {
-                            'timestamps': plunge_timestamps,
-                            'prices': plunge_prices
-                        },
-                    }
-
-                else:
-                    _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
-                    return None
+            else:
+                _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
+                return None
 
 
     time_price_list = await async_update_data()
