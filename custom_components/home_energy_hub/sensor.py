@@ -53,6 +53,7 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entrie
 
         elif config_entry.data.get("octopus_region"):
             region = config_entry.data.get("octopus_region")
+            entry = config_entry.data
             await OCTOPUS_TARIFFS(hass, region, entry, async_add_entities)
             _LOGGER.debug("%s selected. Routing now..", region)
 
