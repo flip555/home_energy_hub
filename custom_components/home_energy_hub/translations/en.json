@@ -2,10 +2,19 @@
     "config": {
         "step": {
             "user": {
-                "description": "Before continuing, please confirm that you have deleted any old entries that were added via the 'seplos_bms_ha' addon. Leaving old entries may cause sensor naming conflicts with the new version. Any data stored in the old sensors should be adopted by the new addon automatically.",
+                "description": "Welcome to the Home Energy Hub Addon.",
                 "data": {
-                    "confirm": "Please confirm you have deleted any old entries that were added via the 'seplos_bms_ha' addon before continuing!"
+                    "anon_reporting_confirm": " (Optional) We may in the future start collecting anonymous usage data for statistical reports, if you would like to enable this for this entry please opt in by ticking the box.!"
                 }
+            },
+            "main_menu": {
+                "description": "Please select where you want to go."
+            },
+            "energy_tariffs": {
+                "description": "Which Energy Company do you want?"
+            },
+            "octopus_step": {
+                "description": "Which Energy Company do you want?"
             },
             "bms_type": {
                 "description": "Please select your BMS Version from the list below. If your BMS is not listed, it is currently not supported. You can request support on our GitHub repository.",
