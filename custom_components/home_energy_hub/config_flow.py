@@ -3,8 +3,9 @@ import voluptuous as vol
 from .const import DOMAIN, MAIN_MENU_OPTIONS
 from .config_flows.bms_config_flow import BMSConfigFlowMethods
 from .config_flows.energy_config_flow import EnergyConfigFlowMethods
+from .config_flows.victron_gx_config_flow import VictronGXConfigFlowMethods
 
-class BMSConnectorConfigFlow(config_entries.ConfigFlow, BMSConfigFlowMethods, EnergyConfigFlowMethods, domain=DOMAIN):
+class BMSConnectorConfigFlow(config_entries.ConfigFlow, BMSConfigFlowMethods, EnergyConfigFlowMethods, VictronGXConfigFlowMethods, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
@@ -39,6 +40,8 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow, BMSConfigFlowMethods, En
                 return await self.async_step_bms_type()
             elif main_menu_selection == "2000":
                 return await self.async_step_energy_tariffs()
+            elif main_menu_selection == "4000":
+                return await self.async_step_victron_gx()
             else:
                 return await self.async_step_main_menu()
 
