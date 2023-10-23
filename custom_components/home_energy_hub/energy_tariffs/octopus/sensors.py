@@ -22,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def generate_sensors(hass, region, entry, async_add_entities):
     async def async_update_data():
-        url = "https://api.octopus.energy/v1/products/AGILE-FLEX-22-11-25/electricity-tariffs/E-1R-AGILE-FLEX-22-11-25-J/standard-unit-rates/?page_size=100"
+        url = f"https://api.octopus.energy/v1/products/AGILE-FLEX-22-11-25/electricity-tariffs/E-1R-AGILE-FLEX-22-11-25-{region}/standard-unit-rates/?page_size=100"
         time_price_list = []  # Initialize an empty list to store times and prices
 
 
@@ -102,11 +102,11 @@ async def generate_sensors(hass, region, entry, async_add_entities):
 
    
     setting_sensors = [
-        OctopusSensor(coordinator, "Current Price", "current", "p", "mdi:currency-gbp"),
-        OctopusSensor(coordinator, "Next Price", "next", "p", "mdi:currency-gbp"),
-        OctopusSensor(coordinator, "Previous Price", "previous", "p", "mdi:currency-gbp"),
-        OctopusSensor(coordinator, "JSON", "full_json"),
-        OctopusSensor(coordinator, "Plunge Pricing JSON", "future_negative_prices"),
+        OctopusSensor(coordinator, f"Octopus Agile - Region {region} - Current Price", "current", "p", "mdi:currency-gbp"),
+        OctopusSensor(coordinator, f"Octopus Agile - Region {region} - Next Price", "next", "p", "mdi:currency-gbp"),
+        OctopusSensor(coordinator, f"Octopus Agile - Region {region} - Previous Price", "previous", "p", "mdi:currency-gbp"),
+        OctopusSensor(coordinator, f"Octopus Agile - Region {region} - JSON", "full_json"),
+        OctopusSensor(coordinator, f"Octopus Agile - Region {region} - Plunge Pricing JSON", "future_negative_prices"),
     ]
 
     # Combine all sensor lists

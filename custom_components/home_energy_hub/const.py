@@ -6,9 +6,9 @@ ATTRIBUTION = "Easily add Energy related things to HA without the hassle."
 
 MAIN_MENU_OPTIONS = {
     "1000": {"option_name": "Battery Monitoring Systems"},
+    "4000": {"option_name": "Victron Equipment"},
     "2000": {"option_name": "Energy Company Tariffs"},
-    "3000": {"option_name": "In Home Displays"},
-    "4000": {"option_name": "(Coming Soon) Victron Equipment"},
+    "3000": {"option_name": "(Coming Soon) In Home Displays"},
     "5000": {"option_name": "(Coming Soon) Sunsynk Equipment"},
     "6000": {"option_name": "(Coming Soon) Renogy Equipment"},
 }
@@ -32,6 +32,11 @@ ENERGY_OCTOPUS_REGIONS = {
     "M": {"option_name": "Yorkshire"},
     "N": {"option_name": "Southern Scotland"},
     "P": {"option_name": "Northern Scotland"},
+}
+
+
+VICTRON_MENU_OPTIONS = {
+    "4010": {"option_name": "GX TCP ModBus"},
 }
 
 BMS_MENU_OPTIONS = {

@@ -16,6 +16,18 @@
             "octopus_step": {
                 "description": "Which Energy Company do you want?"
             },
+            "victron_gx": {
+                "description": "Add Victron device",
+                "data": {
+                    "victron_gx": "Please select how you want to connect to your Victron device"
+                }
+            },
+            "victron_ip": {
+                "description": "Which Energy Company do you want?",
+                "data": {
+                    "gx_ip_address": "Enter you GX IP Address"
+                }
+            },
             "bms_type": {
                 "description": "Please select your BMS Version from the list below. If your BMS is not listed, it is currently not supported. You can request support on our GitHub repository.",
                 "data": {

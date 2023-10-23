@@ -32,16 +32,17 @@ class EnergyConfigFlowMethods:
         if user_input is not None:
             # Store user input and create the configuration entry
             self.user_input.update(user_input)
-            title = f"Octopus Tariff Region {self.user_input['octopus_region']}"
+            title = f"Octopus Energy UK Agile - Region {self.user_input['octopus_region']}"
             return self.async_create_entry(title=title, data=self.user_input)
 
         energy_tariffs_option_names = [option["option_name"] for option in ENERGY_OCTOPUS_REGIONS.values()]
 
         data_schema = vol.Schema({
-            vol.Required("octopus_region", description="What do you want to add"): vol.In(energy_tariffs_option_names),
-
+            vol.Required("octopus_region", description="What do you want to add"): vol.In({k: v["option_name"] for k, v in ENERGY_OCTOPUS_REGIONS.items()}),
         })
+
         return self.async_show_form(
             step_id="octopus_step",
             data_schema=data_schema,
         )
+

@@ -4,7 +4,6 @@ from .const import DOMAIN, MAIN_MENU_OPTIONS
 from .config_flows.bms_config_flow import BMSConfigFlowMethods
 from .config_flows.energy_config_flow import EnergyConfigFlowMethods
 from .config_flows.victron_gx_config_flow import VictronGXConfigFlowMethods
-
 class BMSConnectorConfigFlow(config_entries.ConfigFlow, BMSConfigFlowMethods, EnergyConfigFlowMethods, VictronGXConfigFlowMethods, domain=DOMAIN):
     VERSION = 1
 
@@ -23,6 +22,7 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow, BMSConfigFlowMethods, En
             data_schema=data_schema,
             errors=errors,
         )
+
 
     async def async_step_main_menu(self, user_input=None):
         if user_input is not None:
