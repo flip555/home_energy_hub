@@ -70,6 +70,7 @@ async def generate_sensors(hass, region, entry, async_add_entities):
                 return {
                     'prices': {
                         'current': current_price,
+                        'pound_current': current_price / 100,
                         'next': next_price,
                         'previous': previous_price
                     },
@@ -103,6 +104,7 @@ async def generate_sensors(hass, region, entry, async_add_entities):
    
     setting_sensors = [
         OctopusSensor(coordinator, f"Octopus Agile - Region {region} - Current Price", "current", "p", "mdi:currency-gbp"),
+        OctopusSensor(coordinator, f"Octopus Agile - Region {region} - GBP Current Price", "pound_current", "£", "mdi:currency-gbp"),
         OctopusSensor(coordinator, f"Octopus Agile - Region {region} - Next Price", "next", "p", "mdi:currency-gbp"),
         OctopusSensor(coordinator, f"Octopus Agile - Region {region} - Previous Price", "previous", "p", "mdi:currency-gbp"),
         OctopusSensor(coordinator, f"Octopus Agile - Region {region} - JSON", "full_json"),
