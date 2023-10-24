@@ -13,6 +13,7 @@ from homeassistant import config_entries  # Add this import
 from .bms.seplos.v2.sensors import generate_sensors as SEPLOS_V2_START
 from .bms.seplos.v3.sensors import generate_sensors as SEPLOS_V3_START
 from .energy_tariffs.octopus.sensors import generate_sensors as OCTOPUS_TARIFFS
+from .victron.sensors import generate_sensors as VICTRON_GX_MODBUS
 
 _LOGGER = logging.getLogger(__name__)
 coordinator = None  # Define coordinator at a higher scope
@@ -56,6 +57,12 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entrie
             entry = config_entry.data
             await OCTOPUS_TARIFFS(hass, region, entry, async_add_entities)
             _LOGGER.debug("%s selected. Routing now..", region)
+
+        elif config_entry.data.get("victron_gx_ip"):
+            gx_ip = config_entry.data.get("victron_gx_ip")
+            entry = config_entry.data
+            await VICTRON_GX_MODBUS(hass, gx_ip, entry, async_add_entities)
+            _LOGGER.debug("%s selected. Routing now..", gx_ip)
 
         else:
             _LOGGER.error("Error Setting up Entry")
