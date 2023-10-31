@@ -1,58 +1,152 @@
 from homeassistant import config_entries
 import voluptuous as vol
-from .const import DOMAIN, MAIN_MENU_OPTIONS
-from .config_flows.bms_config_flow import BMSConfigFlowMethods
-from .config_flows.energy_config_flow import EnergyConfigFlowMethods
-from .config_flows.victron_gx_config_flow import VictronGXConfigFlowMethods
-class BMSConnectorConfigFlow(config_entries.ConfigFlow, BMSConfigFlowMethods, EnergyConfigFlowMethods, VictronGXConfigFlowMethods, domain=DOMAIN):
+from .const import DOMAIN, HEH_REGISTER
+import logging
+import importlib
+import sys
+from homeassistant.core import callback
+
+# ---------------------------------------------
+# ------------- CONFIG IMPORTS START ----------
+# ---------------------------------------------
+# Add your module imports here. 
+# If you're adding a new module, import it in this section.
+from .config_flows.energy_tariffs.octopus_uk import OctopusUKEnergyConfigFlowMethods, OctopusUKEnergyOptionsFlowMethods
+# Example: 
+# from .config_flows.category.file import YourMethodName
+# ---------------------------------------------
+# ---------------------------------------------
+
+_LOGGER = logging.getLogger(__name__)
+class BMSConnectorOptionsFlow(config_entries.OptionsFlow,                                
+                                # ---------------------------------------------
+                                # ---------- ADD NEW METHODS HERE -------------
+                                # ---------------------------------------------
+                                # This is where you add method references 
+                                # for new modules you've imported.
+                                OctopusUKEnergyOptionsFlowMethods, 
+                                # Example:
+                                # YourMethodName,
+                                # ---------------------------------------------
+                                # ---------------------------------------------
+                                ):
+    # This is a stub. Here you would define the options schema and the logic for updating options.
+    def __init__(self, config_entry):
+        self.config_entry = config_entry
+
+    async def async_step_init(self, user_input=None):        
+        options_flow = self.config_entry.data.get("options_flow", "")
+        method_to_call = getattr(self, options_flow, None)
+        if callable(method_to_call):
+            return await method_to_call()
+
+
+
+
+class BMSConnectorConfigFlow(config_entries.ConfigFlow,
+                                # ---------------------------------------------
+                                # ---------- ADD NEW METHODS HERE -------------
+                                # ---------------------------------------------
+                                # This is where you add method references 
+                                # for new modules you've imported.
+                                OctopusUKEnergyConfigFlowMethods, 
+                                # Example:
+                                # YourMethodName,
+                                # ---------------------------------------------
+                                # ---------------------------------------------
+                            domain=DOMAIN):
     VERSION = 1
+
+
+    def __init__(self):
+        # Initialize the user_input and submenu_stack attributes
+        self.user_input = {}
+        self.submenu_stack = []
 
     async def async_step_user(self, user_input=None):
         errors = {}
 
         if user_input is not None:
-            # If the user checks the box, proceed to the next step
-            return await self.async_step_main_menu()
+            # Proceed to the next step
+            return await self.async_step_submenu_selection(user_input)
+
+        main_menu_options = [
+            v['option_name']
+            for k, v in HEH_REGISTER.items()
+            if v.get('active') == '1'
+        ]
 
         data_schema = vol.Schema({
-            vol.Optional("anon_reporting_confirm", description="I confirm"): bool,
+            vol.Required("submenu_selection", description="Select a submenu"): vol.In(main_menu_options),
         })
+
         return self.async_show_form(
-            step_id="user",
+            step_id="submenu_selection",
             data_schema=data_schema,
             errors=errors,
         )
 
-
-    async def async_step_main_menu(self, user_input=None):
+    async def async_step_submenu_selection(self, user_input=None):
         if user_input is not None:
-            # Store user input and transition to the next step
-            self.user_input = user_input
-            main_menu_selection_option = user_input.get('main_menu_selection')
-            main_menu_selection = None
+            submenu_name = user_input.get('submenu_selection')
+            self.submenu_stack.append(submenu_name)
+            submenu, config_flow_dir, init_dir, options_flow, heh_registry = self.get_submenu()
 
-            # Convert the selected option_name to the corresponding key
-            for key, option in MAIN_MENU_OPTIONS.items():
-                if option["option_name"] == main_menu_selection_option:
-                    main_menu_selection = key
-                    break
-            if main_menu_selection == "1000":
-                return await self.async_step_bms_type()
-            elif main_menu_selection == "2000":
-                return await self.async_step_energy_tariffs()
-            elif main_menu_selection == "4000":
-                return await self.async_step_victron_gx()
+            if submenu and submenu != "config_flow":
+                submenu_options = [
+                    v['option_name']
+                    for k, v in submenu.items()
+                    if v.get('active') == '1'
+                ]
+
+                data_schema = vol.Schema({
+                    vol.Required("submenu_selection", description="Select a submenu"): vol.In(submenu_options),
+                })
+
+                return self.async_show_form(
+                    step_id="submenu_selection",
+                    data_schema=data_schema,
+                )
             else:
-                return await self.async_step_main_menu()
+                # Handle the selected submenu here
+                self.user_input["options_flow"] = options_flow
+                self.user_input["init"] = init_dir
+                self.user_input["home_energy_hub_registry"] = heh_registry
+                method_to_call = getattr(self, config_flow_dir, None)
+                if callable(method_to_call):
+                    return await method_to_call()
 
-        main_menu_option_names = [option["option_name"] for option in MAIN_MENU_OPTIONS.values()]
+        # Return to the main menu if there are no more submenus to select
+        return await self.async_step_user()
 
-        data_schema = vol.Schema({
-            vol.Required("main_menu_selection", description="What do you want to add"): vol.In(main_menu_option_names),
-        })
+    def get_submenu(self):
+        submenu_data = HEH_REGISTER
+        config_flow_dir = None
+        init_dir = None
+        options_flow = None
+        heh_registry = None
 
-        return self.async_show_form(
-            step_id="main_menu",
-            data_schema=data_schema,
-        )
+        for submenu_name in self.submenu_stack:
+            try:
+                submenu_data = next((v['submenu'] for k, v in submenu_data.items() if v['option_name'] == submenu_name), None)
+            except KeyError:
+                try:
+                    heh_registry, matching_submenu = next(((k, v) for k, v in submenu_data.items() if v['option_name'] == submenu_name), (None, None))
+                    if matching_submenu:
+                        config_flow_dir = matching_submenu.get('config_flow', None)
+                        options_flow = matching_submenu.get('options_flow', None)
+                        init_dir = matching_submenu.get('init', None)
+                        submenu_data = "config_flow"
+
+                    else:
+                        submenu_data = {}
+                except KeyError:
+                        submenu_data = {}
+
+        return submenu_data, config_flow_dir, init_dir, options_flow, heh_registry
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        return BMSConnectorOptionsFlow(config_entry)
 
