@@ -14,6 +14,13 @@ PLATFORMS = [SENSOR, BINARY_SENSOR, SELECT, NUMBER]
 
 
 HEH_REGISTER = {
+    "00000": {
+        "option_name": "Home Energy Hub Global Settings",
+        "active": "1",
+        "config_flow": "async_step_home_energy_hub_global_settings",
+        "options_flow": "async_step_home_energy_hub_global_options",
+        "init": "OctopusUKEnergyUKINIT"
+    },
     "10000": {
         "option_name": "ESS Control",
         "active": "0",
@@ -40,7 +47,7 @@ HEH_REGISTER = {
                         "active": "1",
                         "config_flow": "async_step_octopus_agile_tariffs",
                         "options_flow": "async_step_octopus_options_agile_tariffs",
-                        "init": "/config/custom_components/home_energy_hub/octopus_agile/init.py"
+                        "init": "OctopusUKEnergyUKINIT"
                     },
                     "20102": {
                         "option_name": "Octopus Flexible",

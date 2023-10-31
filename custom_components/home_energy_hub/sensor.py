@@ -1,34 +1,35 @@
-
+import asyncio
+import logging
+from datetime import timedelta
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, CoordinatorEntity
+from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant import config_entries  # Add this import
+# ---------------------------------------------
+# ------------- CONFIG IMPORTS START ----------
+# ---------------------------------------------
+# Add your module imports here. 
+# If you're adding a new module, import it in this section.
+from .modules.energy_tariffs.octopus_energy_uk.init import OctopusUKEnergyUKINIT
+# Example: 
+# from .config_flows.category.file import YourMethodName
+# ---------------------------------------------
+# ---------------------------------------------
 
-from .const import DOMAIN
+_LOGGER = logging.getLogger(__name__)
+coordinator = None  # Define coordinator at a higher scope
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    # Add your sensor setup code here
-    # Example:
-    async_add_entities([YourSensorClass(entry)], True)
+async def HomeEnergyHubINIT(hass, config_entry):
+    pass
 
-class YourSensorClass(Entity):
+async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entries.ConfigEntry, async_add_entities: AddEntitiesCallback):
+    try:
+        if config_entry.data.get("home_energy_hub_registry") in [ "20101","20102","20103"] :
+            _LOGGER.debug("Octopus Tariffs Selected, Routing Now.. Region: %s", config_entry.data.get("current_region"))
+            await OctopusUKEnergyUKINIT(hass, config_entry.data.get("current_region"), config_entry.data, async_add_entities)
+        else:
+            _LOGGER.error("Error Setting up Entry")
 
-    def __init__(self, entry):
-        """Initialize the sensor."""
-        self._entry = entry
-        self._state = None
-        self._name = "Your Sensor Name"
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def state(self):
-        return self._state
-
-    @property
-    def unique_id(self):
-        return f"{self._entry.unique_id}_sensor"
-
-    async def async_update(self):
-        # Add your code to update the sensor state here
-        # Example:
-        self._state = 123  # Replace with the actual state
+    except Exception as e:
+        _LOGGER.error("Error setting up Home Energy Hub: %s", e)

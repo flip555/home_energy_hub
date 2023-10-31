@@ -36,12 +36,29 @@ class BMSConnectorOptionsFlow(config_entries.OptionsFlow,
 
     async def async_step_init(self, user_input=None):        
         options_flow = self.config_entry.data.get("options_flow", "")
+
         method_to_call = getattr(self, options_flow, None)
         if callable(method_to_call):
             return await method_to_call()
 
+    async def async_step_home_energy_hub_global_options(self, user_input=None):
+        if user_input is not None:
+                # Update the data
+                self.config_entry.data = {**self.config_entry.data, **user_input}
+                
+                # Update the config entry
+                self.hass.config_entries.async_update_entry(self.config_entry, data=self.config_entry.data)
+                
+                return self.async_create_entry(title="", data=user_input)
 
+        anon_reporting_confirm = self.config_entry.data.get("anon_reporting_confirm")
+        return self.async_show_form(
+            step_id="home_energy_hub_global_options",
+            data_schema=vol.Schema({
+                vol.Required("anon_reporting_confirm", default=anon_reporting_confirm): bool,
 
+            })
+        )
 
 class BMSConnectorConfigFlow(config_entries.ConfigFlow,
                                 # ---------------------------------------------
@@ -66,25 +83,33 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow,
     async def async_step_user(self, user_input=None):
         errors = {}
 
-        if user_input is not None:
-            # Proceed to the next step
-            return await self.async_step_submenu_selection(user_input)
+        # Check if an entry with "first_run" set to 1 already exists for this DOMAIN
+        existing_entry = next((entry for entry in self.hass.config_entries.async_entries(DOMAIN) 
+                               if entry.data.get("home_enery_hub_first_run") == 1), None)
+        if existing_entry:
+            if user_input is not None:
+                # Proceed to the next step
+                return await self.async_step_submenu_selection(user_input)
 
-        main_menu_options = [
-            v['option_name']
-            for k, v in HEH_REGISTER.items()
-            if v.get('active') == '1'
-        ]
+            main_menu_options = [
+                v['option_name']
+                for k, v in HEH_REGISTER.items()
+                if v.get('active') == '1' and k != "00000"
+            ]
 
-        data_schema = vol.Schema({
-            vol.Required("submenu_selection", description="Select a submenu"): vol.In(main_menu_options),
-        })
+            data_schema = vol.Schema({
+                vol.Required("submenu_selection", description="Select a submenu"): vol.In(main_menu_options),
+            })
 
-        return self.async_show_form(
-            step_id="submenu_selection",
-            data_schema=data_schema,
-            errors=errors,
-        )
+            return self.async_show_form(
+                step_id="submenu_selection",
+                data_schema=data_schema,
+                errors=errors,
+            )
+        else:
+            # Handle the error or any logic you want to do if the entry exists
+            return await self.async_step_home_energy_hub_global_settings()
+
 
     async def async_step_submenu_selection(self, user_input=None):
         if user_input is not None:
@@ -145,8 +170,25 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow,
 
         return submenu_data, config_flow_dir, init_dir, options_flow, heh_registry
 
+    async def async_step_home_energy_hub_global_settings(self, user_input=None):
+        errors = {}
+
+        if user_input is not None:
+            user_input["home_enery_hub_first_run"] = 1
+            user_input["options_flow"] = "async_step_home_energy_hub_global_options"
+            return self.async_create_entry(title="Home Energy Hub Global Settings", data=user_input)
+
+        data_schema = vol.Schema({
+            vol.Optional("anon_reporting_confirm", description="I confirm"): bool,
+        })
+        return self.async_show_form(
+            step_id="home_energy_hub_global_settings",
+            data_schema=data_schema,
+            errors=errors,
+        )
+
     @staticmethod
     @callback
+
     def async_get_options_flow(config_entry):
         return BMSConnectorOptionsFlow(config_entry)
-
