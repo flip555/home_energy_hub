@@ -51,11 +51,12 @@ class BMSConnectorOptionsFlow(config_entries.OptionsFlow,
                 
                 return self.async_create_entry(title="", data=user_input)
 
-        anon_reporting_confirm = self.config_entry.data.get("anon_reporting_confirm")
+        disclaimer = self.config_entry.data.get("disclaimer")
+        anon_reporting_confirm = self.config_entry.data.get("anon_reporting_confirm", False)
         return self.async_show_form(
             step_id="home_energy_hub_global_options",
             data_schema=vol.Schema({
-                vol.Required("anon_reporting_confirm", default=anon_reporting_confirm): bool,
+                vol.Optional("anon_reporting_confirm", default=anon_reporting_confirm): bool,
 
             })
         )
@@ -85,7 +86,7 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow,
 
         # Check if an entry with "first_run" set to 1 already exists for this DOMAIN
         existing_entry = next((entry for entry in self.hass.config_entries.async_entries(DOMAIN) 
-                               if entry.data.get("home_enery_hub_first_run") == 1), None)
+                               if entry.data.get("disclaimer") == 1), None)
         if existing_entry:
             if user_input is not None:
                 # Proceed to the next step
@@ -174,12 +175,29 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow,
         errors = {}
 
         if user_input is not None:
-            user_input["home_enery_hub_first_run"] = 1
-            user_input["options_flow"] = "async_step_home_energy_hub_global_options"
-            return self.async_create_entry(title="Home Energy Hub Global Settings", data=user_input)
+            if not user_input.get("disclaimer"):
+                errors["disclaimer"] = "You must accept the disclaimer to proceed!"
+            else:
+                user_input["home_enery_hub_first_run"] = 1
+                user_input["options_flow"] = "async_step_home_energy_hub_global_options"
+
+                # Check if the entry already exists
+                existing_entry = None
+                for entry in self._async_current_entries():
+                    if entry.data.get("home_enery_hub_first_run") == 1:
+                        existing_entry = entry
+                        break
+
+                # Update existing entry if found; otherwise create a new entry
+                if existing_entry:
+                    self.hass.config_entries.async_update_entry(existing_entry, data={**existing_entry.data, **user_input})
+                    return self.async_abort(reason="entry_updated")
+                else:
+                    return self.async_create_entry(title="Home Energy Hub Global Settings", data=user_input)
 
         data_schema = vol.Schema({
-            vol.Optional("anon_reporting_confirm", description="I confirm"): bool,
+            vol.Required("disclaimer"): bool,
+            vol.Optional("anon_reporting_confirm"): bool,
         })
         return self.async_show_form(
             step_id="home_energy_hub_global_settings",
@@ -187,8 +205,8 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow,
             errors=errors,
         )
 
+
     @staticmethod
     @callback
-
     def async_get_options_flow(config_entry):
         return BMSConnectorOptionsFlow(config_entry)

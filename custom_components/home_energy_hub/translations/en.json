@@ -2,8 +2,10 @@
     "config": {
         "step": {
             "home_energy_hub_global_settings": {
-                "description": "Welcome to the Home Energy Hub. This Entry must be added before you can add other options.",
+                "title": "Home Energy Hub - First Run Setup",
+                "description": "Welcome to the Home Energy Hub Addon. This entry must be completed and added before you can continue to use this addon.",
                 "data": {
+                    "disclaimer": "This add-on is designed for informational and control purposes only. Any electrical installations or adjustments should only be carried out by qualified professionals. It's essential to ensure that all devices connected to this add-on have the appropriate safety configurations in place. By checking this box, you acknowledge and accept that the developers hold no liability for any damage or issues that may result from the use of this add-on.",
                     "anon_reporting_confirm": " (Optional) We may in the future start collecting anonymous usage data for statistical reports, if you would like to enable this for this entry please opt in by ticking the box."
                 }
             },
@@ -14,10 +16,10 @@
                 "description": "Please select your region"
             },
             "octopus_flexible_tariffs": {
-                "description": "Which Energy Company do you want?"
+                "description": "Please select your region"
             },
             "octopus_tracker_tariffs": {
-                "description": "Add Victron device"
+                "description": "Please select your region"
             },
             "bms_type": {
                 "description": "Please select your BMS Version from the list below. If your BMS is not listed, it is currently not supported. You can request support on our GitHub repository.",
@@ -43,27 +45,34 @@
     "options": {
         "step": {
             "home_energy_hub_global_options": {
-                "description": "Home Energy Hub Global Settings",
+                "title": "Home Energy Hub Global Settings",
                 "data": {
+                    "disclaimer": "This add-on is designed for informational and control purposes only. Any electrical installations or adjustments should only be carried out by qualified professionals. It's essential to ensure that all devices connected to this add-on have the appropriate safety configurations in place. By checking this box, you acknowledge and accept that the developers hold no liability for any damage or issues that may result from the use of this add-on. \n\r WARNING: UNCHECKING THIS WILL STOP ALL ENTRIES WORKING!",
                     "anon_reporting_confirm": " (Optional) We may in the future start collecting anonymous usage data for statistical reports, if you would like to enable this for this entry please opt in by ticking the box."
+                },
+                "data_description": {
+                    "disclaimer": "Unchecking this box will disable all Home Energy Hub Entries from running!",
+                    "anon_reporting_confirm": "Unchecking this box will disable all Home Energy Hub Entries from running!"
                 }
+
+
             },
             "octopus_options_agile_tariffs": {
-                "description": "Agile Tariff Settings",
+                "title": "Agile Tariff Settings",
                 "data": {
                     "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)"
                 }
             },
             "octopus_options_tracker_tariffs": {
-                "description": "Tracker Tariff Settings",
+                "title": "Tracker Tariff Settings",
                 "data": {
                     "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)"
                 }
             },
             "octopus_options_flexible_tariffs": {
-                "description": "Flexible Tariff Settings",
+                "title": "Flexible Tariff Settings",
                 "data": {
                     "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)"
