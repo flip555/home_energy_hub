@@ -47,8 +47,8 @@ class OctopusUKEnergyConfigFlowMethods:
             # Store user input and create the configuration entry
             self.user_input.update(user_input)
             self.user_input["name_prefix"] = f"Octopus Energy Flexible - Region {self.user_input['current_region']}"
-            self.user_input["octopus_api_update_frequency"] = 600
-            self.user_input["sensor_update_frequency"] = 1
+            self.user_input["octopus_api_update_frequency"] = (60 * 60)
+            self.user_input["sensor_update_frequency"] = (60 * 30)
 
             title = f"Octopus Energy UK Flexible - Region {self.user_input['current_region']}"
             return self.async_create_entry(title=title, data=self.user_input)
@@ -69,8 +69,8 @@ class OctopusUKEnergyConfigFlowMethods:
                 # Store user input and create the configuration entry
                 self.user_input.update(user_input)
                 self.user_input["name_prefix"] = f"Octopus Energy Tracker - Region {self.user_input['current_region']}"
-                self.user_input["octopus_api_update_frequency"] = 600
-                self.user_input["sensor_update_frequency"] = 1
+                self.user_input["octopus_api_update_frequency"] = (60 * 60)
+                self.user_input["sensor_update_frequency"] = (60 * 30)
 
                 title = f"Octopus Energy UK Tracker - Region {self.user_input['current_region']}"
                 return self.async_create_entry(title=title, data=self.user_input)
@@ -123,8 +123,8 @@ class OctopusUKEnergyOptionsFlowMethods:
 
         current_region = self.config_entry.data.get("current_region", "")
         name_prefix = self.config_entry.data.get("name_prefix", f"Octopus Energy Flexible - Region {current_region}")
-        octopus_api_update_frequency = self.config_entry.data.get("octopus_api_update_frequency", 600)
-        sensor_update_frequency = self.config_entry.data.get("sensor_update_frequency", 1)
+        octopus_api_update_frequency = self.config_entry.data.get("octopus_api_update_frequency", (60 * 60))
+        sensor_update_frequency = self.config_entry.data.get("sensor_update_frequency", (60 * 60))
 
         return self.async_show_form(
             step_id="octopus_options_flexible_tariffs",
@@ -146,8 +146,8 @@ class OctopusUKEnergyOptionsFlowMethods:
 
         current_region = self.config_entry.data.get("current_region", "")
         name_prefix = self.config_entry.data.get("name_prefix", f"Octopus Energy Tracker - Region {current_region}")
-        octopus_api_update_frequency = self.config_entry.data.get("octopus_api_update_frequency", 600)
-        sensor_update_frequency = self.config_entry.data.get("sensor_update_frequency", 1)
+        octopus_api_update_frequency = self.config_entry.data.get("octopus_api_update_frequency", (60 * 60))
+        sensor_update_frequency = self.config_entry.data.get("sensor_update_frequency", (60 * 60))
 
         return self.async_show_form(
             step_id="octopus_options_tracker_tariffs",
