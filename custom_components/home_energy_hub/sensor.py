@@ -67,3 +67,7 @@ class CreateSensor(CoordinatorEntity):
     @property
     def extra_state_attributes(self):
         return self.coordinator.data['sensors'][self._coordinator_key]['attributes']
+
+    @property
+    def force_update(self):
+        return False

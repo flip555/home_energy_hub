@@ -26,7 +26,7 @@ class OctopusUKEnergyConfigFlowMethods:
             self.user_input.update(user_input)
             self.user_input["name_prefix"] = f"Octopus Energy Agile - Region {self.user_input['current_region']}"
             self.user_input["octopus_api_update_frequency"] = 600
-            self.user_input["sensor_update_frequency"] = 1
+            self.user_input["sensor_update_frequency"] = 5
 
             title = f"Octopus Energy UK Agile - Region {self.user_input['current_region']}"
             return self.async_create_entry(title=title, data=self.user_input)
