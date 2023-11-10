@@ -12,6 +12,7 @@ from homeassistant.core import callback
 # Add your module imports here. 
 # If you're adding a new module, import it in this section.
 from .config_flows.energy_tariffs.octopus_uk import OctopusUKEnergyConfigFlowMethods, OctopusUKEnergyOptionsFlowMethods
+from .config_flows.bms.seplos import SeplosConfigFlowMethods, SeplosOptionsFlowMethods
 # Example: 
 # from .config_flows.category.file import YourMethodName
 # ---------------------------------------------
@@ -25,6 +26,7 @@ class BMSConnectorOptionsFlow(config_entries.OptionsFlow,
                                 # This is where you add method references 
                                 # for new modules you've imported.
                                 OctopusUKEnergyOptionsFlowMethods, 
+                                SeplosOptionsFlowMethods, 
                                 # Example:
                                 # YourMethodName,
                                 # ---------------------------------------------
@@ -68,6 +70,7 @@ class BMSConnectorConfigFlow(config_entries.ConfigFlow,
                                 # This is where you add method references 
                                 # for new modules you've imported.
                                 OctopusUKEnergyConfigFlowMethods, 
+                                SeplosConfigFlowMethods, 
                                 # Example:
                                 # YourMethodName,
                                 # ---------------------------------------------

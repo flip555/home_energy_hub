@@ -77,8 +77,9 @@ HEH_REGISTER = {
                 "submenu": {
                     "30101": {
                         "option_name": "Seplos BMS V2",
-                        "active": "0",
-                        "config_flow": "async_step_energy_tariffs",
+                        "active": "1",
+                        "config_flow": "async_step_seplos_bms_v2",
+                        "options_flow": "async_step_seplos_options_bms_v2",
                         "init": "/config/custom_components/home_energy_hub/seplos_bms_v2/init.py"
                     },
                     "30102": {
