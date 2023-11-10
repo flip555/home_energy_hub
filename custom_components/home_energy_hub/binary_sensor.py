@@ -1,28 +1,65 @@
+import asyncio
+import logging
+from datetime import timedelta
+from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, CoordinatorEntity
+from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant import config_entries  # Add this import
+from .const import (
+    NAME,
+    DOMAIN,
+    VERSION,
+    ATTRIBUTION,
+)
+from homeassistant.helpers.entity import async_generate_entity_id
+from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.components.binary_sensor import BinarySensorEntity
 
-from .const import DOMAIN
+_LOGGER = logging.getLogger(__name__)
+async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entries.ConfigEntry, async_add_entities: AddEntitiesCallback):
+    entry_id = config_entry.entry_id 
+    _LOGGER.error("entry_id1 %s", entry_id)
+    await hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id].async_refresh() 
+    coordinator = hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id]
+    _LOGGER.debug("Binary Sensor data: %s", coordinator.data['binary_sensors'])
+    if coordinator.data is not None and 'binary_sensors' in coordinator.data:
+        sensors = [CreateBinarySensor(coordinator, key) for key in coordinator.data['binary_sensors']]
+    else:
+        sensors = []
+    all_sensors = sensors
+    async_add_entities(all_sensors, True)
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    # Add your binary sensor setup code here
-    # Example:
-    async_add_entities([YourBinarySensorClass(entry)], True)
+class CreateBinarySensor(CoordinatorEntity, BinarySensorEntity):
+    def __init__(self, coordinator, coordinator_key):
+        super().__init__(coordinator)
+        self._coordinator_key = coordinator_key
 
-class YourBinarySensorClass(BinarySensorEntity):
-
-    def __init__(self, entry):
-        self._entry = entry
-        self._state = None
+    @property
+    def device_class(self):
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['device_class']
 
     @property
     def name(self):
-        return "Your Binary Sensor Name"
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['name']
+
+    @property
+    def unique_id(self):
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['unique_id']
+
+    @property
+    def icon(self):
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['icon']
 
     @property
     def is_on(self):
-        return self._state
+        # Return the state of the binary sensor.
+        # Typically, you would access the coordinator data for the current state like:
+        # return self.coordinator.data.get(self._coordinator_key)
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['state']
 
-    async def async_update(self):
-        #"""Update the binary sensor state
-        # Add your code to update the binary sensor state here
-        # Example:
-        self._state = True  # Replace with the actual state
+    @property
+    def extra_state_attributes(self):
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['attributes']
+
+    # Add methods for updating, etc.

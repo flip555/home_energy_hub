@@ -12,37 +12,58 @@ from .const import (
     VERSION,
     ATTRIBUTION,
 )
-# ---------------------------------------------
-# ------------- CONFIG IMPORTS START ----------
-# ---------------------------------------------
-# Add your module imports here. 
-# If you're adding a new module, import it in this section.
-from .modules.global_settings import HomeEnergyHubGlobalSettings
-from .modules.energy_tariffs.octopus_energy_uk.init import OctopusUKEnergyUKINIT
-# Example: 
-# from .config_flows.category.file import YourMethodName
-# ---------------------------------------------
-# ---------------------------------------------
+from homeassistant.helpers.entity import async_generate_entity_id
+from homeassistant.helpers.entity_component import EntityComponent
+from homeassistant.components.binary_sensor import BinarySensorEntity
 
 _LOGGER = logging.getLogger(__name__)
-coordinator = None  # Define coordinator at a higher scope
-
-async def HomeEnergyHubINIT(hass, config_entry):
-    pass
-
 async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entries.ConfigEntry, async_add_entities: AddEntitiesCallback):
-    try:
+    entry_id = config_entry.entry_id 
+    _LOGGER.error("entry_id1 %s", entry_id)
+    await hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id].async_refresh() 
+    coordinator = hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id]
+    _LOGGER.debug("Sensor data: %s", coordinator.data['sensors'])
+    if coordinator.data is not None and 'sensors' in coordinator.data:
+        sensors = [CreateSensor(coordinator, key) for key in coordinator.data['sensors']]
+    else:
+        sensors = []
+    all_sensors = sensors
 
-        # Check the disclaimer value and proceed accordingly
-        if config_entry.data.get("home_enery_hub_first_run") == 1:
-            _LOGGER.debug("Home Energy Hub Global Settings Loading...")
-            await HomeEnergyHubGlobalSettings(hass, "C", config_entry.data, async_add_entities)
+    async_add_entities(all_sensors, True)
 
-        elif config_entry.data.get("home_energy_hub_registry") in ["20101","20102","20103"]:
-            _LOGGER.debug("Octopus Tariffs Selected, Routing Now.. Region: %s", config_entry.data.get("current_region"))
-            await OctopusUKEnergyUKINIT(hass, config_entry.data.get("current_region"), config_entry.data, async_add_entities)
-        else:
-            _LOGGER.error("Error Setting up Entry")
+class CreateSensor(CoordinatorEntity):
+    def __init__(self, coordinator, coordinator_key):
+        super().__init__(coordinator)
+        self._coordinator_key = coordinator_key
 
-    except Exception as e:
-        _LOGGER.error("Error setting up Home Energy Hub: %s", e)
+    @property
+    def device_class(self):
+        return self.coordinator.data['sensors'][self._coordinator_key]['device_class']
+
+    @property
+    def state_class(self):
+        return self.coordinator.data['sensors'][self._coordinator_key]['state_class']
+
+    @property
+    def name(self):
+        return f"{self.coordinator.data['sensors'][self._coordinator_key]['name']}"
+
+    @property
+    def unique_id(self):
+        return f"{self.coordinator.data['sensors'][self._coordinator_key]['unique_id']}"
+
+    @property
+    def icon(self):
+        return self.coordinator.data['sensors'][self._coordinator_key]['icon']
+
+    @property
+    def state(self):
+        return self.coordinator.data['sensors'][self._coordinator_key]['state']
+
+    @property
+    def unit_of_measurement(self):
+        return self.coordinator.data['sensors'][self._coordinator_key]['unit']
+
+    @property
+    def extra_state_attributes(self):
+        return self.coordinator.data['sensors'][self._coordinator_key]['attributes']
