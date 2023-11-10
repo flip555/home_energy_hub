@@ -20,7 +20,7 @@ from ....const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-async def OctopusEnergyUKAgile(hass, entry):
+async def OctopusEnergyUKTracker(hass, entry):
     region = entry.data.get("current_region")
     api_update_time = entry.data.get("octopus_api_update_frequency")
     ha_update_time = entry.data.get("sensor_update_frequency")

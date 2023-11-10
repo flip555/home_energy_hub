@@ -47,7 +47,7 @@ HEH_REGISTER = {
                         "active": "1",
                         "config_flow": "async_step_octopus_agile_tariffs",
                         "options_flow": "async_step_octopus_options_agile_tariffs",
-                        "init": "OctopusUKEnergyUKINIT"
+                        "init": "OctopusEnergyUKAgile"
                     },
                     "20102": {
                         "option_name": "Octopus Flexible",

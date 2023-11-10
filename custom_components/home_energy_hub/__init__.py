@@ -5,7 +5,9 @@ from homeassistant.helpers import config_validation as cv
 from .const import DOMAIN, PLATFORMS
 import voluptuous as vol
 from .modules.global_settings import HomeEnergyHubGlobalSettings
-from .modules.energy_tariffs.octopus_energy_uk.agile import OctopusUKEnergyUKINIT
+from .modules.energy_tariffs.octopus_energy_uk.agile import OctopusEnergyUKAgile
+from .modules.energy_tariffs.octopus_energy_uk.flexible import OctopusEnergyUKFlexible
+from .modules.energy_tariffs.octopus_energy_uk.tracker import OctopusEnergyUKTracker
 import logging
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,9 +27,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if config_data.get("home_enery_hub_first_run") == 1:
             _LOGGER.debug("Home Energy Hub Global Settings Loading...")
             await HomeEnergyHubGlobalSettings(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20101","20102","20103"]:
-            _LOGGER.debug("Octopus Tariffs Selected, Routing Now.. Region: %s", entry.data.get("current_region"))
-            await OctopusUKEnergyUKINIT(hass, entry)
+        elif config_data.get("home_energy_hub_registry") in ["20101"]:
+            _LOGGER.debug("Octopus Agile Tariff Region %s Selected..", entry.data.get("current_region"))
+            await OctopusEnergyUKAgile(hass, entry)
+        elif config_data.get("home_energy_hub_registry") in ["20103"]:
+            _LOGGER.debug("Octopus Tracker Tariff Region %s Selected..", entry.data.get("current_region"))
+            await OctopusEnergyUKTracker(hass, entry)
+        elif config_data.get("home_energy_hub_registry") in ["20102"]:
+            _LOGGER.debug("Octopus Flexible Tariff Region %s Selected..", entry.data.get("current_region"))
+            await OctopusEnergyUKFlexible(hass, entry)
         else:
             _LOGGER.error("Error Setting up Entry")
 
