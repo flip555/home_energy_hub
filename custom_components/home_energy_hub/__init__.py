@@ -24,8 +24,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # Check the disclaimer value and proceed accordingly
         if config_data.get("home_enery_hub_first_run") == 1:
             _LOGGER.debug("Home Energy Hub Global Settings Loading...")
-            #await HomeEnergyHubGlobalSettings(hass, "C", entry.data, async_add_entities)
-            pass
+            await HomeEnergyHubGlobalSettings(hass, entry)
         elif config_data.get("home_energy_hub_registry") in ["20101","20102","20103"]:
             _LOGGER.debug("Octopus Tariffs Selected, Routing Now.. Region: %s", entry.data.get("current_region"))
             await OctopusUKEnergyUKINIT(hass, entry)
