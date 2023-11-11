@@ -192,7 +192,7 @@ _LOGGER = logging.getLogger(__name__)
 #     _LOGGER.debug(f"Response {i + 1}: {response}")
 
 async def SeplosV2BMS(hass, entry):
-    def send_serial_commands(commands, port, baudrate=19200, timeout=2):
+    async def send_serial_commands(commands, port, baudrate=19200, timeout=2):
         responses = []
         _LOGGER.debug(commands)
 
@@ -200,7 +200,7 @@ async def SeplosV2BMS(hass, entry):
             for command in commands:
                 _LOGGER.debug(command)
                 ser.write(command.encode())
-                time.sleep(0.5)
+                await asyncio.sleep(0.5)
                 responses.append(ser.read(ser.in_waiting).decode().replace('\r', '').replace('\n', ''))
         _LOGGER.debug(responses)
 
@@ -224,7 +224,7 @@ async def SeplosV2BMS(hass, entry):
 
         _LOGGER.debug("BATTERY PACK SELECTED: %s", battery_address)
         commands = V2_COMMAND_ARRAY[battery_address]
-        data = send_serial_commands(commands, usb_port, baudrate=19200, timeout=2)
+        data = await send_serial_commands(commands, usb_port, baudrate=19200, timeout=2)
         _LOGGER.debug("data: %s", data)
 
         # PROCESS 42H CODES

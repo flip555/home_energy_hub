@@ -21,6 +21,13 @@
             "octopus_tracker_tariffs": {
                 "description": "Please select your region"
             },
+            "seplos_bms_v2": {
+                "description": "Please enter the connection port and battery address for your BMS. For example, use '/dev/ttyUSB0' for USB serial connections and '0x00' for a single battery.",
+                "data": {
+                    "usb_port": "Please enter your connection port",
+                    "battery_address": "Please enter your battery address"
+                }
+            },
             "bms_type": {
                 "description": "Please select your BMS Version from the list below. If your BMS is not listed, it is currently not supported. You can request support on our GitHub repository.",
                 "data": {
@@ -76,6 +83,14 @@
                 "data": {
                     "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)"
+                }
+            },
+            "seplos_options_bms_v2": {
+                "title": "Seplos BMS V2 Settings",
+                "data": {
+                    "usb_port": "USB Serial Port",
+                    "battery_address": "Battery Address",
+                    "sensor_update_frequency": "Update Frequency (s)"
                 }
             }
         }
