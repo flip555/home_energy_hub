@@ -34,27 +34,24 @@ async def OctopusEnergyUKAccountData(hass, entry):
 
     async def async_update_data():
         url = f'https://api.octopus.energy/v1/accounts/{ACCOUNT_ID}/'
-        
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, auth=aiohttp.BasicAuth(APIKEY, '')) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    current_time = datetime.utcnow().timestamp()
-                    hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id] = data
+        async with aiohttp.ClientSession() as session, session.get(url, auth=aiohttp.BasicAuth(APIKEY, '')) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                current_time = datetime.utcnow().timestamp()
+                hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id] = data
+                sensors["number"] = {
+                    'state': data["number"],
+                    'name': f"{name_prefix}Account Number",
+                    'unique_id': f"{name_prefix}Account Number",
+                    'unit': None,
+                    'icon': "", 
+                    'device_class': "",
+                    'state_class': "",
+                    'attributes': data,
+                }
 
-                    sensors["number"] = {
-                        'state': data["number"],
-                        'name': f"{name_prefix}Account Number",
-                        'unique_id': f"{name_prefix}Account Number",
-                        'unit': None,
-                        'icon': "", 
-                        'device_class': "",
-                        'state_class': "",
-                        'attributes': data,
-                    }
-
-                else:
-                    _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
+            else:
+                _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
 
 
         return { 
