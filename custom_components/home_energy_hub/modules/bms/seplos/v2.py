@@ -240,16 +240,17 @@ async def SeplosV2BMS(hass, entry):
         cursor += 2
         cellVoltage = []
         temperatures = []
-        for i in range(cellsCount):
+        for _ in range(cellsCount):
             cellVoltage.append(int(info_str[cursor:cursor+4], 16))
             cursor += 4
 
         tempCount = int(info_str[cursor:cursor+2], 16)
         cursor += 2
-        for i in range(tempCount):
+        for _ in range(tempCount):
             temperature = (int(info_str[cursor:cursor+4], 16) - 2731) / 10
             temperatures.append(temperature)
             cursor += 4
+
 
         current = int(info_str[cursor:cursor+4], 16)
         if current > 32767:
@@ -565,7 +566,7 @@ async def SeplosV2BMS(hass, entry):
 
         # Initialize cellAlarm as a list in the result dictionary
         result['cellAlarm'] = []
-        for i in range(result['cellsCount']):
+        for _ in range(result['cellsCount']):
             if remaining_length() < 2:
                 return result
             result['cellAlarm'].append(int(info_str[cursor:cursor+2], 16))
@@ -577,7 +578,7 @@ async def SeplosV2BMS(hass, entry):
 
         # Initialize tempAlarm as a list in the result dictionary
         result['tempAlarm'] = []
-        for i in range(result['tempCount']):
+        for _ in range(result['tempCount']):
             if remaining_length() < 2:
                 return result
             result['tempAlarm'].append(int(info_str[cursor:cursor+2], 16))
