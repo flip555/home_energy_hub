@@ -612,17 +612,17 @@ async def SeplosV2BMS(hass, entry):
             'state_class': "",
             'attributes': {},
         }
-        customAlarms = interpret_alarm('customAlarms', get_value(result, 'customAlarms'))
-        sensors["customAlarms"] = {
-            'state': customAlarms,
-            'name': f"{name_prefix}Custom Alarms",
-            'unique_id': f"{name_prefix}Custom Alarms",
-            'unit': "",  # Assuming the unit is Celsius
-            'icon': "",  # Example icon, you can change it
-            'device_class': "",
-            'state_class': "",
-            'attributes': {},
-        }
+#        customAlarms = interpret_alarm('customAlarms', get_value(result, 'customAlarms'))
+#        sensors["customAlarms"] = {
+#            'state': customAlarms,
+#            'name': f"{name_prefix}Custom Alarms",
+#            'unique_id': f"{name_prefix}Custom Alarms",
+#            'unit': "",  # Assuming the unit is Celsius
+#            'icon': "",  # Example icon, you can change it
+#            'device_class': "",
+#            'state_class': "",
+#            'attributes': {},
+#       }
         alarmEvent0 = interpret_alarm('alarmEvent0', get_value(result, 'alarmEvent0'))
         sensors["alarmEvent0"] = {
             'state': alarmEvent0,
@@ -827,7 +827,7 @@ async def SeplosV2BMS(hass, entry):
             'state': device_name,
             'name': f"{name_prefix}Device Name",
             'unique_id': f"{name_prefix}Device Name",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,  # Assuming the unit is Celsius
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -837,7 +837,7 @@ async def SeplosV2BMS(hass, entry):
             'state': software_version,
             'name': f"{name_prefix}Software Version",
             'unique_id': f"{name_prefix}Software Version",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,  # Assuming the unit is Celsius
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -845,9 +845,9 @@ async def SeplosV2BMS(hass, entry):
         }
         sensors["manufacturer_name"] = {
             'state': manufacturer_name,
-            'name': f"{name_prefix}Manufacturer Name",
-            'unique_id': f"{name_prefix}Manufacturer Name",
-            'unit': "",  # Assuming the unit is Celsius
+            'name': f"{name_prefix}Inverter Manufacturer Name",
+            'unique_id': f"{name_prefix}Inverter Manufacturer Name",
+            'unit': None,  # Assuming the unit is Celsius
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -1520,10 +1520,10 @@ async def SeplosV2BMS(hass, entry):
         }
             # Cell invalidation differential pressure
         sensors["cell_invalidation_differential_pressure"] = {
-            'state': int.from_bytes(datai_bytes[121:122], byteorder='big') / 1000.0 ,
+            'state': int.from_bytes(datai_bytes[121:122], byteorder='big') ,
             'name': f"{name_prefix}Cell Invalidation Differential Pressure",
             'unique_id': f"{name_prefix}Cell Invalidation Differential Pressure",
-            'unit': "V",  # Assuming the unit is Celsius
+            'unit': "mV",  # Assuming the unit is Celsius
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -1531,10 +1531,10 @@ async def SeplosV2BMS(hass, entry):
         }
             # Cell invalidation recovery
         sensors["cell_invalidation_recovery"] = {
-            'state': int.from_bytes(datai_bytes[120:121], byteorder='big') / 1000.0 ,
+            'state': int.from_bytes(datai_bytes[120:121], byteorder='big'),
             'name': f"{name_prefix}Cell Invalidation Recovery",
             'unique_id': f"{name_prefix}Cell Invalidation Recovery",
-            'unit': "V",  # Assuming the unit is Celsius
+            'unit': "mV",  # Assuming the unit is Celsius
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -1542,10 +1542,10 @@ async def SeplosV2BMS(hass, entry):
         }
             # Equalization opening pressure difference
         sensors["equalization_opening_pressure_difference"] = {
-            'state': int.from_bytes(datai_bytes[122:123], byteorder='big') / 1000.0 ,
+            'state': int.from_bytes(datai_bytes[122:123], byteorder='big') ,
             'name': f"{name_prefix}Equalization Opening Pressure Difference",
             'unique_id': f"{name_prefix}Equalization Opening Pressure Difference",
-            'unit': "V",  # Assuming the unit is Celsius
+            'unit': "mV",  # Assuming the unit is Celsius
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -1553,10 +1553,10 @@ async def SeplosV2BMS(hass, entry):
         }
             # Equalization closing pressure difference
         sensors["equalization_closing_pressure_difference"] = {
-            'state': int.from_bytes(datai_bytes[124:125], byteorder='big') / 1000.0 ,
+            'state': int.from_bytes(datai_bytes[124:125], byteorder='big'),
             'name': f"{name_prefix}Equalization Closing Pressure Difference",
             'unique_id': f"{name_prefix}Equalization Closing Pressure Difference",
-            'unit': "V",  # Assuming the unit is Celsius
+            'unit': "mV",  # Assuming the unit is Celsius
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
