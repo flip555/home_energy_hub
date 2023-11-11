@@ -22,52 +22,44 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entrie
     _LOGGER.error("entry_id1 %s", entry_id)
     await hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id].async_refresh() 
     coordinator = hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id]
-    _LOGGER.debug("Sensor data: %s", coordinator.data['sensors'])
-    if coordinator.data is not None and 'sensors' in coordinator.data:
-        sensors = [CreateSensor(coordinator, key) for key in coordinator.data['sensors']]
+    _LOGGER.debug("Binary Sensor data: %s", coordinator.data['binary_sensors'])
+    if coordinator.data is not None and 'binary_sensors' in coordinator.data:
+        sensors = [CreateBinarySensor(coordinator, key) for key in coordinator.data['binary_sensors']]
     else:
         sensors = []
     all_sensors = sensors
-
     async_add_entities(all_sensors, True)
 
-class CreateSensor(CoordinatorEntity):
+class CreateBinarySensor(CoordinatorEntity, BinarySensorEntity):
     def __init__(self, coordinator, coordinator_key):
         super().__init__(coordinator)
         self._coordinator_key = coordinator_key
 
     @property
     def device_class(self):
-        return self.coordinator.data['sensors'][self._coordinator_key]['device_class']
-
-    @property
-    def state_class(self):
-        return self.coordinator.data['sensors'][self._coordinator_key]['state_class']
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['device_class']
 
     @property
     def name(self):
-        return f"{self.coordinator.data['sensors'][self._coordinator_key]['name']}"
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['name']
 
     @property
     def unique_id(self):
-        return f"{self.coordinator.data['sensors'][self._coordinator_key]['unique_id']}"
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['unique_id']
 
     @property
     def icon(self):
-        return self.coordinator.data['sensors'][self._coordinator_key]['icon']
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['icon']
 
     @property
-    def state(self):
-        return self.coordinator.data['sensors'][self._coordinator_key]['state']
-
-    @property
-    def unit_of_measurement(self):
-        return self.coordinator.data['sensors'][self._coordinator_key]['unit']
+    def is_on(self):
+        # Return the state of the binary sensor.
+        # Typically, you would access the coordinator data for the current state like:
+        # return self.coordinator.data.get(self._coordinator_key)
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['state']
 
     @property
     def extra_state_attributes(self):
-        return self.coordinator.data['sensors'][self._coordinator_key]['attributes']
+        return self.coordinator.data['binary_sensors'][self._coordinator_key]['attributes']
 
-    @property
-    def force_update(self):
-        return False
+    # Add methods for updating, etc.

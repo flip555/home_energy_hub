@@ -1,31 +1,31 @@
 {
     "config": {
         "step": {
-            "user": {
-                "description": "Welcome to the Home Energy Hub Addon.",
+            "home_energy_hub_global_settings": {
+                "title": "Home Energy Hub - First Run Setup",
+                "description": "Welcome to the Home Energy Hub Addon. This entry must be completed and added before you can continue to use this addon.",
                 "data": {
-                    "anon_reporting_confirm": " (Optional) We may in the future start collecting anonymous usage data for statistical reports, if you would like to enable this for this entry please opt in by ticking the box.!"
+                    "disclaimer": "This add-on is designed for informational and control purposes only. Any electrical installations or adjustments should only be carried out by qualified professionals. It's essential to ensure that all devices connected to this add-on have the appropriate safety configurations in place. By checking this box, you acknowledge and accept that the developers hold no liability for any damage or issues that may result from the use of this add-on.",
+                    "anon_reporting_confirm": " (Optional) We may in the future start collecting anonymous usage data for statistical reports, if you would like to enable this for this entry please opt in by ticking the box."
                 }
             },
-            "main_menu": {
-                "description": "Please select where you want to go."
+            "submenu_selection": {
+                "description": "Please Navigate through the options."
             },
-            "energy_tariffs": {
-                "description": "Which Energy Company do you want?"
+            "octopus_agile_tariffs": {
+                "description": "Please select your region"
             },
-            "octopus_step": {
-                "description": "Which Energy Company do you want?"
+            "octopus_flexible_tariffs": {
+                "description": "Please select your region"
             },
-            "victron_gx": {
-                "description": "Add Victron device",
+            "octopus_tracker_tariffs": {
+                "description": "Please select your region"
+            },
+            "seplos_bms_v2": {
+                "description": "Please enter the connection port and battery address for your BMS. For example, use '/dev/ttyUSB0' for USB serial connections and '0x00' for a single battery.",
                 "data": {
-                    "victron_gx": "Please select how you want to connect to your Victron device"
-                }
-            },
-            "victron_ip": {
-                "description": "Which Energy Company do you want?",
-                "data": {
-                    "gx_ip_address": "Enter you GX IP Address"
+                    "usb_port": "Please enter your connection port",
+                    "battery_address": "Please enter your battery address"
                 }
             },
             "bms_type": {
@@ -45,6 +45,52 @@
                 "data": {
                     "battery_address": "Please enter your battery pack address",
                     "sensor_prefix": "Please enter your desired sensor prefix"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "home_energy_hub_global_options": {
+                "title": "Home Energy Hub Global Settings",
+                "data": {
+                    "disclaimer": "This add-on is designed for informational and control purposes only. Any electrical installations or adjustments should only be carried out by qualified professionals. It's essential to ensure that all devices connected to this add-on have the appropriate safety configurations in place. By checking this box, you acknowledge and accept that the developers hold no liability for any damage or issues that may result from the use of this add-on. \n\r WARNING: UNCHECKING THIS WILL STOP ALL ENTRIES WORKING!",
+                    "anon_reporting_confirm": " (Optional) We may in the future start collecting anonymous usage data for statistical reports, if you would like to enable this for this entry please opt in by ticking the box."
+                },
+                "data_description": {
+                    "disclaimer": "Unchecking this box will disable all Home Energy Hub Entries from running!",
+                    "anon_reporting_confirm": "Unchecking this box will disable all Home Energy Hub Entries from running!"
+                }
+
+
+            },
+            "octopus_options_agile_tariffs": {
+                "title": "Agile Tariff Settings",
+                "data": {
+                    "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)"
+                }
+            },
+            "octopus_options_tracker_tariffs": {
+                "title": "Tracker Tariff Settings",
+                "data": {
+                    "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)"
+                }
+            },
+            "octopus_options_flexible_tariffs": {
+                "title": "Flexible Tariff Settings",
+                "data": {
+                    "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)"
+                }
+            },
+            "seplos_options_bms_v2": {
+                "title": "Seplos BMS V2 Settings",
+                "data": {
+                    "usb_port": "USB Serial Port",
+                    "battery_address": "Battery Address",
+                    "sensor_update_frequency": "Update Frequency (s)"
                 }
             }
         }
