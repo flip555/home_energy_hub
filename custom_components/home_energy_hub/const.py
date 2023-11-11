@@ -62,6 +62,13 @@ HEH_REGISTER = {
                         "config_flow": "async_step_octopus_tracker_tariffs",
                         "options_flow": "async_step_octopus_options_tracker_tariffs",
                         "init": "/config/custom_components/home_energy_hub/octopus_tracker/init.py"
+                    },
+                    "20190": {
+                        "option_name": "Octopus Account Data",
+                        "active": "1",
+                        "config_flow": "async_step_octopus_account_data",
+                        "options_flow": "async_step_octopus_options_account_data",
+                        "init": "/config/custom_components/home_energy_hub/octopus_tracker/init.py"
                     }
                 }
             }

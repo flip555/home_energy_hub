@@ -200,7 +200,7 @@ async def SeplosV2BMS(hass, entry):
             for command in commands:
                 _LOGGER.debug(command)
                 ser.write(command.encode())
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.3)
                 responses.append(ser.read(ser.in_waiting).decode().replace('\r', '').replace('\n', ''))
         _LOGGER.debug(responses)
 

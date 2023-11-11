@@ -86,6 +86,27 @@ class OctopusUKEnergyConfigFlowMethods:
                 data_schema=data_schema,
             )
 
+    async def async_step_octopus_account_data(self, user_input=None):
+            if user_input is not None:
+                # Store user input and create the configuration entry
+                self.user_input.update(user_input)
+                self.user_input["name_prefix"] = f"Octopus Energy Account Data - {self.user_input['account_id']}"
+                self.user_input["octopus_api_update_frequency"] = (60 * 1)
+                self.user_input["sensor_update_frequency"] = (60 * 0.5)
+
+                title = f"Octopus Energy UK Account Data - {self.user_input['account_id']}"
+                return self.async_create_entry(title=title, data=self.user_input)
+
+            data_schema = vol.Schema({
+                vol.Required("account_id", default="A-"): str,
+                vol.Required("api_key", default=""): str,
+            })
+
+            return self.async_show_form(
+                step_id="octopus_account_data",
+                data_schema=data_schema,
+            )
+
 
 class OctopusUKEnergyOptionsFlowMethods:
     async def async_step_octopus_options_agile_tariffs(self, user_input=None):
@@ -152,6 +173,31 @@ class OctopusUKEnergyOptionsFlowMethods:
         return self.async_show_form(
             step_id="octopus_options_tracker_tariffs",
             data_schema=vol.Schema({
+                vol.Required("octopus_api_update_frequency", default=octopus_api_update_frequency): int,
+                vol.Required("sensor_update_frequency", default=sensor_update_frequency): int,
+            })
+        )
+
+    async def async_step_octopus_options_account_data(self, user_input=None):
+        if user_input is not None:
+                # Update the data
+                self.config_entry.data = {**self.config_entry.data, **user_input}
+                
+                # Update the config entry
+                self.hass.config_entries.async_update_entry(self.config_entry, data=self.config_entry.data)
+                
+                return self.async_create_entry(title="", data=user_input)
+
+        account_id = self.config_entry.data.get("account_id", "")
+        api_key = self.config_entry.data.get("api_key", "")
+        octopus_api_update_frequency = self.config_entry.data.get("octopus_api_update_frequency", (60 * 1))
+        sensor_update_frequency = self.config_entry.data.get("sensor_update_frequency", (60 * 0.5))
+
+        return self.async_show_form(
+            step_id="octopus_options_account_data",
+            data_schema=vol.Schema({
+                vol.Required("account_id", default=account_id): str,
+                vol.Required("api_key", default=api_key): str,
                 vol.Required("octopus_api_update_frequency", default=octopus_api_update_frequency): int,
                 vol.Required("sensor_update_frequency", default=sensor_update_frequency): int,
             })

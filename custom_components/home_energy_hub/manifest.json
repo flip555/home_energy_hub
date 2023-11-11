@@ -11,5 +11,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/flip555/home_energy_hub/issues",
   "requirements": [],
-  "version": "v1.0.4"
+  "version": "v1.1.0"
 }

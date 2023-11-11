@@ -9,6 +9,7 @@ from .modules.bms.seplos.v2 import SeplosV2BMS
 from .modules.energy_tariffs.octopus_energy_uk.agile import OctopusEnergyUKAgile
 from .modules.energy_tariffs.octopus_energy_uk.flexible import OctopusEnergyUKFlexible
 from .modules.energy_tariffs.octopus_energy_uk.tracker import OctopusEnergyUKTracker
+from .modules.energy_tariffs.octopus_energy_uk.account_data import OctopusEnergyUKAccountData
 import logging
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,6 +38,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         elif config_data.get("home_energy_hub_registry") in ["20102"]:
             _LOGGER.debug("Octopus Flexible Tariff Region %s Selected..", entry.data.get("current_region"))
             await OctopusEnergyUKFlexible(hass, entry)
+        elif config_data.get("home_energy_hub_registry") in ["20190"]:
+            _LOGGER.debug("Octopus Account Data Selected..", entry.data.get("api_key"))
+            await OctopusEnergyUKAccountData(hass, entry)
         elif config_data.get("home_energy_hub_registry") in ["30101"]:
             _LOGGER.debug("Seplos V2 BMS Selected..")
             await SeplosV2BMS(hass, entry)
