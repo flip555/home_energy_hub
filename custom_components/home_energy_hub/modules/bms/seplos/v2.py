@@ -440,7 +440,7 @@ async def SeplosV2BMS(hass, entry):
                         'state': highest_voltage_cell_number,
                         'name': f"{name_prefix}Cell Number of Highest Voltage",
                         'unique_id': f"{name_prefix}Cell Number of Highest Voltage",
-                        'unit': "",
+                        'unit': None,
                         'icon': "",
                         'device_class': "",
                         'state_class': "",
@@ -460,7 +460,7 @@ async def SeplosV2BMS(hass, entry):
                         'state': lowest_voltage_cell_number,
                         'name': f"{name_prefix}Cell Number of Lowest Voltage",
                         'unique_id': f"{name_prefix}Cell Number of Lowest Voltage",
-                        'unit': "",
+                        'unit': None,
                         'icon': "",
                         'device_class': "",
                         'state_class': "",
@@ -595,7 +595,7 @@ async def SeplosV2BMS(hass, entry):
             'state': currentAlarm,
             'name': f"{name_prefix}Current Alarm",
             'unique_id': f"{name_prefix}Current Alarm",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -606,7 +606,7 @@ async def SeplosV2BMS(hass, entry):
             'state': voltageAlarm,
             'name': f"{name_prefix}Voltage Alarm",
             'unique_id': f"{name_prefix}Voltage Alarm",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -628,7 +628,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent0,
             'name': f"{name_prefix}Alarm Event 0",
             'unique_id': f"{name_prefix}Alarm Event 0",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -639,7 +639,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent1,
             'name': f"{name_prefix}Alarm Event 1",
             'unique_id': f"{name_prefix}Alarm Event 1",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -650,7 +650,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent2,
             'name': f"{name_prefix}Alarm Event 2",
             'unique_id': f"{name_prefix}Alarm Event 2",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -661,7 +661,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent3,
             'name': f"{name_prefix}Alarm Event 3",
             'unique_id': f"{name_prefix}Alarm Event 3",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -672,7 +672,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent4,
             'name': f"{name_prefix}Alarm Event 4",
             'unique_id': f"{name_prefix}Alarm Event 4",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -683,7 +683,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent5,
             'name': f"{name_prefix}Alarm Event 5",
             'unique_id': f"{name_prefix}Alarm Event 5",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -694,7 +694,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent6,
             'name': f"{name_prefix}Alarm Event 6",
             'unique_id': f"{name_prefix}Alarm Event 6",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -705,7 +705,7 @@ async def SeplosV2BMS(hass, entry):
             'state': alarmEvent7,
             'name': f"{name_prefix}Alarm Event 7",
             'unique_id': f"{name_prefix}Alarm Event 7",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -716,7 +716,7 @@ async def SeplosV2BMS(hass, entry):
             'state': onOffState,
             'name': f"{name_prefix}On Off State",
             'unique_id': f"{name_prefix}On Off State",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -727,7 +727,7 @@ async def SeplosV2BMS(hass, entry):
             'state': equilibriumState0,
             'name': f"{name_prefix}Equilibrium State 0",
             'unique_id': f"{name_prefix}Equilibrium State 0",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -738,7 +738,7 @@ async def SeplosV2BMS(hass, entry):
             'state': equilibriumState1,
             'name': f"{name_prefix}Equilibrium State 1",
             'unique_id': f"{name_prefix}Equilibrium State 1",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -766,7 +766,7 @@ async def SeplosV2BMS(hass, entry):
             'state': systemState,
             'name': f"{name_prefix}System State",
             'unique_id': f"{name_prefix}System State",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -777,7 +777,7 @@ async def SeplosV2BMS(hass, entry):
             'state': disconnectionState0,
             'name': f"{name_prefix}Disconnection State 0",
             'unique_id': f"{name_prefix}Disconnection State 0",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
@@ -788,7 +788,7 @@ async def SeplosV2BMS(hass, entry):
             'state': disconnectionState1,
             'name': f"{name_prefix}Disconnection State 1",
             'unique_id': f"{name_prefix}Disconnection State 1",
-            'unit': "",  # Assuming the unit is Celsius
+            'unit': None,
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
