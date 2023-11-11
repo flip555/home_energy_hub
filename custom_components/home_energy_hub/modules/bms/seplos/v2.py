@@ -286,6 +286,8 @@ async def SeplosV2BMS(hass, entry):
         lowest_voltage_cell_number = lowest_voltage[0] + 1  # Adding 1 for the same reason
         lowest_voltage_value = lowest_voltage[1]
         cell_difference =  highest_voltage[1] - lowest_voltage[1]
+        nominal_voltage = cellsCount * 3.3125
+
         sensors = {
                     'cellsCount': {
                         'state': cellsCount,
@@ -398,7 +400,7 @@ async def SeplosV2BMS(hass, entry):
                         'attributes': {},
                     }, 
                     'full_charge_watts': {
-                        'state': int((capacity - resCap) * voltage),
+                        'state': int((capacity - resCap) * nominal_voltage),
                         'name': f"{name_prefix}Full Charge Watts",
                         'unique_id': f"{name_prefix}Full Charge Watts",
                         'unit': "w",
@@ -418,7 +420,7 @@ async def SeplosV2BMS(hass, entry):
                         'attributes': {},
                     },
                     'remaining_watts': {
-                        'state': int(resCap * voltage),
+                        'state': int(resCap * nominal_voltage),
                         'name': f"{name_prefix}Remaining Watts",
                         'unique_id': f"{name_prefix}Remaining Watts",
                         'unit': "w",
@@ -480,7 +482,16 @@ async def SeplosV2BMS(hass, entry):
 
 
             }
-
+        sensors["capacity_watts"] = {
+            'state': nominal_voltage * capacity,
+            'name': f"{name_prefix}Capacity Watts",
+            'unique_id': f"{name_prefix}Capacity Watts",
+            'unit': "w",
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
 
         for i in range(cellsCount):
             cell_voltage_key = f"cell_{i+1}_voltage"  # Create a unique key for each cell
