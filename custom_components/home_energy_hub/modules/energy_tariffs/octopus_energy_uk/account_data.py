@@ -24,7 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 async def OctopusEnergyUKAccountData(hass, entry):
     entry_id = entry.entry_id 
     api_update_time = entry.data.get("octopus_api_update_frequency")
-    name_prefix = entry.data.get("name_prefix")
+    name_prefix = entry.data.get("name_prefix") + " - "
     ha_update_time = entry.data.get("sensor_update_frequency")
     options_flow = entry.data.get("options_flow")
     APIKEY = entry.data.get("api_key")
