@@ -106,7 +106,7 @@ HEH_REGISTER = {
     },
     "40000": {
         "option_name": "Victron Devices",
-        "active": "1",
+        "active": "0",
         "submenu": {
             "40200": {
                 "option_name": "Victron GX TCP Modbus",
@@ -130,7 +130,7 @@ HEH_REGISTER = {
     },
     "50000": {
         "option_name": "Sunsynk Devices",
-        "active": "1",
+        "active": "0",
         "submenu": {
             "50200": {
                 "option_name": "Sunsynk Test",
@@ -142,7 +142,7 @@ HEH_REGISTER = {
     },
     "60000": {
         "option_name": "Renogy Devices",
-        "active": "1",
+        "active": "0",
         "submenu": {
             "60200": {
                 "option_name": "Renogy Test",
