@@ -1401,7 +1401,415 @@ async def SeplosV2BMS(hass, entry):
             'state_class': "",
             'attributes': {},
         }
+        sensors["charging_overcurrent_warning"] = {
+            'state': int.from_bytes(datai_bytes[100:102], byteorder='big') / 100.0 ,
+            'name': f"{name_prefix}Charging Overcurrent Warning",
+            'unique_id': f"{name_prefix}Charging Overcurrent Warning",
+            'unit': "A",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["charging_overcurrent_recovery"] = {
+            'state': int.from_bytes(datai_bytes[102:104], byteorder='big') / 100.0 ,
+            'name': f"{name_prefix}Charging Overcurrent Recovery",
+            'unique_id': f"{name_prefix}Charging Overcurrent Recovery",
+            'unit': "A",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        overcurrent = int.from_bytes(datai_bytes[104:106], byteorder='big')
+        if overcurrent > 32767:
+            overcurrent -= 65536 
+        sensors["discharge_overcurrent_warning"] = {
+            'state': overcurrent / 100.0 ,
+            'name': f"{name_prefix}Discharge Overcurrent Warning",
+            'unique_id': f"{name_prefix}Discharge Overcurrent Warning",
+            'unit': "A",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        overcurrent = int.from_bytes(datai_bytes[106:108], byteorder='big')
+        if overcurrent > 32767:
+            overcurrent -= 65536 
+        sensors["discharge_overcurrent_recovery"] = {
+            'state': overcurrent / 100.0 ,
+            'name': f"{name_prefix}Discharge Overcurrent Recovery",
+            'unique_id': f"{name_prefix}Discharge Overcurrent Recovery",
+            'unit': "A",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["charge_overcurrent_protection"] = {
+            'state': int.from_bytes(datai_bytes[108:110], byteorder='big') / 100.0 ,
+            'name': f"{name_prefix}Charge Overcurrent Protection",
+            'unique_id': f"{name_prefix}Charge Overcurrent Protection",
+            'unit': "A",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        overcurrent = int.from_bytes(datai_bytes[110:112], byteorder='big')
+        if overcurrent > 32767:
+            overcurrent -= 65536 
+        sensors["discharge_overcurrent_protection"] = {
+            'state': overcurrent / 100.0 ,
+            'name': f"{name_prefix}Discharge Overcurrent Protection",
+            'unique_id': f"{name_prefix}Discharge Overcurrent Protection",
+            'unit': "A",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        overcurrent = int.from_bytes(datai_bytes[112:114], byteorder='big')
+        if overcurrent > 32767:
+            overcurrent -= 65536 
+            # Transient overcurrent protection
+        sensors["transient_overcurrent_protection"] = {
+            'state': overcurrent / 100,
+            'name': f"{name_prefix}Transient Overcurrent Protection",
+            'unique_id': f"{name_prefix}Transient Overcurrent Protection",
+            'unit': "A",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
 
+            # Output soft start delay
+        sensors["output_soft_start_delay"] = {
+            'state': int.from_bytes(datai_bytes[114:116], byteorder='big'),
+            'name': f"{name_prefix}Output Soft Start Delay",
+            'unique_id': f"{name_prefix}Output Soft Start Delay",
+            'unit': "ms",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Battery rated capacity
+        sensors["battery_rated_capacity"] = {
+            'state': int.from_bytes(datai_bytes[116:118], byteorder='big') / 100.0 ,
+            'name': f"{name_prefix}Battery Rated Capacity",
+            'unique_id': f"{name_prefix}Battery Rated Capacity",
+            'unit': "Ah",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+
+        sensors["soc_ah"] = {
+            'state': int.from_bytes(datai_bytes[118:120], byteorder='big') / 100.0 ,
+            'name': f"{name_prefix}State of Charge - Ah",
+            'unique_id': f"{name_prefix}State of Charge - Ah",
+            'unit': "Ah",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Cell invalidation differential pressure
+        sensors["cell_invalidation_differential_pressure"] = {
+            'state': int.from_bytes(datai_bytes[121:122], byteorder='big') / 1000.0 ,
+            'name': f"{name_prefix}Cell Invalidation Differential Pressure",
+            'unique_id': f"{name_prefix}Cell Invalidation Differential Pressure",
+            'unit': "V",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Cell invalidation recovery
+        sensors["cell_invalidation_recovery"] = {
+            'state': int.from_bytes(datai_bytes[120:121], byteorder='big') / 1000.0 ,
+            'name': f"{name_prefix}Cell Invalidation Recovery",
+            'unique_id': f"{name_prefix}Cell Invalidation Recovery",
+            'unit': "V",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Equalization opening pressure difference
+        sensors["equalization_opening_pressure_difference"] = {
+            'state': int.from_bytes(datai_bytes[122:123], byteorder='big') / 1000.0 ,
+            'name': f"{name_prefix}Equalization Opening Pressure Difference",
+            'unique_id': f"{name_prefix}Equalization Opening Pressure Difference",
+            'unit': "V",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Equalization closing pressure difference
+        sensors["equalization_closing_pressure_difference"] = {
+            'state': int.from_bytes(datai_bytes[124:125], byteorder='big') / 1000.0 ,
+            'name': f"{name_prefix}Equalization Closing Pressure Difference",
+            'unique_id': f"{name_prefix}Equalization Closing Pressure Difference",
+            'unit': "V",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["static_equilibrium_time"] = {
+            'state': int.from_bytes(datai_bytes[125:126], byteorder='big'),
+            'name': f"{name_prefix}Static Equilibrium Time",
+            'unique_id': f"{name_prefix}Static Equilibrium Time",
+            'unit': "hours",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["battery_number_in_series"] = {
+            'state': int.from_bytes(datai_bytes[126:127], byteorder='big'),
+            'name': f"{name_prefix}Battery Number in Series",
+            'unique_id': f"{name_prefix}Battery Number in Series",
+            'unit': "cells",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["charge_overcurrent_delay"] = {
+            'state': int.from_bytes(datai_bytes[127:128], byteorder='big'),
+            'name': f"{name_prefix}Charge Overcurrent Delay",
+            'unique_id': f"{name_prefix}Charge Overcurrent Delay",
+            'unit': "s",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["discharge_overcurrent_delay"] = {
+            'state': int.from_bytes(datai_bytes[128:129], byteorder='big'),
+            'name': f"{name_prefix}Discharge Overcurrent Delay",
+            'unique_id': f"{name_prefix}Discharge Overcurrent Delay",
+            'unit': "s",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["transient_overcurrent_delay"] = {
+            'state': int.from_bytes(datai_bytes[129:130], byteorder='big'),
+            'name': f"{name_prefix}Transient Overcurrent Delay",
+            'unique_id': f"{name_prefix}Transient Overcurrent Delay",
+            'unit': "ms",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+
+        sensors["overcurrent_delay_recovery"] = {
+            'state': int.from_bytes(datai_bytes[130:131], byteorder='big'),
+            'name': f"{name_prefix}Overcurrent Delay Recovery",
+            'unique_id': f"{name_prefix}Overcurrent Delay Recovery",
+            'unit': "s",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Overcurrent recovery times
+        sensors["overcurrent_recovery_times"] = {
+            'state': int.from_bytes(datai_bytes[131:132], byteorder='big'),
+            'name': f"{name_prefix}Overcurrent Recovery Times",
+            'unique_id': f"{name_prefix}Overcurrent Recovery Times",
+            'unit': "times",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["charge_current_limit_delay"] = {
+            'state': int.from_bytes(datai_bytes[132:133], byteorder='big'),
+            'name': f"{name_prefix}Charge Current Limit Delay",
+            'unique_id': f"{name_prefix}Charge Current Limit Delay",
+            'unit': "minutes",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Charge activation delay
+        sensors["charge_activation_delay"] = {
+            'state': int.from_bytes(datai_bytes[133:134], byteorder='big'),
+            'name': f"{name_prefix}Charge Activation Delay",
+            'unique_id': f"{name_prefix}Charge Activation Delay",
+            'unit': "minutes",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Charging activation interval
+        sensors["charging_activation_interval"] = {
+            'state': int.from_bytes(datai_bytes[134:135], byteorder='big'),
+            'name': f"{name_prefix}Charging Activation Interval",
+            'unique_id': f"{name_prefix}Charging Activation Interval",
+            'unit': "hours",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Charge activation times
+        sensors["charge_activation_times"] = {
+            'state': int.from_bytes(datai_bytes[135:136], byteorder='big'),
+            'name': f"{name_prefix}Charge Activation Times",
+            'unique_id': f"{name_prefix}Charge Activation Times",
+            'unit': "times",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Work record interval
+        sensors["work_record_interval"] = {
+            'state': int.from_bytes(datai_bytes[136:137], byteorder='big'),
+            'name': f"{name_prefix}Work Record Interval",
+            'unique_id': f"{name_prefix}Work Record Interval",
+            'unit': "minutes",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Standby recording interval
+        sensors["standby_recording_interval"] = {
+            'state': int.from_bytes(datai_bytes[137:138], byteorder='big'),
+            'name': f"{name_prefix}Standby Recording Interval",
+            'unique_id': f"{name_prefix}Standby Recording Interval",
+            'unit': "minutes",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Standby shutdown delay
+        sensors["standby_shutdown_delay"] = {
+            'state': int.from_bytes(datai_bytes[138:139], byteorder='big'),
+            'name': f"{name_prefix}Standby Shutdown Delay",
+            'unique_id': f"{name_prefix}Standby Shutdown Delay",
+            'unit': "hours",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+
+
+            # Remaining capacity alarm
+        sensors["remaining_capacity_alarm"] = {
+            'state': int.from_bytes(datai_bytes[139:140], byteorder='big'),
+            'name': f"{name_prefix}Remaining Capacity Alarm",
+            'unique_id': f"{name_prefix}Remaining Capacity Alarm",
+            'unit': "%",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Remaining  protection
+        sensors["remaining_capacity_protection"] = {
+            'state': int.from_bytes(datai_bytes[140:141], byteorder='big'),
+            'name': f"{name_prefix}Remaining Capacity Protection",
+            'unique_id': f"{name_prefix}Remaining Capacity Protection",
+            'unit': "%",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Interval charge capacity
+        sensors["interval_charge_capacity"] = {
+            'state': int.from_bytes(datai_bytes[141:142], byteorder='big'),
+            'name': f"{name_prefix}Interval Charge Capacity",
+            'unique_id': f"{name_prefix}Interval Charge Capacity",
+            'unit': "%",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+
+            # Cycle cumulative capacity
+        sensors["cycle_cumulative_capacity"] = {
+            'state': int.from_bytes(datai_bytes[142:143], byteorder='big'),
+            'name': f"{name_prefix}Cycle Cumulative Capacity",
+            'unique_id': f"{name_prefix}Cycle Cumulative Capacity",
+            'unit': "%",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Connection fault impedance
+        sensors["connection_fault_impedance"] = {
+            'state': int.from_bytes(datai_bytes[143:144], byteorder='big') / 10.0,
+            'name': f"{name_prefix}Connection Fault Impedance",
+            'unique_id': f"{name_prefix}Connection Fault Impedance",
+            'unit': "mΩ",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Compensation point 1 position
+        sensors["compensation_point_1_position"] = {
+            'state': int.from_bytes(datai_bytes[144:145], byteorder='big'),
+            'name': f"{name_prefix}Compensation Point 1 Position",
+            'unique_id': f"{name_prefix}Compensation Point 1 Position",
+            'unit': "",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+            # Compensation point 1 impedance
+        sensors["compensation_point_1_impedance"] = {
+            'state': int.from_bytes(datai_bytes[145:146], byteorder='big') / 10.0,
+            'name': f"{name_prefix}Compensation Point 1 Impedance",
+            'unique_id': f"{name_prefix}Compensation Point 1 Impedance",
+            'unit': "mΩ",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["compensation_point_2_position"] = {
+            'state': int.from_bytes(datai_bytes[146:147], byteorder='big'),
+            'name': f"{name_prefix}Compensation Point 2 Position",
+            'unique_id': f"{name_prefix}Compensation Point 2 Position",
+            'unit': "",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
+        sensors["compensation_point_2_impedance"] = {
+            'state': int.from_bytes(datai_bytes[147:148], byteorder='big') / 10.0,
+            'name': f"{name_prefix}Compensation Point 2 Impedance",
+            'unique_id': f"{name_prefix}Compensation Point 2 Impedance",
+            'unit': "mΩ",  # Assuming the unit is Celsius
+            'icon': "",  # Example icon, you can change it
+            'device_class': "",
+            'state_class': "",
+            'attributes': {},
+        }
         return {
                 'binary_sensors': binary_sensors,
                 'sensors': sensors
