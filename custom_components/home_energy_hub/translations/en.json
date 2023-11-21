@@ -46,6 +46,26 @@
                     "battery_address": "Please enter your battery pack address",
                     "sensor_prefix": "Please enter your desired sensor prefix"
                 }
+            },
+            "octopus_tariff_engine_agile": {
+                "description": "",
+                "data": {
+                    "current_region": "Please select your required region(s)"
+                }
+            },
+            "octopus_tariff_engine_tracker": {
+                "description": "",
+                "data": {
+                    "fuel": "Please select your required fuels(s)",
+                    "current_region": "Please select your required region(s)"
+                }
+            },
+            "octopus_tariff_engine_flexible": {
+                "description": "",
+                "data": {
+                    "fuel": "Please select your required fuels(s)",
+                    "current_region": "Please select your required region(s)"
+                }
             }
         }
     },
@@ -83,6 +103,32 @@
                 "data": {
                     "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)"
+                }
+            },
+            "octopus_options_tariff_engine_agile": {
+                "title": "Agile Tariff Settings",
+                "data": {
+                    "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)",
+                    "current_region": "Please select your required region(s)"
+                }
+            },
+            "octopus_options_tariff_engine_tracker": {
+                "title": "Tracker Tariff Settings",
+                "data": {
+                    "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)",
+                    "fuel": "Please select your required fuels(s)",
+                    "current_region": "Please select your required region(s)"
+                }
+            },
+            "octopus_options_tariff_engine_flexible": {
+                "title": "Flexible Tariff Settings",
+                "data": {
+                    "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)",
+                    "fuel": "Please select your required fuels(s)",
+                    "current_region": "Please select your required region(s)"
                 }
             },
             "seplos_options_bms_v2": {

@@ -76,20 +76,42 @@ async def OctopusEnergyUKAgile(hass, entry):
             for item in data.get("results", []):
                 time = item.get("valid_from")  # Extract the 'valid_from' time
                 price = item.get("value_inc_vat")  # Extract the 'value_inc_vat' price
-
+                if price <= 0:
+                    background_color = 'skyblue' 
+                elif price <= 3:
+                    background_color = 'limegreen' 
+                elif price <= 5:
+                    background_color = 'springgreen' 
+                elif price <= 7:
+                    background_color = 'greenyellow' 
+                elif price <= 10:
+                    background_color = 'blanchedalmond' 
+                elif price <= 15:
+                    background_color = 'khaki' 
+                elif price <= 20:
+                    background_color = 'yellow' 
+                elif price <= 25:
+                    background_color = 'gold' 
+                elif price <= 30:
+                    background_color = 'orange' 
+                elif price <= 40:
+                    background_color = 'hotpink' 
+                else:
+                    background_color = 'red' 
+                 
                 time_as_datetime = datetime.fromisoformat(time)
 
                 if time_as_datetime > cutoff_time:  # Remove prices older than 24 hours
                     if time is not None and price is not None:
-                        time_price_list.append((time, price))
+                        time_price_list.append((time, price, background_color))
 
                         if time_as_datetime > now and price < 0:  # Include future prices that are negative
-                            future_negative_prices.append((time, price))
+                            future_negative_prices.append((time, price, background_color))
             
             time_price_list.sort()
             current_price = next_price = previous_price = None
 
-            for i, (time, price) in enumerate(time_price_list):
+            for i, (time, price, background_color) in enumerate(time_price_list):
                 time_as_datetime = datetime.fromisoformat(time)
 
                 if time_as_datetime > now:
@@ -98,9 +120,11 @@ async def OctopusEnergyUKAgile(hass, entry):
                 
                 previous_price = current_price  # store the last "current" price as "previous" before updating "current"
                 current_price = price  # update the "current" price
+                current_price_colour = background_color  # update the "current" price
 
             timestamps = [x[0] for x in time_price_list]
             prices = [x[1] for x in time_price_list]
+            colours = [x[2] for x in time_price_list]
 
             plunge_timestamps = [x[0] for x in future_negative_prices]
             plunge_prices = [x[1] for x in future_negative_prices]
@@ -134,7 +158,7 @@ async def OctopusEnergyUKAgile(hass, entry):
                             'icon': "",
                             'device_class': "",
                             'state_class': "",
-                            'attributes': {},
+                            'attributes': { 'colour' : current_price_colour },
                         },
                         'agile_current_gbp': {
                             'state': current_price / 100,
@@ -166,7 +190,8 @@ async def OctopusEnergyUKAgile(hass, entry):
                             'state_class': "",
                             'attributes': {
                                 'timestamps': timestamps,
-                                'prices': prices
+                                'prices': prices,
+                                'colours': colours
                             },
                         },
                     },

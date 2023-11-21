@@ -44,32 +44,52 @@ HEH_REGISTER = {
                 "submenu": {
                     "20101": {
                         "option_name": "Octopus Agile",
-                        "active": "1",
+                        "active": "0",
                         "config_flow": "async_step_octopus_agile_tariffs",
                         "options_flow": "async_step_octopus_options_agile_tariffs",
                         "init": "OctopusEnergyUKAgile"
                     },
                     "20102": {
                         "option_name": "Octopus Flexible",
-                        "active": "1",
+                        "active": "0",
                         "config_flow": "async_step_octopus_flexible_tariffs",
                         "options_flow": "async_step_octopus_options_flexible_tariffs",
                         "init": "/config/custom_components/home_energy_hub/octopus_flexible/init.py"
                     },
                     "20103": {
                         "option_name": "Octopus Tracker",
-                        "active": "1",
+                        "active": "0",
                         "config_flow": "async_step_octopus_tracker_tariffs",
                         "options_flow": "async_step_octopus_options_tracker_tariffs",
                         "init": "/config/custom_components/home_energy_hub/octopus_tracker/init.py"
                     },
                     "20190": {
                         "option_name": "Octopus Account Data",
-                        "active": "1",
+                        "active": "0",
                         "config_flow": "async_step_octopus_account_data",
                         "options_flow": "async_step_octopus_options_account_data",
-                        "init": "/config/custom_components/home_energy_hub/octopus_tracker/init.py"
-                    }
+                    },
+                    "20191": {
+                        "option_name": "Octopus Agile Tariff",
+                        "active": "1",
+                        "single_entry": "1",
+                        "config_flow": "async_step_octopus_tariff_engine_agile",
+                        "options_flow": "async_step_octopus_options_tariff_engine_agile",
+                    },
+                    "20192": {
+                        "option_name": "Octopus Tracker Tariff",
+                        "active": "1",
+                        "single_entry": "1",
+                        "config_flow": "async_step_octopus_tariff_engine_tracker",
+                        "options_flow": "async_step_octopus_options_tariff_engine_tracker",
+                    },
+                    "20193": {
+                        "option_name": "Octopus Flexible Tariff",
+                        "active": "1",
+                        "single_entry": "1",
+                        "config_flow": "async_step_octopus_tariff_engine_flexible",
+                        "options_flow": "async_step_octopus_options_tariff_engine_flexible",
+                    }                
                 }
             }
         }
@@ -84,8 +104,15 @@ HEH_REGISTER = {
                 "submenu": {
                     "30101": {
                         "option_name": "Seplos BMS V2",
-                        "active": "1",
+                        "active": "0",
                         "config_flow": "async_step_seplos_bms_v2",
+                        "options_flow": "async_step_seplos_options_bms_v2",
+                        "init": "/config/custom_components/home_energy_hub/seplos_bms_v2/init.py"
+                    },
+                    "30110": {
+                        "option_name": "Seplos BMS V2",
+                        "active": "1",
+                        "config_flow": "async_step_seplos_bms_v2_device",
                         "options_flow": "async_step_seplos_options_bms_v2",
                         "init": "/config/custom_components/home_energy_hub/seplos_bms_v2/init.py"
                     },

@@ -1,4 +1,4 @@
-from homeassistant.helpers.entity import Entity, DeviceInfo
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -184,7 +184,7 @@ ALARM_MAPPINGS = {
 }
 _LOGGER = logging.getLogger(__name__)
 
-async def SeplosV2BMSDevice(hass, entry):
+async def SeplosV2BMS(hass, entry):
     async def send_serial_commands(commands, port, baudrate=19200, timeout=2):
         responses = []
         _LOGGER.debug(commands)
@@ -205,8 +205,6 @@ async def SeplosV2BMSDevice(hass, entry):
     name_prefix = entry.data.get("name_prefix")
     sensors = {}
     binary_sensors = {}
-
-    device_registry = dr.async_get(hass)
     async def async_update_data():
 
         V2_COMMAND_ARRAY = {
@@ -290,9 +288,6 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
                     'resCap': {
                         'state': resCap,
@@ -303,9 +298,6 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
                     'capacity': {
                         'state': capacity,
@@ -316,9 +308,6 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
                     'soc': {
                         'state': soc,
@@ -329,9 +318,6 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
                     'ratedCapacity': {
                         'state': ratedCapacity,
@@ -342,9 +328,6 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
                     'cycles': {
                         'state': cycles,
@@ -355,9 +338,6 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
                     'soh': {
                         'state': soh,
@@ -368,9 +348,6 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     },  
                     'portVoltage': {
                         'state': portVoltage,
@@ -381,11 +358,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
-                    }, 
-                           
+                    },                            
                     'current': {
                         'state': current,
                         'name': f"{name_prefix}Current",
@@ -395,11 +368,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
-                    }, 
-
+                    },  
                     'voltage': {
                         'state': voltage,
                         'name': f"{name_prefix}Voltage",
@@ -409,11 +378,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
-                    }, 
- 
+                    },  
                     'battery_watts': {
                         'state': int(voltage * current),
                         'name': f"{name_prefix}Battery Watts",
@@ -423,11 +388,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
                     'full_charge_watts': {
                         'state': int((capacity - resCap) * nominal_voltage),
                         'name': f"{name_prefix}Full Charge Watts",
@@ -437,11 +398,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
                     'full_charge_amps': {
                         'state': int((capacity - resCap)),
                         'name': f"{name_prefix}Full Charge Amps",
@@ -451,11 +408,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
-                    }, 
-
+                    },
                     'remaining_watts': {
                         'state': int(resCap * nominal_voltage),
                         'name': f"{name_prefix}Remaining Watts",
@@ -465,11 +418,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
                     'highest_cell_voltage': {
                         'state': highest_voltage_value,
                         'name': f"{name_prefix}Highest Cell Voltage",
@@ -479,11 +428,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
                     'highest_cell_number': {
                         'state': highest_voltage_cell_number,
                         'name': f"{name_prefix}Cell Number of Highest Voltage",
@@ -493,11 +438,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
                     'lowest_cell_voltage': {
                         'state': lowest_voltage_value,
                         'name': f"{name_prefix}Lowest Cell Voltage",
@@ -507,11 +448,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
                     'lowest_cell_number': {
                         'state': lowest_voltage_cell_number,
                         'name': f"{name_prefix}Cell Number of Lowest Voltage",
@@ -521,11 +458,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
                     'cell_difference': {
                         'state': cell_difference,
                         'name': f"{name_prefix}Cell Voltage Difference",
@@ -535,11 +468,7 @@ async def SeplosV2BMSDevice(hass, entry):
                         'device_class': "",
                         'state_class': "",
                         'attributes': {},
-                        'device_register': DeviceInfo(
-                                    identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                                )
                     }, 
-
 
 
             }
@@ -552,11 +481,7 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
-
 
 
         for i, temp in enumerate(temperatures):
@@ -582,9 +507,6 @@ async def SeplosV2BMSDevice(hass, entry):
                 'device_class': "",
                 'state_class': "",
                 'attributes': {},
-                'device_register': DeviceInfo(
-                            identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                        )
             }
 
         def get_value(data, attribute):
@@ -669,9 +591,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         voltageAlarm = interpret_alarm('voltageAlarm', get_value(result, 'voltageAlarm'))
         sensors["voltageAlarm"] = {
@@ -683,9 +602,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 #        customAlarms = interpret_alarm('customAlarms', get_value(result, 'customAlarms'))
 #        sensors["customAlarms"] = {
@@ -708,9 +624,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         alarmEvent1 = interpret_alarm('alarmEvent1', get_value(result, 'alarmEvent1'))
         sensors["alarmEvent1"] = {
@@ -722,9 +635,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         alarmEvent2 = interpret_alarm('alarmEvent2', get_value(result, 'alarmEvent2'))
         sensors["alarmEvent2"] = {
@@ -736,9 +646,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         alarmEvent3 = interpret_alarm('alarmEvent3', get_value(result, 'alarmEvent3'))
         sensors["alarmEvent3"] = {
@@ -750,9 +657,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         alarmEvent4 = interpret_alarm('alarmEvent4', get_value(result, 'alarmEvent4'))
         sensors["alarmEvent4"] = {
@@ -764,9 +668,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         alarmEvent5 = interpret_alarm('alarmEvent5', get_value(result, 'alarmEvent5'))
         sensors["alarmEvent5"] = {
@@ -778,9 +679,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         alarmEvent6 = interpret_alarm('alarmEvent6', get_value(result, 'alarmEvent6'))
         sensors["alarmEvent6"] = {
@@ -792,9 +690,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         alarmEvent7 = interpret_alarm('alarmEvent7', get_value(result, 'alarmEvent7'))
         sensors["alarmEvent7"] = {
@@ -806,9 +701,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         onOffState = interpret_alarm('onOffState', get_value(result, 'onOffState'))
         sensors["onOffState"] = {
@@ -820,9 +712,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         equilibriumState0 = interpret_alarm('equilibriumState0', get_value(result, 'equilibriumState0'))
         sensors["equilibriumState0"] = {
@@ -834,9 +723,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         equilibriumState1 = interpret_alarm('equilibriumState1', get_value(result, 'equilibriumState1'))
         sensors["equilibriumState1"] = {
@@ -848,9 +734,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
         for i in range(cellsCount):
@@ -874,9 +757,6 @@ async def SeplosV2BMSDevice(hass, entry):
                 'state_class': "",
                 'icon': "mdi:battery",
                 'attributes': {},
-                'device_register': DeviceInfo(
-                            identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                        )
             }
             sensors[cell_voltage_key] = {
                 'state': cellVoltage[i],
@@ -891,9 +771,6 @@ async def SeplosV2BMSDevice(hass, entry):
                     'CELL_STATE_HIGHEST': CELL_STATE_HIGHEST,
                     'CELL_STATE_BALANCING': balancerActiveCell
                 },
-                'device_register': DeviceInfo(
-                            identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                        )
             }
 
 
@@ -907,9 +784,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         disconnectionState0 = interpret_alarm('disconnectionState0', get_value(result, 'disconnectionState0'))
         sensors["disconnectionState0"] = {
@@ -921,9 +795,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         disconnectionState1 = interpret_alarm('disconnectionState1', get_value(result, 'disconnectionState1'))
         sensors["disconnectionState1"] = {
@@ -935,9 +806,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
         # PROCESS 42H CODES
@@ -974,9 +842,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["software_version"] = {
             'state': software_version,
@@ -987,9 +852,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["manufacturer_name"] = {
             'state': manufacturer_name,
@@ -1000,9 +862,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
         info_str = data[2]
@@ -1040,9 +899,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["monomer_high_pressure_recovery"] = {
             'state': int.from_bytes(datai_bytes[2:4], byteorder='big') / 1000.0,
@@ -1053,9 +909,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # monomer_low_pressure_alarm = datai_values[2]
         sensors["monomer_low_pressure_alarm"] = {
@@ -1067,9 +920,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # monomer_low_pressure_recovery = datai_values[3]
         sensors["monomer_low_pressure_recovery"] = {
@@ -1081,9 +931,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # monomer_overvoltage_protection = datai_values[4]
         sensors["monomer_overvoltage_protection"] = {
@@ -1095,9 +942,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # monomer_overvoltage_recovery = datai_values[5]
         sensors["monomer_overvoltage_recovery"] = {
@@ -1109,9 +953,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # monomer_undervoltage_protection = datai_values[6]
         sensors["monomer_undervoltage_protection"] = {
@@ -1123,9 +964,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # monomer_undervoltage_recovery = datai_values[7]
         sensors["monomer_undervoltage_recovery"] = {
@@ -1137,9 +975,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # equalization_opening_voltage = datai_values[8]
         sensors["equalization_opening_voltage"] = {
@@ -1151,9 +986,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # battery_low_voltage_forbidden_charging = datai_values[9]
         sensors["battery_low_voltage_forbidden_charging"] = {
@@ -1165,9 +997,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_pressure_high_pressure_alarm = datai_values[10]
         sensors["total_pressure_high_pressure_alarm"] = {
@@ -1179,9 +1008,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_pressure_high_pressure_recovery = datai_values[11]
         sensors["total_pressure_high_pressure_recovery"] = {
@@ -1193,9 +1019,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_pressure_low_pressure_alarm = datai_values[12]
         sensors["total_pressure_low_pressure_alarm"] = {
@@ -1207,9 +1030,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_pressure_low_pressure_recovery = datai_values[13]
         sensors["total_pressure_low_pressure_recovery"] = {
@@ -1221,9 +1041,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_voltage_overvoltage_protection = datai_values[14]
         sensors["total_voltage_overvoltage_protection"] = {
@@ -1235,9 +1052,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_pressure_overpressure_recovery = datai_values[15]
         sensors["total_pressure_overpressure_recovery"] = {
@@ -1249,9 +1063,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_voltage_undervoltage_protection = datai_values[16]
         sensors["total_voltage_undervoltage_protection"] = {
@@ -1263,9 +1074,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # total_pressure_undervoltage_recovery = datai_values[17]
         sensors["total_pressure_undervoltage_recovery"] = {
@@ -1277,9 +1085,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # charging_overvoltage_protection = datai_values[18]
         sensors["charging_overvoltage_protection"] = {
@@ -1291,9 +1096,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # charging_overvoltage_recovery = datai_values[19]
         sensors["charging_overvoltage_recovery"] = {
@@ -1304,10 +1106,7 @@ async def SeplosV2BMSDevice(hass, entry):
             'icon': "",  # Example icon, you can change it
             'device_class': "",
             'state_class': "",
-             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
+            'attributes': {},
         }
 # charging_high_temperature_warning = datai_values[20]
         sensors["charging_high_temperature_warning"] = {
@@ -1319,9 +1118,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # charging_high_temperature_recovery = datai_values[21]
         sensors["charging_high_temperature_recovery"] = {
@@ -1333,9 +1129,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 # charging_low_temperature_warning = datai_values[22]
         sensors["charging_low_temperature_warning"] = {
@@ -1347,9 +1140,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charging_low_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[46:48], byteorder='big')  - 2731) / 10.0 ,
@@ -1360,9 +1150,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charging_over_temperature_protection"] = {
             'state': (int.from_bytes(datai_bytes[48:50], byteorder='big')  - 2731) / 10.0 ,
@@ -1373,9 +1160,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charging_over_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[50:52], byteorder='big')  - 2731) / 10.0 ,
@@ -1386,9 +1170,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charging_under_temperature_protection"] = {
             'state': (int.from_bytes(datai_bytes[52:54], byteorder='big')  - 2731) / 10.0 ,
@@ -1399,9 +1180,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charging_under_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[54:56], byteorder='big')  - 2731) / 10.0 ,
@@ -1412,9 +1190,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_high_temperature_warning"] = {
             'state': (int.from_bytes(datai_bytes[56:58], byteorder='big')  - 2731) / 10.0 ,
@@ -1425,9 +1200,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_high_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[58:60], byteorder='big')  - 2731) / 10.0 ,
@@ -1438,9 +1210,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_low_temperature_warning"] = {
             'state': (int.from_bytes(datai_bytes[60:62], byteorder='big')  - 2731) / 10.0 ,
@@ -1451,9 +1220,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_low_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[62:64], byteorder='big')  - 2731) / 10.0 ,
@@ -1464,9 +1230,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_over_temperature_protection"] = {
             'state': (int.from_bytes(datai_bytes[64:66], byteorder='big')  - 2731) / 10.0 ,
@@ -1477,9 +1240,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_over_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[66:68], byteorder='big')  - 2731) / 10.0 ,
@@ -1490,9 +1250,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_under_temperature_protection"] = {
             'state': (int.from_bytes(datai_bytes[68:70], byteorder='big')  - 2731) / 10.0 ,
@@ -1503,9 +1260,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_under_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[70:72], byteorder='big')  - 2731) / 10.0 ,
@@ -1516,9 +1270,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["cell_low_temperature_heating"] = {
             'state': (int.from_bytes(datai_bytes[72:74], byteorder='big')  - 2731) / 10.0 ,
@@ -1529,9 +1280,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["cell_heating_recovery"] = {
             'state': (int.from_bytes(datai_bytes[74:76], byteorder='big')  - 2731) / 10.0 ,
@@ -1542,9 +1290,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["ambient_high_temperature_alarm"] = {
             'state': (int.from_bytes(datai_bytes[76:78], byteorder='big')  - 2731) / 10.0 ,
@@ -1555,9 +1300,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["ambient_high_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[78:80], byteorder='big')  - 2731) / 10.0 ,
@@ -1568,9 +1310,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["ambient_low_temperature_alarm"] = {
             'state': (int.from_bytes(datai_bytes[80:82], byteorder='big')  - 2731) / 10.0 ,
@@ -1581,9 +1320,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["ambient_low_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[82:84], byteorder='big')  - 2731) / 10.0 ,
@@ -1594,9 +1330,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["environment_over_temperature_protection"] = {
             'state': (int.from_bytes(datai_bytes[84:86], byteorder='big')  - 2731) / 10.0 ,
@@ -1607,9 +1340,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["environment_over_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[86:88], byteorder='big')  - 2731) / 10.0 ,
@@ -1620,9 +1350,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["environment_under_temperature_protection"] = {
             'state': (int.from_bytes(datai_bytes[88:90], byteorder='big')  - 2731) / 10.0 ,
@@ -1633,9 +1360,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["environment_under_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[90:92], byteorder='big')  - 2731) / 10.0 ,
@@ -1646,9 +1370,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["power_high_temperature_alarm"] = {
             'state': (int.from_bytes(datai_bytes[92:94], byteorder='big')  - 2731) / 10.0 ,
@@ -1659,9 +1380,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["power_high_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[94:96], byteorder='big')  - 2731) / 10.0 ,
@@ -1672,9 +1390,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["power_over_temperature_protection"] = {
             'state': (int.from_bytes(datai_bytes[96:98], byteorder='big')  - 2731) / 10.0 ,
@@ -1685,9 +1400,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["power_over_temperature_recovery"] = {
             'state': (int.from_bytes(datai_bytes[98:100], byteorder='big')  - 2731) / 10.0 ,
@@ -1698,9 +1410,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charging_overcurrent_warning"] = {
             'state': int.from_bytes(datai_bytes[100:102], byteorder='big') / 100.0 ,
@@ -1711,9 +1420,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charging_overcurrent_recovery"] = {
             'state': int.from_bytes(datai_bytes[102:104], byteorder='big') / 100.0 ,
@@ -1724,9 +1430,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         overcurrent = int.from_bytes(datai_bytes[104:106], byteorder='big')
         if overcurrent > 32767:
@@ -1740,9 +1443,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         overcurrent = int.from_bytes(datai_bytes[106:108], byteorder='big')
         if overcurrent > 32767:
@@ -1756,9 +1456,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charge_overcurrent_protection"] = {
             'state': int.from_bytes(datai_bytes[108:110], byteorder='big') / 100.0 ,
@@ -1769,9 +1466,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         overcurrent = int.from_bytes(datai_bytes[110:112], byteorder='big')
         if overcurrent > 32767:
@@ -1785,9 +1479,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         overcurrent = int.from_bytes(datai_bytes[112:114], byteorder='big')
         if overcurrent > 32767:
@@ -1802,9 +1493,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
             # Output soft start delay
@@ -1817,9 +1505,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Battery rated capacity
         sensors["battery_rated_capacity"] = {
@@ -1831,9 +1516,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
         sensors["soc_ah"] = {
@@ -1845,9 +1527,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Cell invalidation differential pressure
         sensors["cell_invalidation_differential_pressure"] = {
@@ -1859,9 +1538,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Cell invalidation recovery
         sensors["cell_invalidation_recovery"] = {
@@ -1873,9 +1549,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Equalization opening pressure difference
         sensors["equalization_opening_pressure_difference"] = {
@@ -1887,9 +1560,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Equalization closing pressure difference
         sensors["equalization_closing_pressure_difference"] = {
@@ -1901,9 +1571,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["static_equilibrium_time"] = {
             'state': int.from_bytes(datai_bytes[125:126], byteorder='big'),
@@ -1914,9 +1581,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["battery_number_in_series"] = {
             'state': int.from_bytes(datai_bytes[126:127], byteorder='big'),
@@ -1927,9 +1591,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charge_overcurrent_delay"] = {
             'state': int.from_bytes(datai_bytes[127:128], byteorder='big'),
@@ -1940,9 +1601,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["discharge_overcurrent_delay"] = {
             'state': int.from_bytes(datai_bytes[128:129], byteorder='big'),
@@ -1953,9 +1611,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["transient_overcurrent_delay"] = {
             'state': int.from_bytes(datai_bytes[129:130], byteorder='big'),
@@ -1966,9 +1621,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
         sensors["overcurrent_delay_recovery"] = {
@@ -1980,9 +1632,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Overcurrent recovery times
         sensors["overcurrent_recovery_times"] = {
@@ -1994,9 +1643,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["charge_current_limit_delay"] = {
             'state': int.from_bytes(datai_bytes[132:133], byteorder='big'),
@@ -2007,9 +1653,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Charge activation delay
         sensors["charge_activation_delay"] = {
@@ -2021,9 +1664,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Charging activation interval
         sensors["charging_activation_interval"] = {
@@ -2035,9 +1675,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Charge activation times
         sensors["charge_activation_times"] = {
@@ -2049,9 +1686,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Work record interval
         sensors["work_record_interval"] = {
@@ -2063,9 +1697,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Standby recording interval
         sensors["standby_recording_interval"] = {
@@ -2077,9 +1708,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Standby shutdown delay
         sensors["standby_shutdown_delay"] = {
@@ -2091,9 +1719,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
 
@@ -2107,9 +1732,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Remaining  protection
         sensors["remaining_capacity_protection"] = {
@@ -2121,9 +1743,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Interval charge capacity
         sensors["interval_charge_capacity"] = {
@@ -2135,9 +1754,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
 
             # Cycle cumulative capacity
@@ -2150,9 +1766,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Connection fault impedance
         sensors["connection_fault_impedance"] = {
@@ -2164,9 +1777,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Compensation point 1 position
         sensors["compensation_point_1_position"] = {
@@ -2178,9 +1788,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
             # Compensation point 1 impedance
         sensors["compensation_point_1_impedance"] = {
@@ -2192,9 +1799,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["compensation_point_2_position"] = {
             'state': int.from_bytes(datai_bytes[146:147], byteorder='big'),
@@ -2205,9 +1809,6 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
         sensors["compensation_point_2_impedance"] = {
             'state': int.from_bytes(datai_bytes[147:148], byteorder='big') / 10.0,
@@ -2218,19 +1819,7 @@ async def SeplosV2BMSDevice(hass, entry):
             'device_class': "",
             'state_class': "",
             'attributes': {},
-            'device_register': DeviceInfo(
-                        identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-                    )
         }
-        device_registry.async_get_or_create(
-            config_entry_id=entry.entry_id,
-            identifiers={("home_energy_hub", entry.entry_id, battery_address)},
-            manufacturer="Seplos BMS",
-            name="Seplos V2: "+battery_address,
-            model="Seplos V2 | "+manufacturer_name,
-            sw_version=software_version,
-            serial_number=device_name
-        )
 
         return {
                 'binary_sensors': binary_sensors,

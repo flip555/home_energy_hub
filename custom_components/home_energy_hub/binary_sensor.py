@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import timedelta
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import Entity, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, CoordinatorEntity
 from homeassistant.helpers.typing import HomeAssistantType
@@ -63,3 +63,12 @@ class CreateBinarySensor(CoordinatorEntity, BinarySensorEntity):
         return self.coordinator.data['binary_sensors'][self._coordinator_key]['attributes']
 
     # Add methods for updating, etc.
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return the device info."""
+        try:
+            if self.coordinator.data['binary_sensors'][self._coordinator_key]['device_register']:
+                return self.coordinator.data['binary_sensors'][self._coordinator_key]['device_register']       
+        except:
+            return None

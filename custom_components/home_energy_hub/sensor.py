@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import timedelta
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import Entity, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, CoordinatorEntity
 from homeassistant.helpers.typing import HomeAssistantType
@@ -35,7 +35,6 @@ class CreateSensor(CoordinatorEntity):
     def __init__(self, coordinator, coordinator_key):
         super().__init__(coordinator)
         self._coordinator_key = coordinator_key
-
     @property
     def device_class(self):
         return self.coordinator.data['sensors'][self._coordinator_key]['device_class']
@@ -71,3 +70,12 @@ class CreateSensor(CoordinatorEntity):
     @property
     def force_update(self):
         return False
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return the device info."""
+        try:
+            if self.coordinator.data['sensors'][self._coordinator_key]['device_register']:
+                return self.coordinator.data['sensors'][self._coordinator_key]['device_register']       
+        except:
+            return None
