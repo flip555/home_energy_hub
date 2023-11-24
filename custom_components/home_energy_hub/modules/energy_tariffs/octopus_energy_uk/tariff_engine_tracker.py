@@ -135,6 +135,21 @@ async def OctopusEnergyUKTariffEngineTracker(hass, entry):
                                 identifiers={("home_energy_hub", entry.entry_id, "Tracker", region, fuel )},
                             )
                 }
+                sensors["tracker_today_gbp_"+region+fuel] = {
+                    'state': tracker_today / 100,
+                    'name': f"Octopus Tracker {fuel} - Region {region} - Current Price GBP",
+                    'unique_id': f"Octopus Tracker {fuel} - Region {region} - Current Price GBP",
+                    'unit': "GBP/kWh",
+                    'icon': "",
+                    'device_class': "",
+                    'state_class': "",
+                    'attributes': {
+                    },
+                    'device_register': DeviceInfo(
+                                identifiers={("home_energy_hub", entry.entry_id, "Tracker", region, fuel )},
+                            )
+                }
+                
                 sensors["tracker_standing_chargetoday_"+region+fuel] = {
                     'state': tracker_standing_charge_today,
                     'name': f"Octopus Tracker {fuel} - Region {region} - Standing Charge",
