@@ -70,5 +70,5 @@ class CreateBinarySensor(CoordinatorEntity, BinarySensorEntity):
         try:
             if self.coordinator.data['binary_sensors'][self._coordinator_key]['device_register']:
                 return self.coordinator.data['binary_sensors'][self._coordinator_key]['device_register']       
-        except:
+        except Exception as ex:
             return None

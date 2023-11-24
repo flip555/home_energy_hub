@@ -5,7 +5,7 @@ from homeassistant.helpers.entity import Entity, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, CoordinatorEntity
 from homeassistant.helpers.typing import HomeAssistantType
-from homeassistant import config_entries  # Add this import
+from homeassistant import config_entries
 from .const import (
     NAME,
     DOMAIN,
@@ -19,16 +19,13 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistantType, config_entry: config_entries.ConfigEntry, async_add_entities: AddEntitiesCallback):
     entry_id = config_entry.entry_id 
-    _LOGGER.error("entry_id1 %s", entry_id)
     await hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id].async_refresh() 
     coordinator = hass.data[DOMAIN]["HOME_ENERGY_HUB_SENSOR_COORDINATOR"+entry_id]
-    _LOGGER.debug("Sensor data: %s", coordinator.data['sensors'])
     if coordinator.data is not None and 'sensors' in coordinator.data:
         sensors = [CreateSensor(coordinator, key) for key in coordinator.data['sensors']]
     else:
         sensors = []
     all_sensors = sensors
-
     async_add_entities(all_sensors, True)
 
 class CreateSensor(CoordinatorEntity):
@@ -77,5 +74,5 @@ class CreateSensor(CoordinatorEntity):
         try:
             if self.coordinator.data['sensors'][self._coordinator_key]['device_register']:
                 return self.coordinator.data['sensors'][self._coordinator_key]['device_register']       
-        except:
+        except Exception as ex:
             return None

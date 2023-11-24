@@ -127,6 +127,8 @@ async def OctopusEnergyUKTariffEngineAgile(hass, entry):
 
                     if time_as_datetime > now:
                         next_price = price
+                        next_price_colour = background_color  # update the "current" price
+
                         break  # exit the loop as we've found the next price
                     
                     previous_price = current_price  # store the last "current" price as "previous" before updating "current"
@@ -169,6 +171,19 @@ async def OctopusEnergyUKTariffEngineAgile(hass, entry):
                     'device_class': "",
                     'state_class': "",
                     'attributes': { 'colour' : current_price_colour },
+                    'device_register': DeviceInfo(
+                                identifiers={("home_energy_hub", entry.entry_id, "Agile", region )},
+                            )
+                }
+                sensors["agile_next_"+region] = {
+                    'state': next_price,
+                    'name': f"Octopus Agile - Region {region} - Next Price",
+                    'unique_id': f"Octopus Agile - Region {region} - Next Price",
+                    'unit': "p",
+                    'icon': "",
+                    'device_class': "",
+                    'state_class': "",
+                    'attributes': { 'colour' : next_price_colour },
                     'device_register': DeviceInfo(
                                 identifiers={("home_energy_hub", entry.entry_id, "Agile", region )},
                             )

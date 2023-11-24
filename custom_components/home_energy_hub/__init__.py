@@ -37,7 +37,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             await HomeEnergyHubGlobalSettings(hass, entry)
         elif config_data.get("home_energy_hub_registry") in ["20101"]:
             _LOGGER.debug("Octopus Agile Tariff Region %s Selected..", entry.data.get("current_region"))
-            await OctopusEnergyUKAgile(hass, entry)
+            #await OctopusEnergyUKAgile(hass, entry)
+            await OctopusEnergyUKTariffEngineAgile(hass, entry)
+
         elif config_data.get("home_energy_hub_registry") in ["20103"]:
             _LOGGER.debug("Octopus Tracker Tariff Region %s Selected..", entry.data.get("current_region"))
             await OctopusEnergyUKTracker(hass, entry)
@@ -85,7 +87,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unloaded
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    if entry.data.get("home_energy_hub_registry") in ["20191"]:
+    if entry.data.get("home_energy_hub_registry") in ["20191"] or entry.data.get("home_energy_hub_registry") in ["20101"]:
         tariff_name = "Agile"
         old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
         new_regions = set(entry.data.get("current_region", []))

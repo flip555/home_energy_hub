@@ -180,6 +180,16 @@ async def OctopusEnergyUKAgile(hass, entry):
                             'state_class': "",
                             'attributes': {},
                         },
+                        'agile_next': {
+                            'state': next_price,
+                            'name': f"Octopus Agile - Region {region} - Next Price",
+                            'unique_id': f"Octopus Agile - Region {region} - Next Price",
+                            'unit': "p",
+                            'icon': "",
+                            'device_class': "",
+                            'state_class': "",
+                            'attributes': {},
+                        },
                         'agile_full_json': {
                             'state': current_price,
                             'name': f"Octopus Agile - Region {region} - JSON",
