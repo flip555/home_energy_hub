@@ -50,7 +50,7 @@
 ## Config Flows
 - Implement validation checks.
 - Improve the handling of multiple entries for the same service, ensuring that adding multiple "helper services" creates distinct services under a single entry.
-      ~~~
+     ~~~
       class Entry:
           def __init__(self, entry_id):
               self.entry_id = entry_id
@@ -66,9 +66,12 @@
               new_entry = Entry(entry_id)
               new_entry.services.append(service)
               entries[entry_id] = new_entry
-      ~~~
+     ~~~
+     
 # Seplos V2 BMS
-- Introduce support for multiple battery addresses.
+- Implement support for handling multiple battery addresses.
+- Consider opening the COM port globally and maintaining its open state.
+- Optimize data retrieval by segregating information, avoiding unnecessary spamming of four serial commands every 5 seconds. Focus on frequent updates for critical data like Telemetry and Teledata, while less critical settings, exceeding 100+, can be updated at more reasonable intervals, such as every minute.
 
 # Seplos V3 BMS
 - Reintegrate code from V3 BMS Connector.
