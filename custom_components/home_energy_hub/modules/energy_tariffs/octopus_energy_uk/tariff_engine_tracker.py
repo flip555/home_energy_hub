@@ -32,7 +32,7 @@ async def OctopusEnergyUKTariffEngineTracker(hass, entry):
     selected_fuels = entry.data.get("fuel")
 
     async def GET_TRACKER_ELECTRIC(region, fuel):
-        url = f"https://octopus.energy/api/v1/tracker/E-1R-SILVER-FLEX-22-11-25-{region}/daily/current/1/1/"
+        url = f"https://api.octopus.energy/v1/products/SILVER-FLEX-22-11-25/electricity-tariffs/E-1R-SILVER-FLEX-22-11-25-{region}/standard-unit-rates/"
         async with aiohttp.ClientSession() as session, session.get(url) as resp:
             if resp.status == 200:
                 data = await resp.json()
@@ -46,7 +46,7 @@ async def OctopusEnergyUKTariffEngineTracker(hass, entry):
                 return None
 
     async def GET_TRACKER_GAS(region, fuel):
-        url = f"https://octopus.energy/api/v1/tracker/G-1R-SILVER-FLEX-22-11-25-{region}/daily/current/1/1/"
+        url = f"https://api.octopus.energy/v1/products/SILVER-FLEX-22-11-25/gas-tariffs/G-1R-SILVER-FLEX-22-11-25-{region}/standard-unit-rates/"
         async with aiohttp.ClientSession() as session, session.get(url) as resp:
             if resp.status == 200:
                 data = await resp.json()
@@ -98,29 +98,43 @@ async def OctopusEnergyUKTariffEngineTracker(hass, entry):
                     entry_type=DeviceEntryType.SERVICE,
                 )
 
-                _LOGGER.debug("Update received from Octopus Energy API%s", data)
-
-                # Get today's date
+                _LOGGER.debug("Update received from Octopus Energy API%s", data)# Get today's date
                 today = datetime.now().date()
 
                 # Calculate tomorrow's date
                 tomorrow = today + timedelta(days=1)
 
-                for item in data.get("periods"):
-                    item_date_str = item.get("date")  # This is a string in the format "YYYY-MM-DD"
-                    item_date = datetime.strptime(item_date_str, "%Y-%m-%d").date()  # Convert string to date
+                tracker_today = None
+                tracker_tomorrow = None
 
-                    price = item.get("unit_rate")
-                    standing_charge = item.get("standing_charge")
+                for item in data.get("results", []):
+                    item_date_str = item.get("valid_from")  # Use the "valid_from" key for the date
+                    item_date = datetime.strptime(item_date_str, "%Y-%m-%dT%H:%M:%SZ").date()  # Convert string to date
+
+                    price = item.get("value_inc_vat")
+                    # Assuming standing_charge is not present in the provided JSON structure
+                    tracker_standing_charge_today = None
 
                     if item_date == today:
                         tracker_today = price
-                        tracker_standing_charge_today = standing_charge
                     elif item_date == tomorrow:
                         tracker_tomorrow = price
 
-
                 _LOGGER.debug("Updating HA Sensor based on Stored data")
+                sensors["tracker_tomorrow_"+region+fuel] = {
+                    'state': tracker_tomorrow,
+                    'name': f"Octopus Tracker {fuel} - Region {region} - Tomorrows Price",
+                    'unique_id': f"Octopus Tracker {fuel} - Region {region} - Tomorrows Price",
+                    'unit': "p",
+                    'icon': "",
+                    'device_class': "",
+                    'state_class': "",
+                    'attributes': {
+                    },
+                    'device_register': DeviceInfo(
+                                identifiers={("home_energy_hub", entry.entry_id, "Tracker", region, fuel )},
+                            )
+                }
                 sensors["tracker_today_"+region+fuel] = {
                     'state': tracker_today,
                     'name': f"Octopus Tracker {fuel} - Region {region} - Current Price",
