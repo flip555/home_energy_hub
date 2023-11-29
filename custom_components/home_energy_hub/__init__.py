@@ -13,6 +13,7 @@ from .modules.energy_tariffs.octopus_energy_uk.flexible import OctopusEnergyUKFl
 from .modules.energy_tariffs.octopus_energy_uk.tracker import OctopusEnergyUKTracker
 from .modules.energy_tariffs.octopus_energy_uk.account_data import OctopusEnergyUKAccountData
 from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_agile import OctopusEnergyUKTariffEngineAgile
+from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_cosy import OctopusEnergyUKTariffEngineCosy
 from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_tracker import OctopusEnergyUKTariffEngineTracker
 from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_flexible import OctopusEnergyUKTariffEngineFlexible
 import logging
@@ -61,6 +62,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             for region in entry.data.get("current_region"):
                 _LOGGER.debug("Octopus Tariff Engine.. %s", region)
             await OctopusEnergyUKTariffEngineFlexible(hass, entry)
+        elif config_data.get("home_energy_hub_registry") in ["20194"]:
+            for region in entry.data.get("current_region"):
+                _LOGGER.debug("Octopus Tariff Engine.. %s", region)
+            await OctopusEnergyUKTariffEngineCosy(hass, entry)
         elif config_data.get("home_energy_hub_registry") in ["30101"]:
             _LOGGER.debug("Seplos V2 BMS Selected..")
             await SeplosV2BMS(hass, entry)

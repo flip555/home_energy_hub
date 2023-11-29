@@ -89,6 +89,13 @@ HEH_REGISTER = {
                         "single_entry": "1",
                         "config_flow": "async_step_octopus_tariff_engine_flexible",
                         "options_flow": "async_step_octopus_options_tariff_engine_flexible",
+                    },
+                    "20194": {
+                        "option_name": "Octopus Cosy Tariff",
+                        "active": "1",
+                        "single_entry": "1",
+                        "config_flow": "async_step_octopus_tariff_engine_cosy",
+                        "options_flow": "async_step_octopus_options_tariff_engine_cosy",
                     }                
                 }
             }
