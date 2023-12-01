@@ -43,7 +43,7 @@ async def OctopusEnergyUKTariffEngineFlexible(hass, entry):
                 return data
             else:
                 _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
-                return None
+                return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
 
     async def GET_FLEXIBLE_GAS(region, fuel):
         url = f"https://api.octopus.energy/v1/products/VAR-22-11-01/electricity-tariffs/G-1R-VAR-22-11-01-{region}/standard-unit-rates/"
@@ -57,7 +57,7 @@ async def OctopusEnergyUKTariffEngineFlexible(hass, entry):
                 return data
             else:
                 _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
-                return None
+                return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
 
     async def async_update_data():
         sensors = {}

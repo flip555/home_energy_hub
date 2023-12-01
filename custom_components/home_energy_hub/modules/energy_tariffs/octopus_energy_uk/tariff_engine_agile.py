@@ -45,7 +45,7 @@ async def OctopusEnergyUKTariffEngineAgile(hass, entry):
                 return data
             else:
                 _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
-                return None
+                return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA"+entry_id + region]
 
     async def async_update_data():
         sensors = {}

@@ -43,7 +43,7 @@ async def OctopusEnergyUKTariffEngineCosy(hass, entry):
                 return data
             else:
                 _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
-                return None
+                return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
 
     async def GET_COSY_GAS(region, fuel):
         url = f"https://api.octopus.energy/v1/products/COSY-22-12-08/gas-tariffs/G-1R-COSY-22-12-08-{region}/standard-unit-rates/"
@@ -57,7 +57,7 @@ async def OctopusEnergyUKTariffEngineCosy(hass, entry):
                 return data
             else:
                 _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
-                return None
+                return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
 
     async def async_update_data():
         sensors = {}
