@@ -65,10 +65,12 @@ async def OctopusEnergyUKTariffEngineAgile(hass, entry):
                 last_update_unix = hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_" + entry_id + region)
                 last_update_time = datetime.utcfromtimestamp(last_update_unix)
                 current_time = datetime.utcnow()
-
-                if last_update_time > current_time - timedelta(seconds=api_update_time):
+                if (
+                    last_update_time > current_time - timedelta(seconds=api_update_time)
+                    and hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region) is not None
+                ):
                     # Use existing data
-                    data = hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA"+entry_id + region]
+                    data = hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
                 else:
                     # Fetch new data
                     data = await GET_ELECTRIC_API(region, fuel)
@@ -88,7 +90,6 @@ async def OctopusEnergyUKTariffEngineAgile(hass, entry):
 
             )
             time_price_list = []  # Initialize an empty list to store times and prices
-            time_price_list = []
             future_negative_prices = []
             now = datetime.now(timezone.utc)
             cutoff_time = now - timedelta(hours=24)
@@ -233,8 +234,10 @@ async def OctopusEnergyUKTariffEngineAgile(hass, entry):
                 last_update_unix = hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region)
                 last_update_time = datetime.utcfromtimestamp(last_update_unix)
                 current_time = datetime.utcnow()
-
-                if last_update_time > current_time - timedelta(seconds=api_update_time):
+                if (
+                    last_update_time > current_time - timedelta(seconds=api_update_time)
+                    and hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region) is not None
+                ):
                     standing_charge_data = hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region]
                 else:
                     standing_charge_data = await GET_STANDING_CHARGE_ELECTRIC_API(region, fuel)

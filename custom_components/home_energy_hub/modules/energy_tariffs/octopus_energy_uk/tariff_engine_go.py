@@ -67,8 +67,10 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                     last_update_unix = hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_" + entry_id + "_" + fuel + "_" + region)
                     last_update_time = datetime.utcfromtimestamp(last_update_unix)
                     current_time = datetime.utcnow()
-
-                    if last_update_time > current_time - timedelta(seconds=api_update_time):
+                    if (
+                        last_update_time > current_time - timedelta(seconds=api_update_time)
+                        and hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region) is not None
+                    ):
                         data = hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
                     else:
                         data = await GET_GO_ELECTRIC(region, fuel)
@@ -207,14 +209,16 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                     last_update_unix = hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region)
                     last_update_time = datetime.utcfromtimestamp(last_update_unix)
                     current_time = datetime.utcnow()
-
-                    if last_update_time > current_time - timedelta(seconds=api_update_time):
+                    if (
+                        last_update_time > current_time - timedelta(seconds=api_update_time)
+                        and hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region) is not None
+                    ):
                         standing_charge_data = hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region]
                     else:
                         standing_charge_data = await GET_STANDING_CHARGE_GO_ELECTRIC(region, fuel)
                 else:
                     standing_charge_data = await GET_STANDING_CHARGE_GO_ELECTRIC(region, fuel)
-                    
+
                 for item in standing_charge_data.get("results", []):
                     if item.get("valid_to") is None:
                         standing_charge = item.get("value_inc_vat")  # Extract the 'value_inc_vat' price

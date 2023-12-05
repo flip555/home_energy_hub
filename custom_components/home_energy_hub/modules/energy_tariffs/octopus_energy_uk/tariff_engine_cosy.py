@@ -45,19 +45,19 @@ async def OctopusEnergyUKTariffEngineCosy(hass, entry):
                 _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
                 return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
 
-    async def GET_COSY_GAS(region, fuel):
-        url = f"https://api.octopus.energy/v1/products/COSY-22-12-08/gas-tariffs/G-1R-COSY-22-12-08-{region}/standard-unit-rates/"
+    async def GET_STANDING_CHARGE_ELECTRIC(region, fuel):
+        url = f"https://api.octopus.energy/v1/products/COSY-22-12-08/electricity-tariffs/E-1R-COSY-22-12-08-{region}/standing-charges/"
         async with aiohttp.ClientSession() as session, session.get(url) as resp:
             if resp.status == 200:
                 data = await resp.json()
                 _LOGGER.debug("Update received from Octopus Energy API")
                 current_time = datetime.utcnow().timestamp()                
-                hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_" + entry_id + "_" + fuel + "_" + region] = current_time
-                hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region] = data
+                hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region] = current_time
+                hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region] = data
                 return data
             else:
                 _LOGGER.error("Failed to get data from Octopus Energy API, status: %s", resp.status)
-                return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
+                return hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region]
 
     async def async_update_data():
         sensors = {}
@@ -70,23 +70,17 @@ async def OctopusEnergyUKTariffEngineCosy(hass, entry):
                     last_update_unix = hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_" + entry_id + "_" + fuel + "_" + region)
                     last_update_time = datetime.utcfromtimestamp(last_update_unix)
                     current_time = datetime.utcnow()
-
-                    if last_update_time > current_time - timedelta(seconds=api_update_time):
+                    if (
+                        last_update_time > current_time - timedelta(seconds=api_update_time)
+                        and hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region) is not None
+                    ):
                         # Use existing data
                         data = hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA" + entry_id + "_" + fuel + "_" + region]
                     else:
-                        # Fetch new data
-                        if fuel == "Gas":
-                            data = await GET_COSY_GAS(region, fuel)
-                        elif fuel == "Electric":
-                            data = await GET_COSY_ELECTRIC(region, fuel)
+                        data = await GET_COSY_ELECTRIC(region, fuel)
 
                 else:
-                    # If the timestamp isn't set, fetch new data
-                    if fuel == "Gas":
-                        data = await GET_COSY_GAS(region, fuel)
-                    elif fuel == "Electric":
-                        data = await GET_COSY_ELECTRIC(region, fuel)
+                    data = await GET_COSY_ELECTRIC(region, fuel)
 
                 device_registry.async_get_or_create(
                     config_entry_id=entry.entry_id,
@@ -214,6 +208,53 @@ async def OctopusEnergyUKTariffEngineCosy(hass, entry):
                             )
                 }
 
+
+                if "HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region in hass.data[DOMAIN]:
+                    last_update_unix = hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region)
+                    last_update_time = datetime.utcfromtimestamp(last_update_unix)
+                    current_time = datetime.utcnow()
+                    if (
+                        last_update_time > current_time - timedelta(seconds=api_update_time)
+                        and hass.data[DOMAIN].get("HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region) is not None
+                    ):
+                        standing_charge_data = hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region]
+                    else:
+                        standing_charge_data = await GET_STANDING_CHARGE_ELECTRIC(region, fuel)
+                else:
+                    standing_charge_data = await GET_STANDING_CHARGE_ELECTRIC(region, fuel)
+
+                for item in standing_charge_data.get("results", []):
+                    if item.get("valid_to") is None:
+                        standing_charge = item.get("value_inc_vat")  # Extract the 'value_inc_vat' price
+
+                sensors["cosy_standing_charge_"+region+fuel] = {
+                    'state': standing_charge,
+                    'name': f"Octopus Cosy {fuel} - Region {region} - Standing Charge",
+                    'unique_id': f"Octopus Cosy {fuel} - Region {region} - Standing Charge",
+                    'unit': "p",
+                    'icon': "",
+                    'device_class': "",
+                    'state_class': "",
+                    'attributes': {
+                    },
+                    'device_register': DeviceInfo(
+                                identifiers={("home_energy_hub", entry.entry_id, "Cosy", region, fuel )},
+                            )
+                }
+                sensors["cosy_standing_charge_gbp_"+region+fuel] = {
+                    'state': standing_charge / 100,
+                    'name': f"Octopus Cosy {fuel} - Region {region} - Standing Charge GBP",
+                    'unique_id': f"Octopus Cosy {fuel} - Region {region} - Standing Charge GBP",
+                    'unit': "GBP",
+                    'icon': "",
+                    'device_class': "",
+                    'state_class': "",
+                    'attributes': {
+                    },
+                    'device_register': DeviceInfo(
+                                identifiers={("home_energy_hub", entry.entry_id, "Cosy", region, fuel )},
+                            )
+                }
 
         return {
                 'binary_sensors': binary_sensors,
