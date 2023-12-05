@@ -59,6 +59,12 @@
                     "current_region": "Please select your required region(s)"
                 }
             },
+            "octopus_tariff_engine_go": {
+                "description": "",
+                "data": {
+                    "current_region": "Please select your required region(s)"
+                }
+            },
             "octopus_tariff_engine_tracker": {
                 "description": "",
                 "data": {
@@ -121,6 +127,14 @@
             },
             "octopus_options_tariff_engine_cosy": {
                 "title": "Cosy Tariff Settings",
+                "data": {
+                    "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)",
+                    "current_region": "Please select your required region(s)"
+                }
+            },
+            "octopus_options_tariff_engine_go": {
+                "title": "Go Tariff Settings",
                 "data": {
                     "octopus_api_update_frequency": "Octopus API Fetch Frequency (s)",
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)",

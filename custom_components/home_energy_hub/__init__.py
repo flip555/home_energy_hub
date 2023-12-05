@@ -14,6 +14,7 @@ from .modules.energy_tariffs.octopus_energy_uk.tracker import OctopusEnergyUKTra
 from .modules.energy_tariffs.octopus_energy_uk.account_data import OctopusEnergyUKAccountData
 from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_agile import OctopusEnergyUKTariffEngineAgile
 from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_cosy import OctopusEnergyUKTariffEngineCosy
+from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_go import OctopusEnergyUKTariffEngineGo
 from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_tracker import OctopusEnergyUKTariffEngineTracker
 from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_flexible import OctopusEnergyUKTariffEngineFlexible
 import logging
@@ -66,6 +67,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             for region in entry.data.get("current_region"):
                 _LOGGER.debug("Octopus Tariff Engine.. %s", region)
             await OctopusEnergyUKTariffEngineCosy(hass, entry)
+        elif config_data.get("home_energy_hub_registry") in ["20195"]:
+            for region in entry.data.get("current_region"):
+                _LOGGER.debug("Octopus Tariff Engine.. %s", region)
+            await OctopusEnergyUKTariffEngineGo(hass, entry)
         elif config_data.get("home_energy_hub_registry") in ["30101"]:
             _LOGGER.debug("Seplos V2 BMS Selected..")
             await SeplosV2BMS(hass, entry)
@@ -155,6 +160,48 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
         # Update stored data with the new configuration
         hass.data[DOMAIN][entry.entry_id] = entry.data
+    elif entry.data.get("home_energy_hub_registry") in ["20194"]:
+        tariff_name = "Cosy"
+        old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
+        new_regions = set(entry.data.get("current_region", []))
+
+        # Identify removed regions
+        removed_regions = old_regions - new_regions
+
+        # Remove entities for each removed region
+        for region in removed_regions:
+            for regione in region:
+
+            # Find and remove entities associated with the region
+                await remove_device_and_entities_for_region(hass, entry, regione, tariff_name)
+
+        # Unload and setup entry again
+        await async_unload_entry(hass, entry)
+        await async_setup_entry(hass, entry)
+
+        # Update stored data with the new configuration
+        hass.data[DOMAIN][entry.entry_id] = entry.data
+    elif entry.data.get("home_energy_hub_registry") in ["20195"]:
+        tariff_name = "Go"
+        old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
+        new_regions = set(entry.data.get("current_region", []))
+
+        # Identify removed regions
+        removed_regions = old_regions - new_regions
+
+        # Remove entities for each removed region
+        for region in removed_regions:
+            for regione in region:
+
+            # Find and remove entities associated with the region
+                await remove_device_and_entities_for_region(hass, entry, regione, tariff_name)
+
+        # Unload and setup entry again
+        await async_unload_entry(hass, entry)
+        await async_setup_entry(hass, entry)
+
+        # Update stored data with the new configuration
+        hass.data[DOMAIN][entry.entry_id] = entry.data
     else:
         await async_unload_entry(hass, entry)
         await async_setup_entry(hass, entry)
@@ -163,10 +210,12 @@ async def remove_device_and_entities_for_region(hass: HomeAssistant, entry: Conf
     device_registry = dr.async_get(hass)
     entity_registry =  er.async_get(hass)
 
-    target_device_name = f"{tariff_name} Region {region}"
+    target_device_name = f"{tariff_name} Region {region} - Electric"
+    target_device_name_gas = f"{tariff_name} Region {region} - Gas"
 
     # Find the device by name
     target_device = next((device for device in device_registry.devices.values() if device.name == target_device_name), None)
+    target_device_gas = next((device for device in device_registry.devices.values() if device.name == target_device_name_gas), None)
 
     if target_device:
         # Remove the device
@@ -174,6 +223,15 @@ async def remove_device_and_entities_for_region(hass: HomeAssistant, entry: Conf
 
         # Find and remove all entities associated with this device
         associated_entities = [entity_id for entity_id, entity in entity_registry.entities.items() if entity.device_id == target_device.id]
+        for entity_id in associated_entities:
+            entity_registry.async_remove(entity_id)
+
+    if target_device_gas:
+        # Remove the device
+        device_registry.async_remove_device(target_device.id)
+
+        # Find and remove all entities associated with this device
+        associated_entities = [entity_id for entity_id, entity in entity_registry.entities.items() if entity.device_id == target_device_gas.id]
         for entity_id in associated_entities:
             entity_registry.async_remove(entity_id)
 

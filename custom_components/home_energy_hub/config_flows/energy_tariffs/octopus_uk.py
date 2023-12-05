@@ -155,6 +155,29 @@ class OctopusUKEnergyConfigFlowMethods:
             data_schema=data_schema,
         )
 
+    async def async_step_octopus_tariff_engine_go(self, user_input=None):
+        if user_input is not None:
+            # Store user input and create the configuration entry
+            self.user_input.update(user_input)
+            self.user_input["name_prefix"] = f"Octopus Energy Go - Region {', '.join(self.user_input['current_region'])}"
+            self.user_input["octopus_api_update_frequency"] = 600
+            self.user_input["sensor_update_frequency"] = 5
+            self.user_input["regions"] = self.user_input['current_region']
+
+            title = f"Octopus Energy UK Go Tariff"
+            return self.async_create_entry(title=title, data=self.user_input)
+
+        energy_tariffs_option_names = {k: v["option_name"] for k, v in ENERGY_OCTOPUS_REGIONS.items()}
+
+        data_schema = vol.Schema({
+            vol.Optional("current_region"): cv.multi_select(energy_tariffs_option_names),
+        })
+
+        return self.async_show_form(
+            step_id="octopus_tariff_engine_go",
+            data_schema=data_schema,
+        )
+
     async def async_step_octopus_tariff_engine_tracker(self, user_input=None):
         if user_input is not None:
             # Store user input and create the configuration entry
@@ -247,6 +270,31 @@ class OctopusUKEnergyOptionsFlowMethods:
 
         return self.async_show_form(
             step_id="octopus_options_tariff_engine_cosy",
+            data_schema=vol.Schema({
+                vol.Optional("current_region", default=current_region): cv.multi_select(energy_tariffs_option_names),
+                vol.Required("octopus_api_update_frequency", default=octopus_api_update_frequency): int,
+                vol.Required("sensor_update_frequency", default=sensor_update_frequency): int,
+            })
+        )
+
+    async def async_step_octopus_options_tariff_engine_go(self, user_input=None):
+        if user_input is not None:
+                # Update the data
+                self.config_entry.data = {**self.config_entry.data, **user_input}
+                
+                # Update the config entry
+                self.hass.config_entries.async_update_entry(self.config_entry, data=self.config_entry.data)
+                
+                return self.async_create_entry(title="", data=user_input)
+
+        current_region = self.config_entry.data.get("current_region", "")
+        name_prefix = self.config_entry.data.get("name_prefix", f"Octopus Energy Go - Region {current_region}")
+        octopus_api_update_frequency = self.config_entry.data.get("octopus_api_update_frequency", 600)
+        sensor_update_frequency = self.config_entry.data.get("sensor_update_frequency", 1)
+        energy_tariffs_option_names = {k: v["option_name"] for k, v in ENERGY_OCTOPUS_REGIONS.items()}
+
+        return self.async_show_form(
+            step_id="octopus_options_tariff_engine_go",
             data_schema=vol.Schema({
                 vol.Optional("current_region", default=current_region): cv.multi_select(energy_tariffs_option_names),
                 vol.Required("octopus_api_update_frequency", default=octopus_api_update_frequency): int,
