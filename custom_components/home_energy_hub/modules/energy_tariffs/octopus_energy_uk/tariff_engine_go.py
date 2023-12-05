@@ -100,7 +100,7 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                 time_price_list = []
                 future_negative_prices = []
                 now = datetime.now(timezone.utc)
-                cutoff_time = now - timedelta(hours=12)
+                cutoff_time = now - timedelta(hours=23)
                 for item in data.get("results", []):
                     time = item.get("valid_from")  # Extract the 'valid_from' time
                     price = item.get("value_inc_vat")  # Extract the 'value_inc_vat' price
