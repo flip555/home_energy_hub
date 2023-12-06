@@ -126,12 +126,7 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                 current_price = next_price = previous_price = None
 
                 for i, (time, price, background_color) in enumerate(time_price_list):
-                    time_as_datetime = datetime.fromisoformat(time)
-
-                    if time_as_datetime > now:
-                        next_price = price
-                        break  # exit the loop as we've found the next price
-                    
+                  
                     previous_price = current_price  # store the last "current" price as "previous" before updating "current"
                     current_price = price  # update the "current" price
                     current_price_colour = background_color  # update the "current" price
@@ -139,7 +134,9 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                 timestamps = [x[0] for x in time_price_list]
                 prices = [x[1] for x in time_price_list]
                 colours = [x[2] for x in time_price_list]
- 
+
+                if next_price is None:
+                    next_price = prices[0]
 
                 _LOGGER.debug("Updating HA Sensor based on Stored data")
                 sensors["go_current_"+region+fuel] = {
