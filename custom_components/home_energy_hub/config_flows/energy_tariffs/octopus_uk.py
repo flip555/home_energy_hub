@@ -217,7 +217,7 @@ class OctopusUKEnergyConfigFlowMethods:
         energy_tariffs_option_names = {k: v["option_name"] for k, v in ENERGY_OCTOPUS_REGIONS.items()}
 
         data_schema = vol.Schema({
-            vol.Optional("fuel", default={"Electric"}): cv.multi_select({"Electric"}),
+            vol.Optional("fuel", default={"Electric","Gas"}): cv.multi_select({"Electric","Gas"}),
             vol.Optional("current_region"): cv.multi_select(energy_tariffs_option_names),
         })
 
@@ -344,12 +344,12 @@ class OctopusUKEnergyOptionsFlowMethods:
         octopus_api_update_frequency = self.config_entry.data.get("octopus_api_update_frequency", 600)
         sensor_update_frequency = self.config_entry.data.get("sensor_update_frequency", 1)
         energy_tariffs_option_names = {k: v["option_name"] for k, v in ENERGY_OCTOPUS_REGIONS.items()}
-        fuel = self.config_entry.data.get("fuel", {"Electric"})
+        fuel = self.config_entry.data.get("fuel", {"Electric", "Gas"})
 
         return self.async_show_form(
             step_id="octopus_options_tariff_engine_flexible",
             data_schema=vol.Schema({
-                vol.Optional("fuel", default=fuel): cv.multi_select({"Electric"}),
+                vol.Optional("fuel", default=fuel): cv.multi_select({"Electric", "Gas"}),
                 vol.Optional("current_region", default=current_region): cv.multi_select(energy_tariffs_option_names),
                 vol.Required("octopus_api_update_frequency", default=octopus_api_update_frequency): int,
                 vol.Required("sensor_update_frequency", default=sensor_update_frequency): int,
