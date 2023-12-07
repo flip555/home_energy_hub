@@ -47,7 +47,6 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
         async with aiohttp.ClientSession() as session, session.get(url) as resp:
             if resp.status == 200:
                 data = await resp.json()
-                _LOGGER.debug("Update received from Octopus Energy API")
                 current_time = datetime.utcnow().timestamp()                
                 hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_UPDATE_TIME_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region] = current_time
                 hass.data[DOMAIN]["HOME_ENERGY_HUB_OCTOPUS_DATA_STANDING_CHARGE_" + entry_id + "_" + fuel + "_" + region] = data
@@ -85,7 +84,6 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                     model="Go Tariff " + fuel,
                     entry_type=DeviceEntryType.SERVICE,
                 )
-                _LOGGER.debug("Update received from Octopus Energy API%s", data)
                 time_price_list = []
                 future_negative_prices = []
                 now = datetime.now(timezone.utc)
@@ -163,7 +161,6 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                 prices = [x[1] for x in time_price_list]
                 colours = [x[2] for x in time_price_list]
 
-                _LOGGER.debug("Updating HA Sensor based on Stored data")
                 sensors["go_current_"+region+fuel] = {
                     'state': current_price,
                     'name': f"Octopus Go {fuel} - Region {region} - Current Price",
