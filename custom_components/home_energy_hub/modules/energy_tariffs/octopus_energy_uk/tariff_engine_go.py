@@ -1,4 +1,3 @@
-#![allow(unused_variables)]
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers import device_registry as dr
