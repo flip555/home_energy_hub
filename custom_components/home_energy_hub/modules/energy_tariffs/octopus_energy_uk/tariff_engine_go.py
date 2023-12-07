@@ -86,57 +86,84 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                     entry_type=DeviceEntryType.SERVICE,
                 )
                 _LOGGER.debug("Update received from Octopus Energy API%s", data)
+
+
                 time_price_list = []
                 future_negative_prices = []
                 now = datetime.now(timezone.utc)
-                cutoff_time = now - timedelta(hours=23)
-                for item in data.get("results", []):
-                    time = item.get("valid_from")  # Extract the 'valid_from' time
-                    price = item.get("value_inc_vat")  # Extract the 'value_inc_vat' price
-                    if price <= 0:
-                        background_color = 'skyblue' 
-                    elif price <= 3:
-                        background_color = 'limegreen' 
-                    elif price <= 5:
-                        background_color = 'springgreen' 
-                    elif price <= 7:
-                        background_color = 'greenyellow' 
-                    elif price <= 10:
-                        background_color = 'blanchedalmond' 
-                    elif price <= 15:
-                        background_color = 'khaki' 
-                    elif price <= 20:
-                        background_color = 'yellow' 
-                    elif price <= 25:
-                        background_color = 'gold' 
-                    elif price <= 30:
-                        background_color = 'orange' 
-                    elif price <= 40:
-                        background_color = 'hotpink' 
-                    else:
-                        background_color = 'red' 
-                     
-                    time_as_datetime = datetime.fromisoformat(time)
+                cutoff_time = now - timedelta(hours=24)
 
-                    if time_as_datetime > cutoff_time:  # Remove prices older than 24 hours
-                        if time is not None and price is not None:
+                # Iterate through results
+                for item in data.get("results", []):
+                    time = item.get("valid_from")
+                    valid_to = item.get("valid_to")
+                    price = item.get("value_inc_vat")
+                    
+                    if price is not None and time is not None:
+                        time_as_datetime = datetime.fromisoformat(time)
+                        valid_to_as_datetime = datetime.fromisoformat(valid_to)
+                        
+                        if time_as_datetime > cutoff_time or valid_to_as_datetime > cutoff_time :
+                            if price <= 0:
+                                background_color = 'skyblue' 
+                            elif price <= 3:
+                                background_color = 'limegreen' 
+                            elif price <= 5:
+                                background_color = 'springgreen' 
+                            elif price <= 7:
+                                background_color = 'greenyellow' 
+                            elif price <= 10:
+                                background_color = 'blanchedalmond' 
+                            elif price <= 15:
+                                background_color = 'khaki' 
+                            elif price <= 20:
+                                background_color = 'yellow' 
+                            elif price <= 25:
+                                background_color = 'gold' 
+                            elif price <= 30:
+                                background_color = 'orange' 
+                            elif price <= 40:
+                                background_color = 'hotpink' 
+                            else:
+                                background_color = 'red' 
                             time_price_list.append((time, price, background_color))
-                
+
                 time_price_list.sort()
-                current_price = next_price = previous_price = None
+
+                # Initialize current and next prices
+                current_price, next_price = None, None
 
                 for i, (time, price, background_color) in enumerate(time_price_list):
-                  
-                    previous_price = current_price  # store the last "current" price as "previous" before updating "current"
-                    current_price = price  # update the "current" price
-                    current_price_colour = background_color  # update the "current" price
+                    if i == 0:
+                        current_price = price
+                        if price <= 0:
+                            current_price_colour = 'skyblue' 
+                        elif price <= 3:
+                            current_price_colour = 'limegreen' 
+                        elif price <= 5:
+                            current_price_colour = 'springgreen' 
+                        elif price <= 7:
+                            current_price_colour = 'greenyellow' 
+                        elif price <= 10:
+                            current_price_colour = 'blanchedalmond' 
+                        elif price <= 15:
+                            current_price_colour = 'khaki' 
+                        elif price <= 20:
+                            current_price_colour = 'yellow' 
+                        elif price <= 25:
+                            current_price_colour = 'gold' 
+                        elif price <= 30:
+                            current_price_colour = 'orange' 
+                        elif price <= 40:
+                            current_price_colour = 'hotpink' 
+                        else:
+                            current_price_colour = 'red' 
+                    elif i == 1:
+                        next_price = price
 
                 timestamps = [x[0] for x in time_price_list]
                 prices = [x[1] for x in time_price_list]
                 colours = [x[2] for x in time_price_list]
-
-                if next_price is None:
-                    next_price = prices[0]
 
                 _LOGGER.debug("Updating HA Sensor based on Stored data")
                 sensors["go_current_"+region+fuel] = {
