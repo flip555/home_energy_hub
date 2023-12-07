@@ -1,3 +1,4 @@
+#![allow(unused_variables)]
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers import device_registry as dr
@@ -86,8 +87,6 @@ async def OctopusEnergyUKTariffEngineGo(hass, entry):
                     entry_type=DeviceEntryType.SERVICE,
                 )
                 _LOGGER.debug("Update received from Octopus Energy API%s", data)
-
-
                 time_price_list = []
                 future_negative_prices = []
                 now = datetime.now(timezone.utc)
