@@ -111,7 +111,7 @@ async def OctopusEnergyUKTariffEngineAgile(hass, entry):
                 elif price <= 20:
                     background_color = 'yellow' 
                 elif price <= 25:
-                    background_color = 'agileld' 
+                    background_color = 'gold' 
                 elif price <= 30:
                     background_color = 'orange' 
                 elif price <= 40:
