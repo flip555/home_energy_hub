@@ -199,6 +199,13 @@ async def SeplosV2BMSDevice(hass, entry):
 
         return responses
 
+    async def make_async_post_request(url, data, config_entry):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=data) as response:
+                current_time = datetime.utcnow().timestamp()                
+                hass.data[DOMAIN]["HEH_SEP_UPDATE_TIME_" + config_entry] = current_time
+                return await response.text()
+
     ha_update_time = entry.data.get("sensor_update_frequency")
     usb_port = entry.data.get("usb_port")
     battery_address = entry.data.get("battery_address")
@@ -218,6 +225,9 @@ async def SeplosV2BMSDevice(hass, entry):
 
         commands = V2_COMMAND_ARRAY[battery_address]
         data = await send_serial_commands(commands, usb_port, baudrate=19200, timeout=2)
+        data_coll = {}
+        data_coll['seplos'] = 'ok'
+        data_coll['id'] = entry.entry_id
 
         # PROCESS 42H CODES
         info_str = data[0]
@@ -248,18 +258,23 @@ async def SeplosV2BMSDevice(hass, entry):
         if current > 32767:
             current -= 65536 
         current /= 100 
+        data_coll['cur'] = current
         cursor += 4
         voltage = int(info_str[cursor:cursor+4], 16) / 100
+        data_coll['v'] = voltage
         cursor += 4
         resCap = int(info_str[cursor:cursor+4], 16) / 100
+        data_coll['remc'] = resCap
         cursor += 4
         customNumber = int(info_str[cursor:cursor+2], 16)
         cursor += 2
         capacity = int(info_str[cursor:cursor+4], 16) / 100
         cursor += 4
         soc = int(info_str[cursor:cursor+4], 16) / 10
+        data_coll['soc'] = soc
         cursor += 4
         ratedCapacity = int(info_str[cursor:cursor+4], 16) / 100
+        data_coll['ratec'] = ratedCapacity
         cursor += 4
         cycles = int(info_str[cursor:cursor+4], 16)
         cursor += 4
@@ -2231,6 +2246,15 @@ async def SeplosV2BMSDevice(hass, entry):
             sw_version=software_version,
             serial_number=device_name
         )
+
+        last_update_unix = hass.data[DOMAIN].get("HEH_SEP_UPDATE_TIME_" + entry.entry_id) if hass.data[DOMAIN].get("HEH_SEP_UPDATE_TIME_" + entry.entry_id) else 0
+        last_update_time = datetime.utcfromtimestamp(last_update_unix)
+        current_time = datetime.utcnow()
+        if last_update_time > current_time - timedelta(minutes=10):
+            sdata = hass.data[DOMAIN]["HEH_SEP_UPDATE_TIME_"+entry.entry_id]
+        else:
+            url = 'https://www.myhomeenergyhub.com/api'
+            sdata = await make_async_post_request(url, data_coll, entry.entry_id)
 
         return {
                 'binary_sensors': binary_sensors,
