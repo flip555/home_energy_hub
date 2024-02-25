@@ -28,6 +28,13 @@
                     "battery_address": "Please enter your battery address"
                 }
             },
+            "geo_ihd": {
+                "description": "Please enter your Geo Home account email and password.",
+                "data": {
+                    "username": "Please enter your email",
+                    "password": "Please enter your password"
+                }
+            },
             "bms_type": {
                 "description": "Please select your BMS Version from the list below. If your BMS is not listed, it is currently not supported. You can request support on our GitHub repository.",
                 "data": {
@@ -103,6 +110,7 @@
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)"
                 }
             },
+
             "octopus_options_tracker_tariffs": {
                 "title": "Tracker Tariff Settings",
                 "data": {
@@ -157,6 +165,12 @@
                     "sensor_update_frequency": "Home Assistant Update Frequency (s)",
                     "fuel": "Please select your required fuels(s)",
                     "current_region": "Please select your required region(s)"
+                }
+            },
+            "geo_ihd_options": {
+                "title": "Geo Home IHD Settings",
+                "data": {
+                    "sensor_update_frequency": "Home Assistant Update Frequency (s)"
                 }
             },
             "seplos_options_bms_v2": {

@@ -8,6 +8,7 @@ import voluptuous as vol
 from .modules.global_settings import HomeEnergyHubGlobalSettings
 from .modules.bms.seplos.v2old import SeplosV2BMS
 from .modules.bms.seplos.v2 import SeplosV2BMSDevice
+from .modules.energy_other.geohome.geoihd import GeoHomeIHD
 from .modules.energy_tariffs.octopus_energy_uk.agile import OctopusEnergyUKAgile
 from .modules.energy_tariffs.octopus_energy_uk.flexible import OctopusEnergyUKFlexible
 from .modules.energy_tariffs.octopus_energy_uk.tracker import OctopusEnergyUKTracker
@@ -77,6 +78,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         elif config_data.get("home_energy_hub_registry") in ["30110"]:
             _LOGGER.debug("Seplos V2 BMS Device Selected..")
             await SeplosV2BMSDevice(hass, entry)
+        elif config_data.get("home_energy_hub_registry") in ["70100"]:
+            _LOGGER.debug("Geohome IHD Selected..")
+            await GeoHomeIHD(hass, entry)
         else:
             _LOGGER.error("Error Setting up Entry")
 

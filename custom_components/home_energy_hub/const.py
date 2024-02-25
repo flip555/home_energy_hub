@@ -200,4 +200,17 @@ HEH_REGISTER = {
             }
         }
     },
+    "70000": {
+        "option_name": "Energy Meters/IHDs/CADs",
+        "active": "1",
+        "submenu": {
+            "70100": {
+                "option_name": "Geo Trio In Home Display",
+                "active": "1",
+                "config_flow": "async_step_geo_ihd",
+                "options_flow": "async_step_geo_ihd_options",
+                "init": "/config/custom_components/home_energy_hub/geo_ihd/init.py"
+            }
+        }
+    },
 }
