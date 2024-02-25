@@ -141,7 +141,6 @@ async def GeoHomeIHD(hass, entry):
 
     async def async_update_data():
         data = await get_consolidated_data()
-        _LOGGER.error(data);
         sensors = {
             'electricity_total_consumption': {
                 'state': data['PeriodicMeterData']['totalConsumptionList'][0]['totalConsumption'],
