@@ -72,9 +72,13 @@ jobs:
   performance:
     name: "Performance Benchmarks"
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: write
     steps:
       - name: "Checkout repository"
         uses: "actions/checkout@v4.1.2"
+        with:
+          fetch-depth: 0
 
       - name: "Set up Python"
         uses: "actions/setup-python@v5.1.0"
@@ -91,11 +95,13 @@ jobs:
       - name: "Run performance benchmarks"
         run: pytest tests/performance/ --benchmark-only --benchmark-json output.json
 
-      - name: "Create gh-pages branch if not exists"
+      - name: "Initialize gh-pages branch"
         run: |
-          if ! git ls-remote --heads origin gh-pages; then
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git show-ref --quiet refs/remotes/origin/gh-pages; then
             git checkout --orphan gh-pages
-            git rm -rf .
+            git reset --hard
             git commit --allow-empty -m "Initial gh-pages commit"
             git push origin gh-pages
             git checkout -
@@ -113,14 +119,3 @@ jobs:
           fail-on-alert: true
           gh-pages-branch: "gh-pages"
           benchmark-data-dir-path: "dev/bench"
-          
-      - name: "Create gh-pages branch if not exists"
-        if: github.ref == 'refs/heads/dev'
-        run: |
-          if ! git ls-remote --heads origin gh-pages; then
-            git checkout --orphan gh-pages
-            git rm -rf .
-            git commit --allow-empty -m "Initial gh-pages commit"
-            git push origin gh-pages
-            git checkout -
-          fi
