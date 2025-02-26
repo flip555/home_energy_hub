@@ -1,5 +1,5 @@
 # Core dependencies
-homeassistant==2024.10.4  # Latest stable version
+homeassistant==2025.1  # Latest stable version
 pymodbus==3.6.6  # For modbus communication
 home-assistant-bluetooth>=1.13.0  # For Bluetooth integration
 aiohttp>=3.10.11  # Secure version for request smuggling fix

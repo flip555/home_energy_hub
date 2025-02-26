@@ -2,7 +2,7 @@
     "name": "Home Energy Hub",
     "filename": "home_energy_hub.zip",
     "hide_default_branch": true,
-    "homeassistant": "2024.10.4",
+    "homeassistant": "2025.1",
     "render_readme": true,
     "zip_release": true
 }
