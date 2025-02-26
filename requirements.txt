@@ -9,7 +9,6 @@ colorlog==6.8.2  # For colored console output
 # Development dependencies
 pip>=21.0,<24.1  # Latest compatible version range
 ruff==0.3.4  # Code linting
-pytest-benchmark==4.0.0  # For performance testing
 
 # Optional dependencies
 # Add any optional dependencies here with proper version constraints

@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: "Checkout the repository"
         uses: "actions/checkout@v4.1.2"
+        with:
+          fetch-depth: 0  # Required for benchmark history
 
       - name: "Set up Python"
         uses: "actions/setup-python@v5.1.0"
@@ -32,6 +34,9 @@ jobs:
 
       - name: "Run unit tests"
         run: pytest tests/ --cov=custom_components/home_energy_hub --cov-report=xml
+
+      - name: "Run benchmark tests"
+        run: pytest tests/performance/test_benchmark.py --benchmark-only
 
       - name: "Upload coverage report"
         uses: "codecov/codecov-action@v3"
@@ -68,36 +73,3 @@ jobs:
         uses: "pypa/gh-action-pip-audit@v1.0.8"
         with:
           inputs: requirements.txt
-
-  performance:
-    name: "Performance Benchmarks"
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Checkout repository"
-        uses: "actions/checkout@v4.1.2"
-
-      - name: "Set up Python"
-        uses: "actions/setup-python@v5.1.0"
-        with:
-          python-version: "3.13.2"
-          cache: "pip"
-
-      - name: "Install dependencies"
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest-benchmark
-
-      - name: "Run performance benchmarks"
-        run: pytest tests/performance/ --benchmark-only --benchmark-json output.json
-
-      - name: "Store benchmark result"
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          tool: "pytest"
-          output-file-path: output.json
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          auto-push: true
-          alert-threshold: "200%"
-          comment-on-alert: true
-          fail-on-alert: true
