@@ -1,0 +1,24 @@
+name: "Initialize gh-pages branch"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  init-gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+        with:
+          fetch-depth: 1
+
+      - name: Create and push gh-pages branch
+        run: |
+          git checkout --orphan gh-pages
+          git rm -rf .
+          echo "# Benchmark Results" > README.md
+          git add README.md
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Initial gh-pages commit"
+          git push origin gh-pages -f
