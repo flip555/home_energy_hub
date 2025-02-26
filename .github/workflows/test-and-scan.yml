@@ -101,3 +101,16 @@ jobs:
           alert-threshold: "200%"
           comment-on-alert: true
           fail-on-alert: true
+          gh-pages-branch: "gh-pages"
+          benchmark-data-dir-path: "dev/bench"
+          
+      - name: "Create gh-pages branch if not exists"
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          if ! git ls-remote --heads origin gh-pages; then
+            git checkout --orphan gh-pages
+            git rm -rf .
+            git commit --allow-empty -m "Initial gh-pages commit"
+            git push origin gh-pages
+            git checkout -
+          fi
