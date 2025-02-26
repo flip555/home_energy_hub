@@ -36,7 +36,17 @@ jobs:
         run: pytest tests/ --cov=custom_components/home_energy_hub --cov-report=xml
 
       - name: "Run benchmark tests"
-        run: pytest tests/performance/test_benchmark.py --benchmark-only
+        run: |
+          pytest tests/performance/test_benchmark.py --benchmark-only --benchmark-json output.json
+          python -m pytest-benchmark compare output.json --csv benchmark.csv
+
+      - name: "Store benchmark results"
+        uses: "actions/upload-artifact@v4"
+        with:
+          name: benchmark-results
+          path: |
+            output.json
+            benchmark.csv
 
       - name: "Upload coverage report"
         uses: "codecov/codecov-action@v3"
