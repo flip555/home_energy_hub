@@ -1,7 +1,7 @@
 # Core dependencies
-homeassistant==2024.1.6  # Latest stable version
+homeassistant==2024.10.4  # Latest stable version
 pymodbus==3.6.6  # For modbus communication
-home-assistant-bluetooth>=1.13.0  # Compatible version for HA 2024.1.6
+home-assistant-bluetooth>=1.13.0  # For Bluetooth integration
 
 # Logging
 colorlog==6.8.2  # For colored console output
