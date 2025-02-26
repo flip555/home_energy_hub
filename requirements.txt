@@ -1,13 +1,13 @@
 # Core dependencies
-homeassistant==2023.7.3  # Latest stable version
-pymodbus==3.6.2  # For modbus communication
+homeassistant==2024.1.6  # Latest stable version
+pymodbus==3.6.6  # For modbus communication
 
 # Logging
-colorlog==6.8.0  # For colored console output
+colorlog==6.8.2  # For colored console output
 
 # Development dependencies
-pip>=21.0,<24.0  # Latest compatible version range
-ruff==0.1.9  # Code linting
+pip>=21.0,<24.1  # Latest compatible version range
+ruff==0.3.4  # Code linting
 
 # Optional dependencies
 # Add any optional dependencies here with proper version constraints

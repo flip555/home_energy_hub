@@ -15,7 +15,7 @@ jobs:
       contents: write
     steps:
       - name: "Checkout the repository"
-        uses: "actions/checkout@v4.1.1"
+        uses: "actions/checkout@v4.1.2"
         with:
           fetch-depth: 0
 
@@ -47,7 +47,7 @@ jobs:
           zip home_energy_hub.zip -r ./
 
       - name: "Upload the ZIP file to the release"
-        uses: softprops/action-gh-release@v0.1.15
+        uses: softprops/action-gh-release@v2.0.4
         with:
           files: ${{ github.workspace }}/custom_components/home_energy_hub/home_energy_hub.zip
           body: "${{ steps.changelog.outputs.clean_changelog }}"

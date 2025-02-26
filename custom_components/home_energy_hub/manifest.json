@@ -15,11 +15,11 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/flip555/home_energy_hub/issues",
   "requirements": [
-    "aiohttp>=3.8.5",
+    "aiohttp>=3.10.11",
     "async_timeout>=4.0.3",
     "voluptuous>=0.13.1",
     "python-dateutil>=2.8.2"
   ],
   "version": "v1.1.0",
-  "min_ha_version": "2023.7.3"
+  "min_ha_version": "2024.1.6"
 }
