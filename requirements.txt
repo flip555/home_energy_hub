@@ -1,5 +1,5 @@
 # Core dependencies
-homeassistant==2025.1  # Latest stable version
+homeassistant==2025.2.3  # Latest stable version
 pymodbus==3.6.6  # For modbus communication
 
 
