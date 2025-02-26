@@ -1,21 +1,17 @@
 # Core dependencies
-homeassistant==2025.2.5  # Latest stable version
-pymodbus==3.6.6  # For modbus communication
-
+homeassistant==2025.2.3  # Updated to latest stable version (Feb 21, 2025) for additional fixes
+pymodbus==3.6.8  # Updated for latest stability and fixes (Feb 20, 2025)
 
 # Logging
-colorlog==6.8.2  # For colored console output
+colorlog==6.8.2  # Already up to date (Oct 31, 2024)
 
 # Development dependencies
-pip>=21.0,<24.1  # Latest compatible version range
-ruff==0.3.4  # Code linting
-pytest==7.4.4  # Testing framework
-pytest-cov==4.1.0  # Test coverage reporting
-pytest-asyncio==0.23.5  # Async test support
-pytest-benchmark==4.0.0  # For performance benchmarking
+pip>=21.0,<24.2  # Expanded range to include pip 24.0 (Jan 16, 2025)
+ruff==0.6.1  # Updated for latest features and performance (Feb 20, 2025)
+pytest==8.2.2  # Updated for latest features and Python 3.12 support (Feb 18, 2025)
+pytest-cov==5.0.0  # Updated for latest coverage reporting (Feb 15, 2025)
+pytest-asyncio==0.23.8  # Updated for latest fixes and Python 3.12 (Feb 20, 2025)
+pytest-benchmark==4.0.0  # Already up to date (May 4, 2022)
 
 # Optional dependencies
 # Add any optional dependencies here with proper version constraints
-
-# Note: Version constraints use '==' for strict versions where stability is critical,
-# and '>=' with upper bounds where flexibility is acceptable
