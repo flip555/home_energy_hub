@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1740601824622,
+  "lastUpdate": 1740602375208,
   "repoUrl": "https://github.com/flip555/home_energy_hub",
   "entries": {
     "Benchmark": [
@@ -135,6 +135,51 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.000012347736407844867",
             "extra": "mean: 1.8585085417665708 msec\nrounds: 419"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "109870462+flip555@users.noreply.github.com",
+            "name": "flip555",
+            "username": "flip555"
+          },
+          "committer": {
+            "email": "109870462+flip555@users.noreply.github.com",
+            "name": "flip555",
+            "username": "flip555"
+          },
+          "distinct": true,
+          "id": "482a6d67b38004734937d1f0c8dad2d7d3b06c89",
+          "message": "bump versions",
+          "timestamp": "2025-02-26T20:38:40Z",
+          "tree_id": "53d41f18d243ec9dc6f05aa1e539e13614daed3e",
+          "url": "https://github.com/flip555/home_energy_hub/commit/482a6d67b38004734937d1f0c8dad2d7d3b06c89"
+        },
+        "date": 1740602374970,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/performance/test_benchmark.py::test_core_operations",
+            "value": 25936.957152428593,
+            "unit": "iter/sec",
+            "range": "stddev: 0.00000251824504289783",
+            "extra": "mean: 38.55502378799147 usec\nrounds: 24298"
+          },
+          {
+            "name": "tests/performance/test_benchmark.py::test_data_processing",
+            "value": 1695.4650595289097,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000009639288690526925",
+            "extra": "mean: 589.8086748410217 usec\nrounds: 1101"
+          },
+          {
+            "name": "tests/performance/test_benchmark.py::test_memory_operations",
+            "value": 527.3629611528617,
+            "unit": "iter/sec",
+            "range": "stddev: 0.000012659807733021189",
+            "extra": "mean: 1.8962272166666998 msec\nrounds: 420"
           }
         ]
       }
