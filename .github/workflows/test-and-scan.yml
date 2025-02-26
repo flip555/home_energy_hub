@@ -37,7 +37,7 @@ jobs:
 
       - name: "Run benchmark tests"
         run: |
-          pytest tests/performance/test_benchmark.py --benchmark-only --benchmark-json output.json
+          pytest tests/performance/test_benchmark.py --benchmark-only -v --benchmark-json output.json --benchmark-verbose
           python -m pytest-benchmark compare output.json --csv benchmark.csv
 
       - name: "Store benchmark results"
