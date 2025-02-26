@@ -1,0 +1,103 @@
+name: "Test and Security Scan"
+
+on:
+  push:
+    branches:
+      - "dev"
+  pull_request:
+    branches:
+      - "dev"
+  schedule:
+    - cron: "0 0 * * 0"  # Run weekly
+
+jobs:
+  test:
+    name: "Run Tests"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout the repository"
+        uses: "actions/checkout@v4.1.1"
+
+      - name: "Set up Python"
+        uses: "actions/setup-python@v5.0.0"
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: "Run unit tests"
+        run: pytest tests/ --cov=custom_components/home_energy_hub --cov-report=xml
+
+      - name: "Upload coverage report"
+        uses: "codecov/codecov-action@v3"
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
+
+  security:
+    name: "Security Scan"
+    runs-on: "ubuntu-latest"
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+      - name: "Checkout repository"
+        uses: "actions/checkout@v4.1.1"
+
+      - name: "Initialize CodeQL"
+        uses: "github/codeql-action/init@v2"
+        with:
+          languages: python
+
+      - name: "Perform CodeQL Analysis"
+        uses: "github/codeql-action/analyze@v2"
+
+      - name: "Run Bandit security scanner"
+        run: |
+          pip install bandit
+          bandit -r custom_components/home_energy_hub -f json -o bandit-results.json
+
+      - name: "Run dependency vulnerability scan"
+        uses: "pypa/gh-action-pip-audit@v1.0.8"
+        with:
+          inputs: requirements.txt
+
+  performance:
+    name: "Performance Benchmarks"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout repository"
+        uses: "actions/checkout@v4.1.1"
+
+      - name: "Set up Python"
+        uses: "actions/setup-python@v5.0.0"
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-benchmark
+
+      - name: "Run performance benchmarks"
+        run: pytest tests/performance/ --benchmark-only --benchmark-json output.json
+
+      - name: "Store benchmark result"
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: "pytest"
+          output-file-path: output.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: "200%"
+          comment-on-alert: true
+          fail-on-alert: true

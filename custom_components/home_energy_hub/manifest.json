@@ -5,11 +5,21 @@
     "@flip555"
   ],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": [
+    "http",
+    "sensor",
+    "binary_sensor"
+  ],
   "documentation": "https://github.com/flip555/home_energy_hub",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/flip555/home_energy_hub/issues",
-  "requirements": [],
-  "version": "v1.1.0"
+  "requirements": [
+    "aiohttp>=3.8.5",
+    "async_timeout>=4.0.3",
+    "voluptuous>=0.13.1",
+    "python-dateutil>=2.8.2"
+  ],
+  "version": "v1.1.0",
+  "min_ha_version": "2023.8.0"
 }

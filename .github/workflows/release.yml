@@ -16,6 +16,23 @@ jobs:
     steps:
       - name: "Checkout the repository"
         uses: "actions/checkout@v4.1.1"
+        with:
+          fetch-depth: 0
+
+      - name: "Verify version format"
+        shell: "bash"
+        run: |
+          if [[ ! "${{ github.event.release.tag_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version tag must follow semantic versioning format (v*.*.*)" >&2
+            exit 1
+          fi
+
+      - name: "Generate changelog"
+        id: changelog
+        uses: "conventional-changelog/conventional-changelog-action@v3"
+        with:
+          github-token: "${{ secrets.github_token }}"
+          version-file: "./custom_components/home_energy_hub/manifest.json"
 
       - name: "Adjust version number"
         shell: "bash"
@@ -33,3 +50,14 @@ jobs:
         uses: softprops/action-gh-release@v0.1.15
         with:
           files: ${{ github.workspace }}/custom_components/home_energy_hub/home_energy_hub.zip
+          body: "${{ steps.changelog.outputs.clean_changelog }}"
+          fail_on_unmatched_files: true
+
+      - name: "Create error summary"
+        if: failure()
+        run: |
+          echo "### Release Process Failed! :x:" >> $GITHUB_STEP_SUMMARY
+          echo "\nPlease check the following:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Version tag format (should be v*.*.*)" >> $GITHUB_STEP_SUMMARY
+          echo "2. Required files existence" >> $GITHUB_STEP_SUMMARY
+          echo "3. Permissions and token access" >> $GITHUB_STEP_SUMMARY
