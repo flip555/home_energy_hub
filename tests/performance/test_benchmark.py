@@ -41,7 +41,6 @@ def test_memory_operations(benchmark):
     
     result = benchmark(memory_op)
     assert result == 1249975000
-
 @pytest.fixture
 def benchmark_storage(request, benchmark):
     """Custom fixture to store benchmark results."""

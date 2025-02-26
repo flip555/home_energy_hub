@@ -9,6 +9,9 @@ colorlog==6.8.2  # For colored console output
 # Development dependencies
 pip>=21.0,<24.1  # Latest compatible version range
 ruff==0.3.4  # Code linting
+pytest==7.4.4  # Testing framework
+pytest-cov==4.1.0  # Test coverage reporting
+pytest-asyncio==0.23.5  # Async test support
 pytest-benchmark==4.0.0  # For performance benchmarking
 
 # Optional dependencies
