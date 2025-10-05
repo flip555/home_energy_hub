@@ -1,216 +1,297 @@
-# const.py
-NAME = "Home Energy Hub"
+"""Shared constants for Home Energy Hub."""
+
 DOMAIN = "home_energy_hub"
-DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.1.1"
-ATTRIBUTION = "Easily add Energy related things to HA without the hassle."
 
-# Platforms
-SENSOR = "sensor"
-BINARY_SENSOR = "binary_sensor"
-SELECT = "select"
-NUMBER = "number"
-PLATFORMS = [SENSOR, BINARY_SENSOR, SELECT, NUMBER]
+# Config keys
+CONF_INTEGRATION_TYPE = "integration_type"
+CONF_CONNECTOR_TYPE = "connector_type"
 
+# Integration categories for organized UI
+INTEGRATION_CATEGORIES = {
+    "energy_monitors": "Energy Monitors",
+    "battery_systems": "Battery Systems",
+}
 
-HEH_REGISTER = {
-    "00000": {
-        "option_name": "Home Energy Hub Global Settings",
-        "active": "1",
-        "config_flow": "async_step_home_energy_hub_global_settings",
-        "options_flow": "async_step_home_energy_hub_global_options",
-        "init": "OctopusUKEnergyUKINIT"
+# Integration details with category, human-readable name, and description
+INTEGRATION_TYPES = {
+    "geo_ihd": {
+        "name": "Geo Home IHD",
+        "category": "energy_monitors",
+        "description": "Geo Home In-Home Display for electricity and gas monitoring"
     },
-    "10000": {
-        "option_name": "ESS Control",
-        "active": "0",
-        "submenu": {
-            "10100": {
-                "option_name": "ESS 1 Test",
-                "active": "0",
-                "config_flow": "async_step_ess_1_config",
-                "options_flow": "async_step_ess_1_options",
-                "init": "/config/custom_components/home_energy_hub/ess_1_test/init.py"
-            }
-        }
+    "seplos_v2": {
+        "name": "Seplos BMS V2",
+        "category": "battery_systems",
+        "description": "Seplos Battery Management System Version 2"
+    }
+}
+
+CONNECTOR_TYPES = {
+    "usb_serial": "USB-RS485 Serial",
+    "telnet_serial": "Telnet Serial",
+}
+
+# Seplos-specific configuration
+CONF_SERIAL_PORT = "serial_port"
+CONF_BAUD_RATE = "baud_rate"
+DEFAULT_BAUD_RATE = 19200  # Seplos V2 uses 19200 baud
+CONF_HOST = "host"  # For TCP
+CONF_PORT = "port"  # For TCP/ESPHome
+CONF_ESP_HOME_DEVICE_ID = "esphome_device_id"  # For ESPHome
+
+# Seplos V2 specific configuration
+CONF_BATTERY_ADDRESS = "battery_address"
+CONF_PACK_MODE = "pack_mode"
+CONF_NAME_PREFIX = "name_prefix"
+CONF_POLL_INTERVAL = "poll_interval"
+
+# Battery addresses for Seplos V2
+BATTERY_ADDRESSES = {
+    "0x00": "Pack 0x00 (Single/Master)",
+    "0x01": "Pack 0x01",
+    "0x02": "Pack 0x02",
+    "0x03": "Pack 0x03"
+}
+
+# Pack modes
+PACK_MODES = {
+    "single": "Single Pack",
+    "parallel": "Parallel Packs"
+}
+
+# Seplos V2 sensor definitions
+SENSOR_UNITS = {
+    "cellsCount": None,
+    "resCap": "Ah",
+    "capacity": "Ah",
+    "soc": "%",
+    "ratedCapacity": "Ah",
+    "cycles": None,
+    "soh": "%",
+    "portVoltage": "V",
+    "current": "A",
+    "voltage": "V",
+    "battery_watts": "W",
+    "full_charge_watts": "W",
+    "full_charge_amps": "Ah",
+    "remaining_watts": "W",
+    "capacity_watts": "W",
+    "highest_cell_voltage": "mV",
+    "highest_cell_number": None,
+    "lowest_cell_voltage": "mV",
+    "lowest_cell_number": None,
+    "cell_difference": "mV",
+    "customNumber": None,
+    "power_temperature": "°C",
+    "environment_temperature": "°C",
+    "device_name": None,
+    "software_version": None,
+    "manufacturer_name": None,
+    # Cell voltage sensors
+    "cell_1_voltage": "mV",
+    "cell_2_voltage": "mV",
+    "cell_3_voltage": "mV",
+    "cell_4_voltage": "mV",
+    "cell_5_voltage": "mV",
+    "cell_6_voltage": "mV",
+    "cell_7_voltage": "mV",
+    "cell_8_voltage": "mV",
+    "cell_9_voltage": "mV",
+    "cell_10_voltage": "mV",
+    "cell_11_voltage": "mV",
+    "cell_12_voltage": "mV",
+    "cell_13_voltage": "mV",
+    "cell_14_voltage": "mV",
+    "cell_15_voltage": "mV",
+    "cell_16_voltage": "mV",
+    # Cell temperature sensors
+    "cell_temperature_1": "°C",
+    "cell_temperature_2": "°C",
+    "cell_temperature_3": "°C",
+    "cell_temperature_4": "°C",
+    "cell_temperature_5": "°C",
+    "cell_temperature_6": "°C",
+    "cell_temperature_7": "°C",
+    "cell_temperature_8": "°C",
+    # Alarm sensors (no units - they return strings)
+    "currentAlarm": None,
+    "voltageAlarm": None,
+    "alarmEvent0": None,
+    "alarmEvent1": None,
+    "alarmEvent2": None,
+    "alarmEvent3": None,
+    "alarmEvent4": None,
+    "alarmEvent5": None,
+    "alarmEvent6": None,
+    "alarmEvent7": None,
+    "onOffState": None,
+    "equilibriumState0": None,
+    "equilibriumState1": None,
+    "systemState": None,
+    "disconnectionState0": None,
+    "disconnectionState1": None,
+}
+
+# Seplos V2 alarm mappings (from reference file)
+ALARM_MAPPINGS = {
+    "alarmEvent0": [
+        "No Alarm",
+        "Alarm that analog quantity reaches the lower limit",
+        "Alarm that analog quantity reaches the upper limit",
+        "Other alarms"
+    ],
+    "alarmEvent1": [
+        "Voltage sensor fault",
+        "Temperature sensor fault",
+        "Current sensor fault",
+        "Key switch fault",
+        "Cell voltage dropout fault",
+        "Charge switch fault",
+        "Discharge switch fault",
+        "Current limit switch fault"
+    ],
+    "alarmEvent2": [
+        "Monomer high voltage alarm",
+        "Monomer overvoltage protection",
+        "Monomer low voltage alarm",
+        "Monomer under voltage protection",
+        "High voltage alarm for total voltage",
+        "Overvoltage protection for total voltage",
+        "Low voltage alarm for total voltage",
+        "Under voltage protection for total voltage"
+    ],
+    "alarmEvent3": [
+        "Charge high temperature alarm",
+        "Charge over temperature protection",
+        "Charge low temperature alarm",
+        "Charge under temperature protection",
+        "Discharge high temperature alarm",
+        "Discharge over temperature protection",
+        "Discharge low temperature alarm",
+        "Discharge under temperature protection"
+    ],
+    "alarmEvent4": [
+        "Environment high temperature alarm",
+        "Environment over temperature protection",
+        "Environment low temperature alarm",
+        "Environment under temperature protection",
+        "Power over temperature protection",
+        "Power high temperature alarm",
+        "Cell low temperature heating",
+        "Reservation bit"
+    ],
+    "alarmEvent5": [
+        "Charge over current alarm",
+        "Charge over current protection",
+        "Discharge over current alarm",
+        "Discharge over current protection",
+        "Transient over current protection",
+        "Output short circuit protection",
+        "Transient over current lockout",
+        "Output short circuit lockout"
+    ],
+    "alarmEvent6": [
+        "Charge high voltage protection",
+        "Intermittent recharge waiting",
+        "Residual capacity alarm",
+        "Residual capacity protection",
+        "Cell low voltage charging prohibition",
+        "Output reverse polarity protection",
+        "Output connection fault",
+        "Inside bit"
+    ],
+    "alarmEvent7": [
+        "Inside bit",
+        "Inside bit",
+        "Inside bit",
+        "Inside bit",
+        "Automatic charging waiting",
+        "Manual charging waiting",
+        "Inside bit",
+        "Inside bit"
+    ],
+    "alarmEvent8": [
+        "EEP storage fault",
+        "RTC error",
+        "Voltage calibration not performed",
+        "Current calibration not performed",
+        "Zero calibration not performed",
+        "Inside bit",
+        "Inside bit",
+        "Inside bit"
+    ],
+    "cellAlarm": {
+        0: "No Alarm",
+        1: "Alarm"
     },
-    "20000": {
-        "option_name": "Energy Tariffs",
-        "active": "1",
-        "submenu": {
-            "20100": {
-                "option_name": "Octopus Energy UK",
-                "active": "1", 
-                "submenu": {
-                    "20101": {
-                        "option_name": "Octopus Agile",
-                        "active": "0",
-                        "config_flow": "async_step_octopus_agile_tariffs",
-                        "options_flow": "async_step_octopus_options_tariff_engine_agile",
-                        "init": "OctopusEnergyUKAgile"
-                    },
-                    "20102": {
-                        "option_name": "Octopus Flexible",
-                        "active": "0",
-                        "config_flow": "async_step_octopus_flexible_tariffs",
-                        "options_flow": "async_step_octopus_options_flexible_tariffs",
-                        "init": "/config/custom_components/home_energy_hub/octopus_flexible/init.py"
-                    },
-                    "20103": {
-                        "option_name": "Octopus Tracker",
-                        "active": "0",
-                        "config_flow": "async_step_octopus_tracker_tariffs",
-                        "options_flow": "async_step_octopus_options_tracker_tariffs",
-                        "init": "/config/custom_components/home_energy_hub/octopus_tracker/init.py"
-                    },
-                    "20190": {
-                        "option_name": "Octopus Account Data",
-                        "active": "0",
-                        "config_flow": "async_step_octopus_account_data",
-                        "options_flow": "async_step_octopus_options_account_data",
-                    },
-                    "20191": {
-                        "option_name": "Octopus Agile Tariff",
-                        "active": "1",
-                        "single_entry": "1",
-                        "config_flow": "async_step_octopus_tariff_engine_agile",
-                        "options_flow": "async_step_octopus_options_tariff_engine_agile",
-                    },
-                    "20192": {
-                        "option_name": "Octopus Tracker Tariff",
-                        "active": "1",
-                        "single_entry": "1",
-                        "config_flow": "async_step_octopus_tariff_engine_tracker",
-                        "options_flow": "async_step_octopus_options_tariff_engine_tracker",
-                    },
-                    "20193": {
-                        "option_name": "Octopus Flexible Tariff",
-                        "active": "1",
-                        "single_entry": "1",
-                        "config_flow": "async_step_octopus_tariff_engine_flexible",
-                        "options_flow": "async_step_octopus_options_tariff_engine_flexible",
-                    },
-                    "20194": {
-                        "option_name": "Octopus Cosy Tariff",
-                        "active": "1",
-                        "single_entry": "1",
-                        "config_flow": "async_step_octopus_tariff_engine_cosy",
-                        "options_flow": "async_step_octopus_options_tariff_engine_cosy",
-                    },
-                    "20195": {
-                        "option_name": "Octopus Go Tariff",
-                        "active": "1",
-                        "single_entry": "1",
-                        "config_flow": "async_step_octopus_tariff_engine_go",
-                        "options_flow": "async_step_octopus_options_tariff_engine_go",
-                    }                
-                }
-            }
-        }
+    "tempAlarm": {
+        0: "No Alarm",
+        1: "Alarm"
     },
-    "30000": {
-        "option_name": "Battery Management Systems",
-        "active": "1",
-        "submenu": {
-            "30100": {
-                "option_name": "Seplos BMS",
-                "active": "1",
-                "submenu": {
-                    "30101": {
-                        "option_name": "Seplos BMS V2",
-                        "active": "0",
-                        "config_flow": "async_step_seplos_bms_v2",
-                        "options_flow": "async_step_seplos_options_bms_v2",
-                        "init": "/config/custom_components/home_energy_hub/seplos_bms_v2/init.py"
-                    },
-                    "30110": {
-                        "option_name": "Seplos BMS V2",
-                        "active": "1",
-                        "config_flow": "async_step_seplos_bms_v2_device",
-                        "options_flow": "async_step_seplos_options_bms_v2",
-                        "init": "/config/custom_components/home_energy_hub/seplos_bms_v2/init.py"
-                    },
-                    "30102": {
-                        "option_name": "Seplos BMS V3",
-                        "active": "0",
-                        "config_flow": "/config/custom_components/home_energy_hub/config_flows/seplos_bms_v3.py",
-                        "init": "/config/custom_components/home_energy_hub/seplos_bms_v3/init.py"
-                    }
-                }
-            },
-            "30200": {
-                "option_name": "JK BMS",
-                "active": "0",
-                "submenu": {
-                    "30201": {
-                        "option_name": "JK BMS 1",
-                        "active": "1",
-                        "config_flow": "/config/custom_components/home_energy_hub/config_flows/jk_bms_1.py",
-                        "init": "/config/custom_components/home_energy_hub/jk_bms_1/init.py"
-                    }
-                }
-            }
-        }
+    "currentAlarm": {
+        1: "Charge/Discharge Current Alarm"
     },
-    "40000": {
-        "option_name": "Victron Devices",
-        "active": "0",
-        "submenu": {
-            "40200": {
-                "option_name": "Victron GX TCP Modbus",
-                "active": "0",
-                "config_flow": "/config/custom_components/home_energy_hub/config_flows/victron_gx_tcp_modbus.py",
-                "init": "/config/custom_components/home_energy_hub/multiplus_ii/init.py"
-            },
-            "41001": {
-                "option_name": "Multiplus II",
-                "active": "0",
-                "config_flow": "/config/custom_components/home_energy_hub/config_flows/multiplus_ii.py",
-                "init": "/config/custom_components/home_energy_hub/multiplus_ii/init.py"
-            },
-            "41002": {
-                "option_name": "Solar MPPT",
-                "active": "0",
-                "config_flow": "/config/custom_components/home_energy_hub/config_flows/solar_mppt.py",
-                "init": "/config/custom_components/home_energy_hub/solar_mppt/init.py"
-            }
-        }
+    "voltageAlarm": {
+        1: "Total Battery Voltage Alarm"
     },
-    "50000": {
-        "option_name": "Sunsynk Devices",
-        "active": "0",
-        "submenu": {
-            "50200": {
-                "option_name": "Sunsynk Test",
-                "active": "0",
-                "config_flow": "/config/custom_components/home_energy_hub/config_flows/sunsynk_test.py",
-                "init": "/config/custom_components/home_energy_hub/multiplus_ii/init.py"
-            }
-        }
-    },
-    "60000": {
-        "option_name": "Renogy Devices",
-        "active": "0",
-        "submenu": {
-            "60200": {
-                "option_name": "Renogy Test",
-                "active": "0",
-                "config_flow": "/config/custom_components/home_energy_hub/config_flows/renogy_test.py",
-                "init": "/config/custom_components/home_energy_hub/multiplus_ii/init.py"
-            }
-        }
-    },
-    "70000": {
-        "option_name": "Energy Meters/IHDs/CADs",
-        "active": "1",
-        "submenu": {
-            "70100": {
-                "option_name": "Geo Trio In Home Display",
-                "active": "1",
-                "config_flow": "async_step_geo_ihd",
-                "options_flow": "async_step_geo_ihd_options",
-                "init": "/config/custom_components/home_energy_hub/geo_ihd/init.py"
-            }
-        }
-    },
+    "onOffState": [
+        "Discharge switch state",
+        "Charge switch state",
+        "Current limit switch state",
+        "Heating switch state",
+        "Reservation bit",
+        "Reservation bit",
+        "Reservation bit",
+        "Reservation bit"
+    ],
+    "equilibriumState0": [
+        "Cell 01 equilibrium",
+        "Cell 02 equilibrium",
+        "Cell 03 equilibrium",
+        "Cell 04 equilibrium",
+        "Cell 05 equilibrium",
+        "Cell 06 equilibrium",
+        "Cell 07 equilibrium",
+        "Cell 08 equilibrium"
+    ],
+    "equilibriumState1": [
+        "Cell 09 equilibrium",
+        "Cell 10 equilibrium",
+        "Cell 11 equilibrium",
+        "Cell 12 equilibrium",
+        "Cell 13 equilibrium",
+        "Cell 14 equilibrium",
+        "Cell 15 equilibrium",
+        "Cell 16 equilibrium"
+    ],
+    "systemState": [
+        "Discharge",
+        "Charge",
+        "Floating charge",
+        "Reservation bit",
+        "Standby",
+        "Shutdown",
+        "Reservation bit",
+        "Reservation bit"
+    ],
+    "disconnectionState0": [
+        "Cell 01 disconnection",
+        "Cell 02 disconnection",
+        "Cell 03 disconnection",
+        "Cell 04 disconnection",
+        "Cell 05 disconnection",
+        "Cell 06 disconnection",
+        "Cell 07 disconnection",
+        "Cell 08 disconnection"
+    ],
+    "disconnectionState1": [
+        "Cell 09 disconnection",
+        "Cell 10 disconnection",
+        "Cell 11 disconnection",
+        "Cell 12 disconnection",
+        "Cell 13 disconnection",
+        "Cell 14 disconnection",
+        "Cell 15 disconnection",
+        "Cell 16 disconnection"
+    ]
 }

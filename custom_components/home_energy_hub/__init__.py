@@ -1,241 +1,60 @@
-from __future__ import annotations
-from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
+"""Home Energy Hub custom component."""
+
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry as dr, entity_registry as er, config_validation as cv
 
-from .const import DOMAIN, PLATFORMS
-import voluptuous as vol
-from .modules.global_settings import HomeEnergyHubGlobalSettings
-from .modules.bms.seplos.v2old import SeplosV2BMS
-from .modules.bms.seplos.v2 import SeplosV2BMSDevice
-from .modules.energy_other.geohome.geoihd import GeoHomeIHD
-from .modules.energy_tariffs.octopus_energy_uk.agile import OctopusEnergyUKAgile
-from .modules.energy_tariffs.octopus_energy_uk.flexible import OctopusEnergyUKFlexible
-from .modules.energy_tariffs.octopus_energy_uk.tracker import OctopusEnergyUKTracker
-from .modules.energy_tariffs.octopus_energy_uk.account_data import OctopusEnergyUKAccountData
-from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_agile import OctopusEnergyUKTariffEngineAgile
-from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_cosy import OctopusEnergyUKTariffEngineCosy
-from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_go import OctopusEnergyUKTariffEngineGo
-from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_tracker import OctopusEnergyUKTariffEngineTracker
-from .modules.energy_tariffs.octopus_energy_uk.tariff_engine_flexible import OctopusEnergyUKTariffEngineFlexible
-import logging
-_LOGGER = logging.getLogger(__name__)
-
-
-async def async_setup(hass, config):
-    hass.data[DOMAIN] = {}
-    return True
+from .const import DOMAIN
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    hass.data.setdefault(DOMAIN, {})
-    
-    # Use options if they exist, otherwise default to entry data
-    config_data = entry.data
-    hass.data[DOMAIN][entry.entry_id] = config_data
-    # Logical Checks and coordinators should be set here!
-    try:
-        # Check the disclaimer value and proceed accordingly
-        if config_data.get("home_enery_hub_first_run") == 1:
-            _LOGGER.debug("Home Energy Hub Global Settings Loading...")
-            await HomeEnergyHubGlobalSettings(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20101"]:
-            _LOGGER.debug("Octopus Agile Tariff Region %s Selected..", entry.data.get("current_region"))
-            #await OctopusEnergyUKAgile(hass, entry)
-            await OctopusEnergyUKTariffEngineAgile(hass, entry)
+    """Set up Home Energy Hub from a config entry."""
+    # Migration from old entries
+    if "home_energy_hub_registry" in entry.data:
+        registry = entry.data["home_energy_hub_registry"]
+        if registry == "70100":
+            # Migrate Geohome IHD
+            new_data = {
+                "integration_type": "geo_ihd",
+                "username": entry.data.get("username", ""),
+                "password": entry.data.get("password", ""),
+                "host": "https://api.geotogether.com",
+                "port": 443,
+                "sensor_update_frequency": entry.data.get("sensor_update_frequency", 30),
+            }
+            hass.config_entries.async_update_entry(entry, data=new_data)
+        elif registry in ["30101", "30110"]:
+            # Migrate Seplos V2 (placeholder)
+            new_data = {
+                "integration_type": "seplos_v2",
+                "connector_type": "usb_serial",
+                "serial_port": entry.data.get("serial_port", "/dev/ttyUSB0"),
+                "baud_rate": entry.data.get("baud_rate", 9600),
+            }
+            hass.config_entries.async_update_entry(entry, data=new_data)
 
-        elif config_data.get("home_energy_hub_registry") in ["20103"]:
-            _LOGGER.debug("Octopus Tracker Tariff Region %s Selected..", entry.data.get("current_region"))
-            await OctopusEnergyUKTracker(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20102"]:
-            _LOGGER.debug("Octopus Flexible Tariff Region %s Selected..", entry.data.get("current_region"))
-            await OctopusEnergyUKFlexible(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20190"]:
-            _LOGGER.debug("Octopus Account Data Selected.. %s", entry.data.get("api_key"))
-            await OctopusEnergyUKAccountData(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20191"]:
-            for region in entry.data.get("current_region"):
-                _LOGGER.debug("Octopus Tariff Engine.. %s", region)
-            await OctopusEnergyUKTariffEngineAgile(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20192"]:
-            for region in entry.data.get("current_region"):
-                _LOGGER.debug("Octopus Tariff Engine.. %s", region)
-            await OctopusEnergyUKTariffEngineTracker(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20193"]:
-            for region in entry.data.get("current_region"):
-                _LOGGER.debug("Octopus Tariff Engine.. %s", region)
-            await OctopusEnergyUKTariffEngineFlexible(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20194"]:
-            for region in entry.data.get("current_region"):
-                _LOGGER.debug("Octopus Tariff Engine.. %s", region)
-            await OctopusEnergyUKTariffEngineCosy(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["20195"]:
-            for region in entry.data.get("current_region"):
-                _LOGGER.debug("Octopus Tariff Engine.. %s", region)
-            await OctopusEnergyUKTariffEngineGo(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["30101"]:
-            _LOGGER.debug("Seplos V2 BMS Selected..")
-            await SeplosV2BMS(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["30110"]:
-            _LOGGER.debug("Seplos V2 BMS Device Selected..")
-            await SeplosV2BMSDevice(hass, entry)
-        elif config_data.get("home_energy_hub_registry") in ["70100"]:
-            _LOGGER.debug("Geohome IHD Selected..")
-            await GeoHomeIHD(hass, entry)
-        else:
-            _LOGGER.error("Error Setting up Entry")
+    integration_type = entry.data.get("integration_type")
 
-    except Exception as e:
-        _LOGGER.error("Error setting up Home Energy Hub: %s", e)
+    # Set up coordinator
+    if integration_type == "geo_ihd":
+        from .integrations.geo_ihd.coordinator import GeoIhdCoordinator
+        coordinator = GeoIhdCoordinator(hass, entry)
+        await coordinator.async_config_entry_first_refresh()
+    elif integration_type == "seplos_v2":
+        from .integrations.seplos_v2.coordinator import SeplosV2Coordinator
+        coordinator = SeplosV2Coordinator(hass, entry)
+        await coordinator.async_config_entry_first_refresh()
+    else:
+        return False
 
-    #await HomeEnergyHubINIT(hass, entry)
+    # Store coordinator
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
-
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
-
+    # Forward to sensor platform
+    await hass.config_entries.async_forward_entry_setups(entry, ["sensor"])
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    if unloaded := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        hass.data[DOMAIN].pop(entry.entry_id)
-    return unloaded
+    """Unload a config entry."""
+    # Remove coordinator
+    hass.data[DOMAIN].pop(entry.entry_id, None)
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    if entry.data.get("home_energy_hub_registry") in ["20191"] or entry.data.get("home_energy_hub_registry") in ["20101"]:
-        tariff_name = "Agile"
-        old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
-        new_regions = set(entry.data.get("current_region", []))
-
-        # Identify removed regions
-        removed_regions = old_regions - new_regions
-
-        # Remove entities for each removed region
-        for region in removed_regions:
-            for regione in region:
-
-            # Find and remove entities associated with the region
-                await remove_device_and_entities_for_region(hass, entry, regione, tariff_name)
-
-        # Unload and setup entry again
-        await async_unload_entry(hass, entry)
-        await async_setup_entry(hass, entry)
-
-        # Update stored data with the new configuration
-        hass.data[DOMAIN][entry.entry_id] = entry.data
-    elif entry.data.get("home_energy_hub_registry") in ["20192"]:
-        tariff_name = "Tracker"
-        old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
-        new_regions = set(entry.data.get("current_region", []))
-
-        # Identify removed regions
-        removed_regions = old_regions - new_regions
-
-        # Remove entities for each removed region
-        for region in removed_regions:
-            for regione in region:
-
-            # Find and remove entities associated with the region
-                await remove_device_and_entities_for_region(hass, entry, regione, tariff_name)
-
-        # Unload and setup entry again
-        await async_unload_entry(hass, entry)
-        await async_setup_entry(hass, entry)
-
-        # Update stored data with the new configuration
-        hass.data[DOMAIN][entry.entry_id] = entry.data
-    elif entry.data.get("home_energy_hub_registry") in ["20193"]:
-        tariff_name = "Flexible"
-        old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
-        new_regions = set(entry.data.get("current_region", []))
-
-        # Identify removed regions
-        removed_regions = old_regions - new_regions
-
-        # Remove entities for each removed region
-        for region in removed_regions:
-            for regione in region:
-
-            # Find and remove entities associated with the region
-                await remove_device_and_entities_for_region(hass, entry, regione, tariff_name)
-
-        # Unload and setup entry again
-        await async_unload_entry(hass, entry)
-        await async_setup_entry(hass, entry)
-
-        # Update stored data with the new configuration
-        hass.data[DOMAIN][entry.entry_id] = entry.data
-    elif entry.data.get("home_energy_hub_registry") in ["20194"]:
-        tariff_name = "Cosy"
-        old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
-        new_regions = set(entry.data.get("current_region", []))
-
-        # Identify removed regions
-        removed_regions = old_regions - new_regions
-
-        # Remove entities for each removed region
-        for region in removed_regions:
-            for regione in region:
-
-            # Find and remove entities associated with the region
-                await remove_device_and_entities_for_region(hass, entry, regione, tariff_name)
-
-        # Unload and setup entry again
-        await async_unload_entry(hass, entry)
-        await async_setup_entry(hass, entry)
-
-        # Update stored data with the new configuration
-        hass.data[DOMAIN][entry.entry_id] = entry.data
-    elif entry.data.get("home_energy_hub_registry") in ["20195"]:
-        tariff_name = "Go"
-        old_regions = set(hass.data[DOMAIN][entry.entry_id].get("current_region", []))
-        new_regions = set(entry.data.get("current_region", []))
-
-        # Identify removed regions
-        removed_regions = old_regions - new_regions
-
-        # Remove entities for each removed region
-        for region in removed_regions:
-            for regione in region:
-
-            # Find and remove entities associated with the region
-                await remove_device_and_entities_for_region(hass, entry, regione, tariff_name)
-
-        # Unload and setup entry again
-        await async_unload_entry(hass, entry)
-        await async_setup_entry(hass, entry)
-
-        # Update stored data with the new configuration
-        hass.data[DOMAIN][entry.entry_id] = entry.data
-    else:
-        await async_unload_entry(hass, entry)
-        await async_setup_entry(hass, entry)
-
-async def remove_device_and_entities_for_region(hass: HomeAssistant, entry: ConfigEntry, region: str, tariff_name: str):
-    device_registry = dr.async_get(hass)
-    entity_registry =  er.async_get(hass)
-
-    target_device_name = f"{tariff_name} Region {region} - Electric"
-    target_device_name_gas = f"{tariff_name} Region {region} - Gas"
-
-    # Find the device by name
-    target_device = next((device for device in device_registry.devices.values() if device.name == target_device_name), None)
-    target_device_gas = next((device for device in device_registry.devices.values() if device.name == target_device_name_gas), None)
-
-    if target_device:
-        # Remove the device
-        device_registry.async_remove_device(target_device.id)
-
-        # Find and remove all entities associated with this device
-        associated_entities = [entity_id for entity_id, entity in entity_registry.entities.items() if entity.device_id == target_device.id]
-        for entity_id in associated_entities:
-            entity_registry.async_remove(entity_id)
-
-    if target_device_gas:
-        # Remove the device
-        device_registry.async_remove_device(target_device.id)
-
-        # Find and remove all entities associated with this device
-        associated_entities = [entity_id for entity_id, entity in entity_registry.entities.items() if entity.device_id == target_device_gas.id]
-        for entity_id in associated_entities:
-            entity_registry.async_remove(entity_id)
-
+    return await hass.config_entries.async_unload_platforms(entry, ["sensor"])

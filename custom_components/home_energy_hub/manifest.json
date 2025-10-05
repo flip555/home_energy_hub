@@ -1,15 +1,12 @@
 {
   "domain": "home_energy_hub",
   "name": "Home Energy Hub",
-  "codeowners": [
-    "@flip555"
-  ],
-  "config_flow": true,
-  "dependencies": [],
+  "version": "2.0.0",
   "documentation": "https://github.com/flip555/home_energy_hub",
-  "integration_type": "hub",
-  "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/flip555/home_energy_hub/issues",
-  "requirements": [],
-  "version": "v1.1.0"
+  "requirements": ["pymodbus>=3.6.0", "aiohttp"],
+  "codeowners": ["@flip555"],
+  "iot_class": "local_polling",
+  "config_flow": true,
+  "homeassistant": "2023.12.0"
 }

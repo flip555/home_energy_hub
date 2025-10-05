@@ -2,8 +2,6 @@
 
 A Home Assistant custom component for integrating energy management devices, featuring a modular architecture with support for multiple device types and connection methods.
 
-[![Discord](https://img.shields.io/discord/1161651448011034734?style=for-the-badge&logo=discord)](https://discord.gg/4eQbPEETBR)
-
 ## ⚠️ Important Update Notice
 
 **Breaking Change**: This major update (v2.0.0) includes significant architectural changes. If you are updating from a previous version, you will likely need to:
@@ -12,10 +10,6 @@ A Home Assistant custom component for integrating energy management devices, fea
 - Reconfigure any automations or dashboards that use these entities
 
 **Note**: Some features from previous versions have been temporarily removed as part of this architectural overhaul. These features will be re-added in future updates as we rebuild them on the new modular platform.
-
-## ⚠️ Disclaimer
-
-**Use at Your Own Risk**: This integration is intended for informational and control purposes only. All electrical installations should be performed by a qualified electrician. Ensure that all individual devices connected to this integration have their safety settings correctly configured. The developers are not responsible for any damage or issues that may arise from using this integration.
 
 ## Features
 
@@ -132,25 +126,31 @@ A Home Assistant custom component for integrating energy management devices, fea
 - For Seplos V2 Telnet: telnetlib (included in Python standard library)
 - For GEO IHD: aiohttp library
 
-## Repository Structure
+## File Structure
 
 ```
 home_energy_hub/
-├── .github/                    # GitHub workflows and templates
-├── assets/                     # Logo and branding assets
-├── config/                     # Example configuration files
-├── custom_components/          # Home Assistant custom component
-│   └── home_energy_hub/        # Main integration code
-│       ├── connectors/         # Connection abstraction layer
-│       ├── integrations/       # Device-specific implementations
-│       └── translations/       # Internationalization files
-├── scripts/                    # Development and build scripts
-├── CONTRIBUTING.md             # Contribution guidelines
-├── hacs.json                   # HACS integration metadata
-├── LICENSE                     # MIT License
-├── README.md                   # This file
-├── requirements.txt            # Python dependencies
-└── TODO.md                     # Development roadmap
+├── __init__.py              # Main integration setup
+├── config_flow.py           # Unified configuration flow
+├── const.py                 # Shared constants and definitions
+├── manifest.json            # Integration metadata
+├── README.md                # This file
+├── connectors/              # Connection abstraction layer
+│   ├── __init__.py          # Connector factory
+│   ├── usb_serial.py        # USB-RS485 serial connector
+│   └── telnet_serial.py     # Telnet serial connector
+└── integrations/            # Device-specific implementations
+    ├── seplos_v2/           # Seplos V2 BMS integration
+    │   ├── __init__.py      # Device registration and setup
+    │   ├── coordinator.py   # Data update coordination
+    │   ├── modbus_processor.py # Seplos protocol parsing
+    │   ├── sensor.py        # Sensor platform implementation
+    │   └── binary_sensor.py # Binary sensor platform
+    └── geo_ihd/             # GEO IHD integration
+        ├── __init__.py
+        ├── api_client.py
+        ├── coordinator.py
+        └── sensor.py
 ```
 
 ## Troubleshooting
@@ -165,21 +165,10 @@ home_energy_hub/
 - Check integration logs for connection errors
 - Verify all required configuration parameters
 
-## Development
-
-This project uses:
-- **Ruff** for linting and formatting
-- **HACS** for Home Assistant integration distribution
-- **GitHub Actions** for CI/CD
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for development guidelines and [`TODO.md`](TODO.md) for the development roadmap.
-
 ## Contributing
 
 Contributions are welcome! Please open issues or pull requests on GitHub.
 
-See our [Contributing Guidelines](CONTRIBUTING.md) for more details.
-
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License

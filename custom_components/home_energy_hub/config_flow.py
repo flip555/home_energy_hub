@@ -1,218 +1,288 @@
-from homeassistant import config_entries
-import voluptuous as vol
-from .const import DOMAIN, HEH_REGISTER
-import logging
-import importlib
-import sys
-from homeassistant.core import callback
+"""Central config flow router (single DOMAIN)."""
 
-# ---------------------------------------------
-# ------------- CONFIG IMPORTS START ----------
-# ---------------------------------------------
-# Add your module imports here. 
-# If you're adding a new module, import it in this section.
-from .config_flows.energy_tariffs.octopus_uk import OctopusUKEnergyConfigFlowMethods, OctopusUKEnergyOptionsFlowMethods
-from .config_flows.bms.seplos import SeplosConfigFlowMethods, SeplosOptionsFlowMethods
-from .config_flows.energy_other.geo_ihd import GeoIHDConfigFlowMethods, GeoIHDOptionsFlowMethods
-# Example: 
-# from .config_flows.category.file import YourMethodName
-# ---------------------------------------------
-# ---------------------------------------------
+import logging
+from typing import Any
+
+import voluptuous as vol
+from homeassistant import config_entries
+from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers import selector
+
+from .const import (
+    DOMAIN, CONF_INTEGRATION_TYPE, INTEGRATION_TYPES, INTEGRATION_CATEGORIES,
+    CONF_CONNECTOR_TYPE, CONNECTOR_TYPES, CONF_HOST, CONF_PORT, CONF_SERIAL_PORT, CONF_BAUD_RATE,
+    CONF_BATTERY_ADDRESS, CONF_PACK_MODE, CONF_NAME_PREFIX, CONF_POLL_INTERVAL
+)
 
 _LOGGER = logging.getLogger(__name__)
-class BMSConnectorOptionsFlow(config_entries.OptionsFlow,                                
-                                # ---------------------------------------------
-                                # ---------- ADD NEW METHODS HERE -------------
-                                # ---------------------------------------------
-                                # This is where you add method references 
-                                # for new modules you've imported.
-                                OctopusUKEnergyOptionsFlowMethods, 
-                                SeplosOptionsFlowMethods,
-                                GeoIHDOptionsFlowMethods,
-                                # Example:
-                                # YourMethodName,
-                                # ---------------------------------------------
-                                # ---------------------------------------------
-                                ):
-    # This is a stub. Here you would define the options schema and the logic for updating options.
-    def __init__(self, config_entry):
-        self.config_entry = config_entry
 
-    async def async_step_init(self, user_input=None):        
-        options_flow = self.config_entry.data.get("options_flow", "")
 
-        method_to_call = getattr(self, options_flow, None)
-        if callable(method_to_call):
-            return await method_to_call()
+@config_entries.HANDLERS.register(DOMAIN)
+class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle config flow for Home Energy Hub (all under one domain)."""
 
-    async def async_step_home_energy_hub_global_options(self, user_input=None):
-        if user_input is not None:
-                # Update the data
-                self.config_entry.data = {**self.config_entry.data, **user_input}
-                
-                # Update the config entry
-                self.hass.config_entries.async_update_entry(self.config_entry, data=self.config_entry.data)
-                
-                return self.async_create_entry(title="", data=user_input)
-
-        disclaimer = self.config_entry.data.get("disclaimer")
-        anon_reporting_confirm = self.config_entry.data.get("anon_reporting_confirm", False)
-        return self.async_show_form(
-            step_id="home_energy_hub_global_options",
-            data_schema=vol.Schema({
-                vol.Optional("anon_reporting_confirm", default=anon_reporting_confirm): bool,
-
-            })
-        )
-
-class BMSConnectorConfigFlow(config_entries.ConfigFlow,
-                                # ---------------------------------------------
-                                # ---------- ADD NEW METHODS HERE -------------
-                                # ---------------------------------------------
-                                # This is where you add method references 
-                                # for new modules you've imported.
-                                OctopusUKEnergyConfigFlowMethods, 
-                                SeplosConfigFlowMethods, 
-                                GeoIHDConfigFlowMethods,
-                                # Example:
-                                # YourMethodName,
-                                # ---------------------------------------------
-                                # ---------------------------------------------
-                            domain=DOMAIN):
     VERSION = 1
 
-
-    def __init__(self):
-        # Initialize the user_input and submenu_stack attributes
-        self.user_input = {}
-        self.submenu_stack = []
-
-    async def async_step_user(self, user_input=None):
-        errors = {}
-
-        # Check if an entry with "first_run" set to 1 already exists for this DOMAIN
-        existing_entry = next((entry for entry in self.hass.config_entries.async_entries(DOMAIN) 
-                               if entry.data.get("disclaimer") == 1), None)
-        if existing_entry:
-            if user_input is not None:
-                # Proceed to the next step
-                return await self.async_step_submenu_selection(user_input)
-
-            main_menu_options = [
-                v['option_name']
-                for k, v in HEH_REGISTER.items()
-                if v.get('active') == '1' and k != "00000"
-            ]
-
-            data_schema = vol.Schema({
-                vol.Required("submenu_selection", description="Select a submenu"): vol.In(main_menu_options),
-            })
-
-            return self.async_show_form(
-                step_id="submenu_selection",
-                data_schema=data_schema,
-                errors=errors,
-            )
-        else:
-            # Handle the error or any logic you want to do if the entry exists
-            return await self.async_step_home_energy_hub_global_settings()
-
-
-    async def async_step_submenu_selection(self, user_input=None):
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """First step: Select category."""
         if user_input is not None:
-            submenu_name = user_input.get('submenu_selection')
-            self.submenu_stack.append(submenu_name)
-            submenu, config_flow_dir, init_dir, options_flow, heh_registry = self.get_submenu()
+            self._category = user_input["category"]
+            return await self.async_step_select_integration()
 
-            if submenu and submenu != "config_flow":
-                submenu_options = [
-                    v['option_name']
-                    for k, v in submenu.items()
-                    if v.get('active') == '1'
-                ]
+        # Create category options with human-readable names
+        categories = {
+            category_id: category_name 
+            for category_id, category_name in INTEGRATION_CATEGORIES.items()
+        }
 
-                data_schema = vol.Schema({
-                    vol.Required("submenu_selection", description="Select a submenu"): vol.In(submenu_options),
-                })
-
-                return self.async_show_form(
-                    step_id="submenu_selection",
-                    data_schema=data_schema,
-                )
-            else:
-                # Handle the selected submenu here
-                self.user_input["options_flow"] = options_flow
-                self.user_input["init"] = init_dir
-                self.user_input["home_energy_hub_registry"] = heh_registry
-                method_to_call = getattr(self, config_flow_dir, None)
-                if callable(method_to_call):
-                    return await method_to_call()
-
-        # Return to the main menu if there are no more submenus to select
-        return await self.async_step_user()
-
-    def get_submenu(self):
-        submenu_data = HEH_REGISTER
-        config_flow_dir = None
-        init_dir = None
-        options_flow = None
-        heh_registry = None
-
-        for submenu_name in self.submenu_stack:
-            try:
-                submenu_data = next((v['submenu'] for k, v in submenu_data.items() if v['option_name'] == submenu_name), None)
-            except KeyError:
-                try:
-                    heh_registry, matching_submenu = next(((k, v) for k, v in submenu_data.items() if v['option_name'] == submenu_name), (None, None))
-                    if matching_submenu:
-                        config_flow_dir = matching_submenu.get('config_flow', None)
-                        options_flow = matching_submenu.get('options_flow', None)
-                        init_dir = matching_submenu.get('init', None)
-                        submenu_data = "config_flow"
-
-                    else:
-                        submenu_data = {}
-                except KeyError:
-                        submenu_data = {}
-
-        return submenu_data, config_flow_dir, init_dir, options_flow, heh_registry
-
-    async def async_step_home_energy_hub_global_settings(self, user_input=None):
-        errors = {}
-
-        if user_input is not None:
-            if not user_input.get("disclaimer"):
-                errors["disclaimer"] = "You must accept the disclaimer to proceed!"
-            else:
-                user_input["home_enery_hub_first_run"] = 1
-                user_input["options_flow"] = "async_step_home_energy_hub_global_options"
-
-                # Check if the entry already exists
-                existing_entry = None
-                for entry in self._async_current_entries():
-                    if entry.data.get("home_enery_hub_first_run") == 1:
-                        existing_entry = entry
-                        break
-
-                # Update existing entry if found; otherwise create a new entry
-                if existing_entry:
-                    self.hass.config_entries.async_update_entry(existing_entry, data={**existing_entry.data, **user_input})
-                    return self.async_abort(reason="entry_updated")
-                else:
-                    return self.async_create_entry(title="Home Energy Hub Global Settings", data=user_input)
-
-        data_schema = vol.Schema({
-            vol.Required("disclaimer"): bool,
-            vol.Optional("anon_reporting_confirm"): bool,
-        })
         return self.async_show_form(
-            step_id="home_energy_hub_global_settings",
-            data_schema=data_schema,
-            errors=errors,
+            step_id="user",
+            data_schema=vol.Schema({
+                vol.Required("category"): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=[{"value": cat_id, "label": cat_name} for cat_id, cat_name in categories.items()],
+                        translation_key="category"
+                    )
+                )
+            }),
         )
 
+    async def async_step_select_integration(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Select integration within category."""
+        if user_input is not None:
+            self._integration_type = user_input[CONF_INTEGRATION_TYPE]
+            method_name = f"async_step_config_{self._integration_type}"
+            return await getattr(self, method_name)()
+
+        # Get integrations for the selected category
+        category_integrations = {
+            integration_id: integration_data["name"]
+            for integration_id, integration_data in INTEGRATION_TYPES.items()
+            if integration_data["category"] == self._category
+        }
+
+        return self.async_show_form(
+            step_id="select_integration",
+            data_schema=vol.Schema({
+                vol.Required(CONF_INTEGRATION_TYPE): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=[{"value": int_id, "label": int_name} for int_id, int_name in category_integrations.items()],
+                        translation_key="integration_type"
+                    )
+                )
+            }),
+        )
+
+    # Dynamic steps: Add one per integration (e.g., for seplos_v2)
+    async def async_step_config_seplos_v2(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Seplos BMS V2 config step."""
+        errors = {}
+        
+        if user_input is not None:
+            # Store the current state
+            current_step = user_input.get("_current_step", "connector")
+            
+            if current_step == "connector":
+                # User selected connector type, now show full config
+                connector_type = user_input[CONF_CONNECTOR_TYPE]
+                schema = self._get_seplos_v2_schema(connector_type, include_hidden=True)
+                return self.async_show_form(
+                    step_id="config_seplos_v2",
+                    data_schema=schema,
+                    description_placeholders={
+                        "integration_name": INTEGRATION_TYPES["seplos_v2"]["name"],
+                        "connector_type": CONNECTOR_TYPES[connector_type]
+                    }
+                )
+            
+            elif current_step == "config":
+                # User submitted full configuration
+                try:
+                    # Validate connection
+                    from .connectors import create_connector_client
+                    client = await create_connector_client(self.hass, user_input, self._integration_type)
+                    await client.close()  # Test connect
+                    
+                    # Create entry with all data
+                    await self.async_set_unique_id(f"{self._integration_type}_{user_input.get(CONF_SERIAL_PORT, user_input.get(CONF_HOST))}_{user_input[CONF_BATTERY_ADDRESS]}")
+                    return self.async_create_entry(
+                        title=f"{INTEGRATION_TYPES[self._integration_type]['name']} {user_input[CONF_BATTERY_ADDRESS]} via {CONNECTOR_TYPES[user_input[CONF_CONNECTOR_TYPE]]}",
+                        data={**user_input, CONF_INTEGRATION_TYPE: self._integration_type},
+                    )
+                    
+                except Exception as err:
+                    errors["base"] = str(err)
+                    connector_type = user_input[CONF_CONNECTOR_TYPE]
+                    schema = self._get_seplos_v2_schema(connector_type, include_hidden=True)
+                    return self.async_show_form(
+                        step_id="config_seplos_v2",
+                        data_schema=schema,
+                        errors=errors,
+                        description_placeholders={
+                            "integration_name": INTEGRATION_TYPES["seplos_v2"]["name"],
+                            "connector_type": CONNECTOR_TYPES[connector_type]
+                        }
+                    )
+
+        # First time - show connector type selection
+        return self.async_show_form(
+            step_id="config_seplos_v2",
+            data_schema=vol.Schema({
+                vol.Required(CONF_CONNECTOR_TYPE): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=[{"value": conn_type, "label": conn_name} for conn_type, conn_name in CONNECTOR_TYPES.items()],
+                        translation_key="connector_type"
+                    )
+                ),
+                vol.Required("_current_step", default="connector"): str,  # Hidden field to track step
+            }),
+            description_placeholders={
+                "integration_name": INTEGRATION_TYPES["seplos_v2"]["name"]
+            }
+        )
+
+    def _get_seplos_v2_schema(self, connector_type: str, include_hidden: bool = False) -> vol.Schema:
+        """Dynamic schema for Seplos V2 with connector-specific and Seplos parameters."""
+        from .const import (
+            CONF_SERIAL_PORT, CONF_BAUD_RATE, DEFAULT_BAUD_RATE,
+            CONF_BATTERY_ADDRESS, BATTERY_ADDRESSES, CONF_PACK_MODE,
+            PACK_MODES, CONF_NAME_PREFIX, CONF_POLL_INTERVAL
+        )
+        
+        base_schema = {}
+        
+        if connector_type == "usb_serial":
+            base_schema.update({
+                vol.Required(CONF_SERIAL_PORT, default="/dev/ttyUSB1"): str,
+                vol.Optional(CONF_BAUD_RATE, default=DEFAULT_BAUD_RATE): int,
+            })
+        elif connector_type == "telnet_serial":
+            base_schema.update({
+                vol.Required(CONF_HOST): str,
+                vol.Optional(CONF_PORT, default=23): int,
+            })
+        
+        # Add Seplos V2 specific parameters
+        base_schema.update({
+            vol.Required(CONF_BATTERY_ADDRESS, default="0x00"): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=[{"value": addr, "label": label} for addr, label in BATTERY_ADDRESSES.items()],
+                    translation_key="battery_address"
+                )
+            ),
+            vol.Required(CONF_PACK_MODE, default="single"): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=[{"value": mode, "label": label} for mode, label in PACK_MODES.items()],
+                    translation_key="pack_mode"
+                )
+            ),
+            vol.Optional(CONF_NAME_PREFIX, default="Seplos BMS HA "): str,
+            vol.Optional(CONF_POLL_INTERVAL, default=10): selector.NumberSelector(
+                selector.NumberSelectorConfig(min=5, max=300, mode="box")
+            ),
+        })
+        
+        # Add hidden fields for step tracking if needed
+        if include_hidden:
+            base_schema.update({
+                vol.Required(CONF_CONNECTOR_TYPE, default=connector_type): str,
+                vol.Required("_current_step", default="config"): str,
+            })
+        
+        return vol.Schema(base_schema)
+
+    def _get_connector_schema(self, connector_type: str) -> vol.Schema:
+        """Dynamic schema per connector."""
+        if connector_type == "usb_serial":
+            from .const import CONF_SERIAL_PORT, CONF_BAUD_RATE
+            return vol.Schema({
+                vol.Required(CONF_SERIAL_PORT): str,
+                vol.Optional(CONF_BAUD_RATE): int,
+            })
+        raise ValueError(f"Unknown connector: {connector_type}")
+
+    async def async_step_config_geo_ihd(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Geo Home IHD config step (HTTP-based)."""
+        if user_input is not None:
+            # Validate HTTP connection
+            # Placeholder: Implement HTTP test
+            # For now, assume valid
+            await self.async_set_unique_id(f"geo_ihd_{user_input['username']}")
+            return self.async_create_entry(
+                title=f"{INTEGRATION_TYPES['geo_ihd']['name']} - {user_input['username']}",
+                data={**user_input, CONF_INTEGRATION_TYPE: "geo_ihd"},
+            )
+
+        schema = vol.Schema({
+            vol.Required("username"): selector.TextSelector(
+                selector.TextSelectorConfig(type="email")
+            ),
+            vol.Required("password"): selector.TextSelector(
+                selector.TextSelectorConfig(type="password")
+            ),
+            vol.Optional(CONF_HOST, default="https://api.geotogether.com"): selector.TextSelector(
+                selector.TextSelectorConfig(type="url")
+            ),
+            vol.Optional(CONF_PORT, default=443): selector.NumberSelector(
+                selector.NumberSelectorConfig(min=1, max=65535, mode="box")
+            ),
+            vol.Optional("sensor_update_frequency", default=30): selector.NumberSelector(
+                selector.NumberSelectorConfig(min=10, max=3600, mode="box")
+            ),
+        })
+        return self.async_show_form(
+            step_id="config_geo_ihd",
+            data_schema=schema,
+            description_placeholders={
+                "integration_name": INTEGRATION_TYPES["geo_ihd"]["name"]
+            }
+        )
 
     @staticmethod
-    @callback
-    def async_get_options_flow(config_entry):
-        return BMSConnectorOptionsFlow(config_entry)
+    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> config_entries.OptionsFlow:
+        return HomeEnergyHubOptionsFlowHandler(config_entry)
+
+
+class HomeEnergyHubOptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle options flow for Home Energy Hub."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        self._config_entry = config_entry
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Manage the options."""
+        if user_input is not None:
+            # Update the config entry data and title if username changed
+            new_data = self._config_entry.data.copy()
+            new_data.update(user_input)
+            
+            integration_type = self._config_entry.data.get(CONF_INTEGRATION_TYPE)
+            if integration_type == "geo_ihd" and "username" in user_input:
+                # Update title if username changed
+                new_title = f"{INTEGRATION_TYPES['geo_ihd']['name']} - {user_input['username']}"
+                self.hass.config_entries.async_update_entry(
+                    self._config_entry,
+                    data=new_data,
+                    title=new_title
+                )
+            else:
+                self.hass.config_entries.async_update_entry(self._config_entry, data=new_data)
+                
+            return self.async_create_entry(title="", data=user_input)
+
+        integration_type = self._config_entry.data.get(CONF_INTEGRATION_TYPE)
+        if integration_type == "geo_ihd":
+            schema = vol.Schema({
+                vol.Required("username", default=self._config_entry.data.get("username")): str,
+                vol.Required("password", default=self._config_entry.data.get("password")): str,
+                vol.Optional("sensor_update_frequency", default=self._config_entry.data.get("sensor_update_frequency", 30)): int,
+            })
+        elif integration_type == "seplos_v2":
+            # Add options for seplos if needed
+            schema = vol.Schema({
+                vol.Optional("poll_interval", default=self._config_entry.data.get("poll_interval", 30)): int,
+            })
+        else:
+            schema = vol.Schema({})
+
+        return self.async_show_form(step_id="init", data_schema=schema)
