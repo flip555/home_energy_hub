@@ -85,7 +85,7 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             if current_step == "connector":
                 # User selected connector type, now show full config
                 connector_type = user_input[CONF_CONNECTOR_TYPE]
-                schema = self._get_seplos_v2_schema(connector_type, include_hidden=True)
+                schema = self._get_seplos_v2_schema(connector_type, include_hidden=False)
                 return self.async_show_form(
                     step_id="config_seplos_v2",
                     data_schema=schema,
@@ -134,7 +134,6 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         translation_key="connector_type"
                     )
                 ),
-                vol.Required("_current_step", default="connector"): str,  # Hidden field to track step
             }),
             description_placeholders={
                 "integration_name": INTEGRATION_TYPES["seplos_v2"]["name"]
