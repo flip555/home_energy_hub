@@ -39,39 +39,6 @@
           "poll_interval": "Update Frequency (seconds)"
         }
       }
-    },
-    "selector": {
-      "category": {
-        "options": {
-          "energy_monitors": "Energy Monitors",
-          "battery_systems": "Battery Systems"
-        }
-      },
-      "integration_type": {
-        "options": {
-          "geo_ihd": "Geo Home IHD",
-          "seplos_v2": "Seplos BMS V2"
-        }
-      },
-      "connector_type": {
-        "options": {
-          "usb_serial": "USB Serial"
-        }
-      },
-      "battery_address": {
-        "options": {
-          "0x00": "Pack 0x00 (Single/Master)",
-          "0x01": "Pack 0x01",
-          "0x02": "Pack 0x02",
-          "0x03": "Pack 0x03"
-        }
-      },
-      "pack_mode": {
-        "options": {
-          "single": "Single Pack",
-          "parallel": "Parallel Packs"
-        }
-      }
     }
   }
 }
