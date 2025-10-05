@@ -182,4 +182,4 @@ See our [Contributing Guidelines](CONTRIBUTING.md) for more details.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+GPL-3.0 License - see [LICENSE](LICENSE) file for details.
