@@ -17,11 +17,8 @@ The wiki contains detailed guides for:
 
 ## ⚠️ Important Notices
 
-### Breaking Changes (v2.0.0+)
-This major update includes significant architectural changes. If updating from a previous version:
-- Remove existing Home Energy Hub integration entries from Home Assistant
-- Re-add the integration with fresh configuration
-- Reconfigure any automations or dashboards that use these entities
+### v2.0.0+ Architecture
+This major update introduced a modular architecture with clear separation between connectors, integrations, and core components. The platform now supports easy extension with new device integrations.
 
 ### Safety Disclaimer
 **Use at Your Own Risk**: This integration is for informational and control purposes only. All electrical installations should be performed by a qualified electrician. Ensure all connected devices have proper safety settings configured.
@@ -35,8 +32,8 @@ This major update includes significant architectural changes. If updating from a
 - **Clean Device Organization**: Separate devices for operational data and settings
 
 ### Supported Devices
-- **Seplos V2 BMS**: Advanced battery management system monitoring
-- **GEO IHD**: Energy monitoring via HTTP API
+- **Seplos V2 BMS**: Advanced battery management system with 160+ sensors
+- **GEO IHD**: Energy monitoring via HTTP API with real-time consumption data
 
 ## Quick Start
 
@@ -59,12 +56,16 @@ For detailed instructions, see the [Installation Guide](https://github.com/flip5
 - **Discord Community**: [Join our Discord](https://discord.gg/4eQbPEETBR) for support
 - **GitHub Issues**: Report bugs and request features
 
-## Contributing
+## Contributing & Support
 
 We welcome contributions! Please see our:
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [Development Guide](https://github.com/flip555/home_energy_hub/wiki/Development)
-- [Project Roadmap](TODO.md)
+- [Project Roadmap](https://github.com/flip555/home_energy_hub/wiki/Development-Roadmap)
+
+### Support the Project
+- [GitHub Sponsors](https://github.com/sponsors/flip555) - Support ongoing development
+- [Discord Community](https://discord.gg/4eQbPEETBR) - Get help and discuss features
 
 ## License
 
