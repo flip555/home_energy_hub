@@ -59,6 +59,8 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
             sw_version=self.coordinator.data.get("software_version", "Unknown"),
         )
         
+        # Set device class and state class based on sensor type
+        self._set_sensor_attributes(key)
 
     def _camel_to_snake(self, name: str) -> str:
         """Convert camelCase to snake_case."""
@@ -71,9 +73,6 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
         s4 = re.sub('([0-9])([a-zA-Z])', r'\1_\2', s3)
         # Convert to lowercase
         return s4.lower()
-
-        # Set device class and state class based on sensor type
-        self._set_sensor_attributes(key)
 
     def _get_sensor_name(self, base_key: str) -> str:
         """Get human-readable sensor name."""
