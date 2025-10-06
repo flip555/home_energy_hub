@@ -155,7 +155,10 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.CURRENT
         elif "power" in key or "watts" in key:
             self._attr_device_class = SensorDeviceClass.POWER
-        elif "soc" in key:
+        # soc_ah is battery capacity in Ah, not energy storage
+        # Remove device class for soc_ah since Ah is not a valid unit for energy_storage
+        # soc_ah will be a generic sensor with Ah units
+        elif "soc" in key and not "ah" in key.lower():
             self._attr_device_class = SensorDeviceClass.BATTERY
         elif "capacity" in key and "ah" in key.lower():
             self._attr_device_class = SensorDeviceClass.ENERGY_STORAGE
