@@ -17,6 +17,14 @@ The wiki contains detailed guides for:
 
 ## ⚠️ Important Notices
 
+### Breaking Changes in v2.0.0+
+This major update introduced significant architectural changes that may break existing configurations:
+
+- **Complete Rewrite**: The entire codebase was restructured with a modular architecture
+- **Configuration Changes**: Setup process and configuration flow have been completely redesigned
+- **Entity Naming**: Sensor and device naming conventions have changed
+- **Integration Removal**: Previous versions are incompatible - complete reinstallation required
+
 ### v2.0.0+ Architecture
 This major update introduced a modular architecture with clear separation between connectors, integrations, and core components. The platform now supports easy extension with new device integrations.
 
