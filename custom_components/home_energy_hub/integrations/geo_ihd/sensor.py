@@ -13,13 +13,16 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
         self._key = key
         self._attr_name = sensor_info['name']
         self._attr_unique_id = sensor_info['unique_id']
-        self._attr_unit_of_measurement = sensor_info['unit']
-        
+        self._attr_unit_of_measurement = sensor_info['unit_of_measurement']
+
+
+
         # Map string device classes to enum values
         device_class_map = {
             "power": SensorDeviceClass.POWER,
             "energy": SensorDeviceClass.ENERGY,
             "gas": SensorDeviceClass.GAS,
+            "monetary": SensorDeviceClass.MONETARY,
         }
         
         # Map string state classes to enum values
@@ -30,10 +33,12 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
         
         if sensor_info['device_class'] and sensor_info['device_class'] in device_class_map:
             self._attr_device_class = device_class_map[sensor_info['device_class']]
-        
+        else:
+            self._attr_device_class = ""
         if sensor_info['state_class'] and sensor_info['state_class'] in state_class_map:
             self._attr_state_class = state_class_map[sensor_info['state_class']]
-            
+        else:
+            self._attr_state_class = ""
         self._attr_icon = sensor_info['icon']
         # Set device info
         device_type = "electric" if "electric" in key else "gas"
@@ -45,3 +50,18 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
     def state(self):
         """Return the state of the sensor."""
         return self.coordinator.data[self._key]['state']
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self.coordinator.data[self._key]['unit_of_measurement']
+
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        return self._attr_device_class
+
+    @property
+    def state_class(self):
+        """Return the state class of the sensor."""
+        return self._attr_state_class
