@@ -1,37 +1,72 @@
-# Home Energy Hub Add-On
+# Home Energy Hub
 
-> ⚠️ **Note**: This repository is currently under development and not ready for production use.
+A Home Assistant custom component for integrating energy management devices, featuring a modular architecture with support for multiple device types and connection methods.
 
-[Join our Discord Community](https://discord.gg/4eQbPEETBR)  
-![Discord Badge](https://img.shields.io/discord/1161651448011034734?style=for-the-badge&logo=discord)
+[![Discord](https://img.shields.io/discord/1161651448011034734?style=for-the-badge&logo=discord)](https://discord.gg/4eQbPEETBR)
 
-## Disclaimer
+## 📚 Documentation
 
-⚠️ **Use at Your Own Risk**: This add-on is intended for informational and control purposes only. All electrical installations should be performed by a qualified electrician. Ensure that all individual devices connected to this add-on have their safety settings correctly configured. The developers are not responsible for any damage or issues that may arise from using this add-on.
+**Comprehensive documentation is available in our [GitHub Wiki](https://github.com/flip555/home_energy_hub/wiki)**
 
-## Overview
+The wiki contains detailed guides for:
+- [Installation](https://github.com/flip555/home_energy_hub/wiki/Installation) - Step-by-step setup instructions
+- [Configuration](https://github.com/flip555/home_energy_hub/wiki/Configuration) - Device setup and configuration
+- [Supported Integrations](https://github.com/flip555/home_energy_hub/wiki/Supported-Integrations) - Available devices and features
+- [Troubleshooting](https://github.com/flip555/home_energy_hub/wiki/Troubleshooting) - Common issues and solutions
+- [Development](https://github.com/flip555/home_energy_hub/wiki/Development) - Contributing and extending the platform
 
-The Home Energy Hub Add-On is your one-stop solution for managing, monitoring, and integrating various home energy systems from different vendors. Whether it's solar inverters, battery management systems, or energy tariffs, this add-on aims to bring everything under one roof.
+## ⚠️ Important Notices
 
-## 🌠 Key Features
+### v2.0.0+ Architecture
+This major update introduced a modular architecture with clear separation between connectors, integrations, and core components. The platform now supports easy extension with new device integrations.
 
-### Vendor Agnostic
-- Easily integrate and manage devices from different manufacturers without being locked into a single ecosystem.
+### Safety Disclaimer
+**Use at Your Own Risk**: This integration is for informational and control purposes only. All electrical installations should be performed by a qualified electrician. Ensure all connected devices have proper safety settings configured.
 
-### Real-Time Monitoring
-- Keep an eye on your energy consumption, generation, and storage in real-time.
+## Quick Overview
 
-### Dynamic Control
-- Adjust settings based on real-time grid prices, ensuring you always get the best deal.
+### Key Features
+- **Modular Architecture**: Easy to extend with new integrations
+- **Multiple Connection Methods**: USB Serial, Telnet Serial, HTTP API
+- **Comprehensive Monitoring**: 160+ sensors for detailed energy data
+- **Clean Device Organization**: Separate devices for operational data and settings
 
-### BMS Support
-- Support for monitoring various Battery Management Systems.
+### Supported Devices
+- **Seplos V2 BMS**: Advanced battery management system with 160+ sensors
+- **GEO IHD**: Energy monitoring via HTTP API with real-time consumption data
 
-### Energy Tariff Integration
-- Support for Octopus Energy UK Agile tariff rates and more.
+## Quick Start
 
-## 🛠 Upcoming Enhancements
-- Extended support for more vendors and devices.
-- Improved user interface for easier management.
-- Advanced analytics and reporting features.
-- Enhanced automation capabilities.
+1. **Install via HACS** (recommended) or manual installation
+2. **Add integration** in Home Assistant Settings > Devices & Services
+3. **Configure your devices** following the setup wizard
+4. **Restart Home Assistant** to complete installation
+
+For detailed instructions, see the [Installation Guide](https://github.com/flip555/home_energy_hub/wiki/Installation).
+
+## Requirements
+
+- Home Assistant 2023.12.0 or later
+- Python 3.9 or later
+- Required Python libraries (automatically installed): pyserial, aiohttp
+
+## Getting Help
+
+- **Wiki Documentation**: Comprehensive guides and troubleshooting
+- **Discord Community**: [Join our Discord](https://discord.gg/4eQbPEETBR) for support
+- **GitHub Issues**: Report bugs and request features
+
+## Contributing & Support
+
+We welcome contributions! Please see our:
+- [Contributing Guidelines](CONTRIBUTING.md)
+- [Development Guide](https://github.com/flip555/home_energy_hub/wiki/Development)
+- [Project Roadmap](https://github.com/flip555/home_energy_hub/wiki/Development-Roadmap)
+
+### Support the Project
+- [GitHub Sponsors](https://github.com/sponsors/flip555) - Support ongoing development
+- [Discord Community](https://discord.gg/4eQbPEETBR) - Get help and discuss features
+
+## License
+
+GPL-3.0 License - see [LICENSE](LICENSE) file for details.

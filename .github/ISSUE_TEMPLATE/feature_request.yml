@@ -1,5 +1,5 @@
 name: "Feature request"
-description: "Suggest an idea or enhancement for this project"
+description: "Suggest an idea or enhancement for the Home Energy Hub"
 labels: "Feature+Request"
 
 body:
@@ -11,21 +11,28 @@ body:
       - **First**, search if a similar request has already been proposed. Let's avoid duplicates.
       - **Describe** the problem and solution in detail. It helps us understand your perspective and needs.
 
-- type: input
+- type: dropdown
   attributes:
-    label: "BMS Version 🔄"
-    description: "Specify the version of the BMS you are using. It can help contextualize the feature request."
+    label: "Integration Type 🔄"
+    description: "Which integration would this feature apply to?"
+    options:
+      - "Seplos V2 BMS"
+      - "GEO IHD"
+      - "New Integration"
+      - "Core Platform"
+      - "Other (please specify)"
   validations:
     required: true
   
 - type: dropdown
   attributes:
     label: "Connection Method 🌐"
-    description: "How is the BMS connected to your system? This can give insights into the applicability of the feature."
+    description: "How would this feature interact with devices?"
     options:
-      - "USB-RS485"
-      - "ESP8266"
-      - "ESP32"
+      - "USB-RS485 Serial"
+      - "Telnet Serial"
+      - "HTTP API"
+      - "Multiple/All"
       - "Other (please specify)"
   validations:
     required: true
