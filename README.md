@@ -27,13 +27,20 @@ This major update introduced a modular architecture with clear separation betwee
 
 ### Key Features
 - **Modular Architecture**: Easy to extend with new integrations
-- **Multiple Connection Methods**: USB Serial, Telnet Serial, HTTP API
-- **Comprehensive Monitoring**: 160+ sensors for detailed energy data
+- **Multiple Connection Methods**: USB-RS485 Serial (✅ tested), Telnet Serial (🧪 untested), HTTP API (✅ tested)
+- **Comprehensive Monitoring**: 167 sensors for Seplos V2 BMS, 18 sensors for GEO IHD
 - **Clean Device Organization**: Separate devices for operational data and settings
 
 ### Supported Devices
-- **Seplos V2 BMS**: Advanced battery management system with 160+ sensors
-- **GEO IHD**: Energy monitoring via HTTP API with real-time consumption data
+
+#### ✅ Tested & Verified
+- **Seplos V2 BMS** (Single pack via USB-RS485): Advanced battery management with 167 sensors (80 BMS + 87 Settings)
+- **GEO IHD**: Energy monitoring via HTTP API with 18 sensors (9 Electricity + 9 Gas)
+
+#### 🧪 Experimental/Untested
+- **Seplos V2 via Telnet Serial**: Network-based serial connection (untested)
+- **Multiple Seplos battery packs**: Parallel battery configurations (untested)
+- **Other connection methods**: Additional protocols and devices (see roadmap)
 
 ## Quick Start
 
@@ -48,7 +55,7 @@ For detailed instructions, see the [Installation Guide](https://github.com/flip5
 
 - Home Assistant 2023.12.0 or later
 - Python 3.9 or later
-- Required Python libraries (automatically installed): pyserial, aiohttp
+- Required Python libraries (automatically installed): pymodbus, aiohttp
 
 ## Getting Help
 
