@@ -1,10 +1,10 @@
 """Sensor entities for GEO IHD."""
 
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass, RestoreSensor
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo
 
-class GeoIhdSensor(CoordinatorEntity, SensorEntity):
+class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
     """Sensor for GEO IHD data."""
 
     def __init__(self, coordinator, key: str, entry_id: str, username: str) -> None:
