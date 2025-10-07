@@ -35,15 +35,17 @@ This major update introduced a modular architecture with clear separation betwee
 
 ### Key Features
 - **Modular Architecture**: Easy to extend with new integrations
-- **Multiple Connection Methods**: USB-RS485 Serial (✅ tested), Telnet Serial (🧪 untested), HTTP API (✅ tested)
-- **Comprehensive Monitoring**: 167 sensors for Seplos V2 BMS, 18 sensors for GEO IHD
+- **Multiple Connection Methods**: USB-RS485 Serial (✅ tested), Telnet Serial (🧪 untested), HTTP API (✅ tested), Helper Services (✅ tested)
+- **Comprehensive Monitoring**: 167 sensors for Seplos V2 BMS, 18 sensors for GEO IHD, plus charging slot tracking
 - **Clean Device Organization**: Separate devices for operational data and settings
+- **Helper Services**: IOG-Ohme Slots for tracking cheap electricity rate activation
 
 ### Supported Devices
 
 #### ✅ Tested & Verified
 - **Seplos V2 BMS** (Single pack via USB-RS485): Advanced battery management with 167 sensors (80 BMS + 87 Settings)
 - **GEO IHD**: Energy monitoring via HTTP API with 18 sensors (9 Electricity + 9 Gas)
+- **IOG-Ohme Slots**: Track active charging during cheap electricity slots for Ohme chargers or any power sensor
 
 #### 🧪 Experimental/Untested
 - **Seplos V2 via Telnet Serial**: Network-based serial connection (untested)
