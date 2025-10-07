@@ -12,12 +12,12 @@ async def async_setup_entry(
 ) -> None:
     """Set up sensors based on integration type."""
     integration_type = entry.data.get(CONF_INTEGRATION_TYPE)
-    coordinator = hass.data[DOMAIN][entry.entry_id]
 
     if integration_type == "geo_ihd":
         from homeassistant.helpers import device_registry as dr
         from .integrations.geo_ihd.sensor import GeoIhdSensor
 
+        coordinator = hass.data[DOMAIN][entry.entry_id]
         device_registry = dr.async_get(hass)
         username = entry.data.get("username")
 
@@ -43,4 +43,9 @@ async def async_setup_entry(
     elif integration_type == "seplos_v2":
         from .integrations.seplos_v2.sensor import SeplosV2Sensor
 
+        coordinator = hass.data[DOMAIN][entry.entry_id]
         async_add_entities([SeplosV2Sensor(coordinator, key, entry) for key in coordinator.data.keys()])
+    elif integration_type == "iog_slots":
+        # IOG-Ohme Slots doesn't use a coordinator, import and call its setup directly
+        from .integrations.iog_slots import async_setup_entry as iog_async_setup_entry
+        await iog_async_setup_entry(hass, entry, async_add_entities)

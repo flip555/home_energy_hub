@@ -38,6 +38,78 @@
           "name_prefix": "Name Prefix",
           "poll_interval": "Update Frequency (seconds)"
         }
+      },
+      "config_iog_slots": {
+        "title": "Configure IOG-Ohme Slots",
+        "description": "To track IOG 'active charging' when using Ohme, useful for knowing when your Ohme charger has activated Octopuses cheaper household rate. Uses Ohme Integration, or any sensor with a power W/kW unit of measure (Smart plug, shelly, R4850g2 etc)",
+        "data": {
+          "name_prefix": "Name prefix for entities",
+          "enable_charge_mode_check": "Enable Ohme charge mode check",
+          "charge_mode_entity": "Charge mode select entity",
+          "charge_mode_value": "Charge mode value for smart charging",
+          "power_entity": "Power sensor entity (W or kW)",
+          "power_threshold": "Power threshold (W) for active charging",
+          "activation_threshold": "Activation threshold (minutes) for cheap slot",
+          "update_interval": "Update interval (seconds)"
+        },
+        "data_description": {
+          "name_prefix": "Prefix for all created entities (e.g., 'IOG' creates 'IOG Active Charging Duration Slot 00')",
+          "enable_charge_mode_check": "When enabled, checks if charge mode matches the specified value. Requires Ohme Integration. Disable if you only want to track power.",
+          "charge_mode_entity": "Select entity that controls charge mode (e.g., select.ohme_home_pro_charge_mode)",
+          "charge_mode_value": "Value that indicates smart charging mode (e.g., 'smart_charge', 'Smart Charge')",
+          "power_entity": "Power sensor that measures charging power (must use W or kW units) *MUST* be powered by the Ohme charger.",
+          "power_threshold": "Minimum power in watts to consider charging active (e.g., 1700W)",
+          "activation_threshold": "Minutes of charging required to activate the cheap slot (e.g., 5 minutes)",
+          "update_interval": "How often to update sensor states (10-30 seconds recommended)"
+        }
+      }
+    } 
+  },
+  "options": {
+    "step": {
+      "geo_ihd": {
+        "title": "Configure Geo Home IHD",
+        "description": "Update your Geo Home IHD account settings.",
+        "data": {
+          "username": "Email Address",
+          "password": "Password",
+          "sensor_update_frequency": "Update Frequency (seconds)"
+        }
+      },
+      "seplos_v2": {
+        "title": "Configure Seplos BMS V2",
+        "description": "Update your Seplos BMS V2 settings.",
+        "data": {
+          "poll_interval": "Update Frequency (seconds)",
+          "serial_port": "Serial Port",
+          "baud_rate": "Baud Rate",
+          "host": "Telnet Host Address",
+          "port": "Telnet Port Number"
+        }
+      },
+      "iog_slots": {
+        "title": "Configure IOG-Ohme Slots",
+        "description": "Update your IOG-Ohme Slots configuration to track active charging triggering cheap electricity slots.",
+        "data": {
+          "name_prefix": "Name prefix for entities",
+          "enable_charge_mode_check": "Enable Ohme charge mode check",
+          "charge_mode_entity": "Charge mode select entity",
+          "charge_mode_value": "Charge mode value for smart charging",
+          "power_entity": "Power sensor entity (W or kW)",
+          "power_threshold": "Power threshold (W) for active charging",
+          "activation_threshold": "Activation threshold (minutes) for cheap slot",
+          "update_interval": "Update interval (seconds)"
+        },
+        "data_description": {
+          "name_prefix": "Prefix for all created entities (e.g., 'IOG' creates 'IOG Active Charging Duration Slot 00')",
+          "enable_charge_mode_check": "When enabled, checks if charge mode matches the specified value. Requires Ohme Integration. Disable if you only want to track power.",
+          "charge_mode_entity": "Select entity that controls charge mode (e.g., select.ohme_home_pro_charge_mode)",
+          "charge_mode_value": "Value that indicates smart charging mode (e.g., 'smart_charge', 'Smart Charge')",
+          "power_entity": "Power sensor that measures charging power (must use W or kW units) *MUST* be powered by the Ohme charger.",
+          "power_threshold": "Minimum power in watts to consider charging active (e.g., 1700W)",
+          "activation_threshold": "Minutes of charging required to activate the cheap slot (e.g., 5 minutes)",
+          "update_interval": "How often to update sensor states (10-30 seconds recommended)"
+        }
       }
     }
   }

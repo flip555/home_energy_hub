@@ -23,6 +23,11 @@ INTEGRATION_TYPES = {
         "name": "Seplos BMS V2",
         "category": "battery_systems",
         "description": "Seplos Battery Management System Version 2"
+    },
+    "iog_slots": {
+        "name": "IOG-Ohme Slots",
+        "category": "energy_monitors",
+        "description": "IOG-Ohme charging slot duration tracking"
     }
 }
 
