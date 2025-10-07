@@ -72,6 +72,7 @@ For detailed instructions, see the [Installation Guide](https://github.com/flip5
 - **Wiki Documentation**: Comprehensive guides and troubleshooting
 - **Discord Community**: [Join our Discord](https://discord.gg/4eQbPEETBR) for support
 - **GitHub Issues**: Report bugs and request features
+- **Related Projects**: [Complementary integrations](https://github.com/flip555/home_energy_hub/wiki/Related-Projects) that work well with Home Energy Hub
 
 ## Contributing & Support
 
