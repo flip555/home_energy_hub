@@ -141,8 +141,13 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             }
         )
 
+    async def async_step_config_seplos_v3(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Seplos BMS V3 config step (same schema as V2, different entry naming)."""
+        self._integration_type = "seplos_v3"
+        return await self.async_step_config_seplos_v2(user_input)
+
     def _get_seplos_v2_schema(self, connector_type: str, include_hidden: bool = True) -> vol.Schema:
-        """Dynamic schema for Seplos V2 with connector-specific and Seplos parameters."""
+        """Dynamic schema for Seplos with connector-specific and Seplos parameters."""
         from .const import (
             CONF_SERIAL_PORT, CONF_BAUD_RATE, DEFAULT_BAUD_RATE,
             CONF_BATTERY_ADDRESS, BATTERY_ADDRESSES,
@@ -248,6 +253,8 @@ class HomeEnergyHubOptionsFlowHandler(config_entries.OptionsFlow):
         if integration_type == "geo_ihd":
             return await self.async_step_geo_ihd(user_input)
         elif integration_type == "seplos_v2":
+            return await self.async_step_seplos_v2(user_input)
+        elif integration_type == "seplos_v3":
             return await self.async_step_seplos_v2(user_input)
         else:
             return self.async_abort(reason="not_supported")

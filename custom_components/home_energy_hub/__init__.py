@@ -42,6 +42,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         from .integrations.seplos_v2.coordinator import SeplosV2Coordinator
         coordinator = SeplosV2Coordinator(hass, entry)
         await coordinator.async_config_entry_first_refresh()
+    elif integration_type == "seplos_v3":
+        from .integrations.seplos_v3.coordinator import SeplosV3Coordinator
+        coordinator = SeplosV3Coordinator(hass, entry)
+        await coordinator.async_config_entry_first_refresh()
     else:
         return False
 

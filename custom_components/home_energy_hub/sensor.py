@@ -45,3 +45,7 @@ async def async_setup_entry(
 
         coordinator = hass.data[DOMAIN][entry.entry_id]
         async_add_entities([SeplosV2Sensor(coordinator, key, entry) for key in coordinator.data.keys()])
+    elif integration_type == "seplos_v3":
+        from .integrations.seplos_v3.sensor import async_setup_entry as seplos_v3_async_setup_entry
+
+        await seplos_v3_async_setup_entry(hass, entry, async_add_entities)

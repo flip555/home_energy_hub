@@ -24,6 +24,11 @@ INTEGRATION_TYPES = {
         "category": "battery_systems",
         "description": "Seplos Battery Management System Version 2"
     },
+    "seplos_v3": {
+        "name": "Seplos BMS V3",
+        "category": "battery_systems",
+        "description": "Seplos Battery Management System Version 3 (Modbus RTU)"
+    },
 
 }
 
