@@ -20,10 +20,11 @@ class SeplosV2BinarySensor(CoordinatorEntity, BinarySensorEntity):
         
         # Get configuration
         name_prefix = config_entry.data.get(CONF_NAME_PREFIX, "Seplos BMS HA")
-        # Set name for display purposes — just the sensor-specific part.
-        # HA will display it alongside the device name in the UI.
+        battery_address = config_entry.data.get("battery_address", "0x00")
+        
+        # Full entity name — includes prefix so multiple config entries produce unique IDs
         sensor_display_name = self._get_sensor_name(key)
-        self._attr_name = sensor_display_name
+        self._attr_name = f"{name_prefix} {battery_address} {sensor_display_name}"
         
         # Use stable unique_id based on entry_id — NOT the user-configurable name_prefix.
         # This prevents entity duplication when the prefix is changed.
