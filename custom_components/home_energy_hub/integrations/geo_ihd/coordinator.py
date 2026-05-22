@@ -117,7 +117,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             sensors = {
                 'electricity_total_consumption': {
                     'state': data['PeriodicMeterData']['totalConsumptionList'][0]['totalConsumption'],
-                    'name': "Geo IHD - Electricity Total Consumption",
+                    'name': "Total Consumption",
                     'unique_id': f"geo_ihd_electricity_total_consumption_{self.entry_id}",
                     'unit_of_measurement': "kWh",
                     'icon': "",
@@ -127,7 +127,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_total_consumption': {
                     'state': data['PeriodicMeterData']['totalConsumptionList'][1]['totalConsumption'] / 1000,
-                    'name': "Geo IHD - Gas Total Consumption",
+                    'name': "Total Consumption",
                     'unique_id': f"geo_ihd_gas_total_consumption_{self.entry_id}",
                     'unit_of_measurement': "m³",
                     'icon': "",
@@ -137,7 +137,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'electricity_supply_status': {
                     'state': data['PeriodicMeterData']['supplyStatusList'][0]['supplyStatus'],
-                    'name': "Geo IHD - Electricity Supply Status",
+                    'name': "Supply Status",
                     'unique_id': f"geo_ihd_electricity_supply_status_{self.entry_id}",
                     'unit_of_measurement': "",
                     'icon': "",
@@ -147,7 +147,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_supply_status': {
                     'state': data['PeriodicMeterData']['supplyStatusList'][1]['supplyStatus'],
-                    'name': "Geo IHD - Gas Supply Status",
+                    'name': "Supply Status",
                     'unique_id': f"geo_ihd_gas_supply_status_{self.entry_id}",
                     'unit_of_measurement': "",
                     'icon': "",
@@ -157,7 +157,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'electricity_bill_to_date': {
                     'state': data['PeriodicMeterData']['billToDateList'][0]['billToDate'] / 100,
-                    'name': "Geo IHD - Electricity Bill To Date",
+                    'name': "Bill To Date",
                     'unique_id': f"geo_ihd_electricity_bill_to_date_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -167,7 +167,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_bill_to_date': {
                     'state': data['PeriodicMeterData']['billToDateList'][1]['billToDate'] / 100,
-                    'name': "Geo IHD - Gas Bill To Date",
+                    'name': "Bill To Date",
                     'unique_id': f"geo_ihd_gas_bill_to_date_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -177,7 +177,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'electricity_active_tariff_price': {
                     'state': data['PeriodicMeterData']['activeTariffList'][0]['activeTariffPrice'] / 100,
-                    'name': "Geo IHD - Electricity Active Tariff Price",
+                    'name': "Active Tariff Price",
                     'unique_id': f"geo_ihd_electricity_active_tariff_price_{self.entry_id}",
                     'unit_of_measurement': "GBP/kWh",
                     'icon': "",
@@ -187,7 +187,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_active_tariff_price': {
                     'state': data['PeriodicMeterData']['activeTariffList'][1]['activeTariffPrice'] / 100,
-                    'name': "Geo IHD - Gas Active Tariff Price",
+                    'name': "Active Tariff Price",
                     'unique_id': f"geo_ihd_gas_active_tariff_price_{self.entry_id}",
                     'unit_of_measurement': "GBP/kWh",
                     'icon': "",
@@ -197,7 +197,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'electricity_cost_day': {
                     'state': data['PeriodicMeterData']['currentCostsElec'][0]['costAmount'] / 100,
-                    'name': "Geo IHD - Electricity Cost (Day)",
+                    'name': "Cost (Day)",
                     'unique_id': f"geo_ihd_electricity_cost_day_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -207,7 +207,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'electricity_cost_week': {
                     'state': data['PeriodicMeterData']['currentCostsElec'][1]['costAmount'] / 100,
-                    'name': "Geo IHD - Electricity Cost (Week)",
+                    'name': "Cost (Week)",
                     'unique_id': f"geo_ihd_electricity_cost_week_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -217,7 +217,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'electricity_cost_month': {
                     'state': data['PeriodicMeterData']['currentCostsElec'][2]['costAmount'] / 100,
-                    'name': "Geo IHD - Electricity Cost (Month)",
+                    'name': "Cost (Month)",
                     'unique_id': f"geo_ihd_electricity_cost_month_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -227,7 +227,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_cost_day': {
                     'state': data['PeriodicMeterData']['currentCostsGas'][0]['costAmount'] / 100,
-                    'name': "Geo IHD - Gas Cost (Day)",
+                    'name': "Cost (Day)",
                     'unique_id': f"geo_ihd_gas_cost_day_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -237,7 +237,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_cost_week': {
                     'state': data['PeriodicMeterData']['currentCostsGas'][1]['costAmount'] / 100,
-                    'name': "Geo IHD - Gas Cost (Week)",
+                    'name': "Cost (Week)",
                     'unique_id': f"geo_ihd_gas_cost_week_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -247,7 +247,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_cost_month': {
                     'state': data['PeriodicMeterData']['currentCostsGas'][2]['costAmount'] / 100,
-                    'name': "Geo IHD - Gas Cost (Month)",
+                    'name': "Cost (Month)",
                     'unique_id': f"geo_ihd_gas_cost_month_{self.entry_id}",
                     'unit_of_measurement': "GBP",
                     'icon': "",
@@ -257,7 +257,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'live_electricity_usage': {
                     'state': data['LiveMeterData']['power'][0]['watts'],
-                    'name': "Geo IHD - Live Electricity Usage",
+                    'name': "Live Usage",
                     'unique_id': f"geo_ihd_live_electricity_usage_{self.entry_id}",
                     'unit_of_measurement': "W",
                     'icon': "",
@@ -267,7 +267,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'live_gas_usage': {
                     'state': data['LiveMeterData']['power'][1]['watts'],
-                    'name': "Geo IHD - Live Gas Usage",
+                    'name': "Live Usage",
                     'unique_id': f"geo_ihd_live_gas_usage_{self.entry_id}",
                     'unit_of_measurement': "W",
                     'icon': "",
@@ -277,7 +277,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'electricity_zigbee_status': {
                     'state': data['LiveMeterData']['zigbeeStatus']['electricityClusterStatus'],
-                    'name': "Geo IHD - Electricity Zigbee Status",
+                    'name': "Zigbee Status",
                     'unique_id': f"geo_ihd_electricity_zigbee_status_{self.entry_id}",
                     'unit_of_measurement': "",
                     'icon': "",
@@ -287,7 +287,7 @@ class GeoIhdCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 },
                 'gas_zigbee_status': {
                     'state': data['LiveMeterData']['zigbeeStatus']['gasClusterStatus'],
-                    'name': "Geo IHD - Gas Zigbee Status",
+                    'name': "Zigbee Status",
                     'unique_id': f"geo_ihd_gas_zigbee_status_{self.entry_id}",
                     'unit_of_measurement': "",
                     'icon': "",

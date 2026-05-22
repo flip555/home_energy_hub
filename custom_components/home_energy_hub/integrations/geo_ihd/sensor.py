@@ -11,6 +11,8 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
         super().__init__(coordinator)
         sensor_info = coordinator.data[key]
         self._key = key
+        # Entity names are device-relative to avoid doubling with device prefix
+        self._attr_has_entity_name = True
         self._attr_name = sensor_info['name']
         self._attr_unique_id = sensor_info['unique_id']
         self._attr_unit_of_measurement = sensor_info['unit_of_measurement']
@@ -40,12 +42,10 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
         else:
             self._attr_state_class = ""
         self._attr_icon = sensor_info['icon']
-        # Set device info
+        # Set device info — name comes from device registry
         device_type = "electric" if "electric" in key else "gas"
-        device_name = f"Geo Home IHD - {device_type.capitalize()}"
         self._attr_device_info = DeviceInfo(
             identifiers={("home_energy_hub", "geo_ihd", entry_id, username, device_type)},
-            name=device_name,
         )
 
     @property

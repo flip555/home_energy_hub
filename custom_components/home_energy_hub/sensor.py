@@ -26,7 +26,7 @@ async def async_setup_entry(
             config_entry_id=entry.entry_id,
             identifiers={("home_energy_hub", "geo_ihd", entry.entry_id, username, "electric")},
             manufacturer="Geo Home",
-            name=f"Geo Home IHD - Electricity",
+            name=f"Geo IHD - Electricity",
             model="Geo IHD",
             sw_version="v1.0",
         )
@@ -34,7 +34,7 @@ async def async_setup_entry(
             config_entry_id=entry.entry_id,
             identifiers={("home_energy_hub", "geo_ihd", entry.entry_id, username, "gas")},
             manufacturer="Geo Home",
-            name=f"Geo Home IHD - Gas",
+            name=f"Geo IHD - Gas",
             model="Geo IHD",
             sw_version="v1.0",
         )
