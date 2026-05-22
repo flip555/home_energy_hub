@@ -85,6 +85,7 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             if current_step == "connector":
                 # User selected connector type, now show full config
                 connector_type = user_input[CONF_CONNECTOR_TYPE]
+                #connector_type = user_input.get(CONF_CONNECTOR_TYPE, "usb_serial")  # fallback to serial/USB
                 schema = self._get_seplos_v2_schema(connector_type, include_hidden=False)
                 return self.async_show_form(
                     step_id="config_seplos_v2",
@@ -112,7 +113,7 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     
                 except Exception as err:
                     errors["base"] = str(err)
-                    connector_type = user_input[CONF_CONNECTOR_TYPE]
+                    connector_type = user_input[CONF_CONNECTOR_TYPE] 
                     schema = self._get_seplos_v2_schema(connector_type, include_hidden=True)
                     return self.async_show_form(
                         step_id="config_seplos_v2",
@@ -140,7 +141,7 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             }
         )
 
-    def _get_seplos_v2_schema(self, connector_type: str, include_hidden: bool = False) -> vol.Schema:
+    def _get_seplos_v2_schema(self, connector_type: str, include_hidden: bool = True) -> vol.Schema:
         """Dynamic schema for Seplos V2 with connector-specific and Seplos parameters."""
         from .const import (
             CONF_SERIAL_PORT, CONF_BAUD_RATE, DEFAULT_BAUD_RATE,
@@ -160,7 +161,6 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_HOST): str,
                 vol.Optional(CONF_PORT, default=23): int,
             })
-        
         # Add Seplos V2 specific parameters
         base_schema.update({
             vol.Required(CONF_BATTERY_ADDRESS, default="0x00"): selector.SelectSelector(
@@ -182,11 +182,10 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         })
         
         # Add hidden fields for step tracking if needed
-        if include_hidden:
-            base_schema.update({
-                vol.Required(CONF_CONNECTOR_TYPE, default=connector_type): str,
-                vol.Required("_current_step", default="config"): str,
-            })
+        base_schema.update({
+            vol.Required(CONF_CONNECTOR_TYPE, default=connector_type): str,
+            vol.Required("_current_step", default="config"): str,
+        })
         
         return vol.Schema(base_schema)
 
