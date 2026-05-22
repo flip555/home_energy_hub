@@ -11,7 +11,7 @@ from homeassistant.helpers import selector
 from .const import (
     DOMAIN, CONF_INTEGRATION_TYPE, INTEGRATION_TYPES, INTEGRATION_CATEGORIES,
     CONF_CONNECTOR_TYPE, CONNECTOR_TYPES, CONF_HOST, CONF_PORT, CONF_SERIAL_PORT, CONF_BAUD_RATE,
-    CONF_BATTERY_ADDRESS, CONF_PACK_MODE, CONF_NAME_PREFIX, CONF_POLL_INTERVAL
+    CONF_BATTERY_ADDRESS, CONF_NAME_PREFIX, CONF_POLL_INTERVAL
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -145,8 +145,8 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Dynamic schema for Seplos V2 with connector-specific and Seplos parameters."""
         from .const import (
             CONF_SERIAL_PORT, CONF_BAUD_RATE, DEFAULT_BAUD_RATE,
-            CONF_BATTERY_ADDRESS, BATTERY_ADDRESSES, CONF_PACK_MODE,
-            PACK_MODES, CONF_NAME_PREFIX, CONF_POLL_INTERVAL
+            CONF_BATTERY_ADDRESS, BATTERY_ADDRESSES,
+            CONF_NAME_PREFIX, CONF_POLL_INTERVAL
         )
         
         base_schema = {}
@@ -167,12 +167,6 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 selector.SelectSelectorConfig(
                     options=[{"value": addr, "label": label} for addr, label in BATTERY_ADDRESSES.items()],
                     translation_key="battery_address"
-                )
-            ),
-            vol.Required(CONF_PACK_MODE, default="single"): selector.SelectSelector(
-                selector.SelectSelectorConfig(
-                    options=[{"value": mode, "label": label} for mode, label in PACK_MODES.items()],
-                    translation_key="pack_mode"
                 )
             ),
             vol.Optional(CONF_NAME_PREFIX, default="Seplos BMS HA "): str,
@@ -236,51 +230,6 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             }
         )
 
-    async def async_step_config_iog_slots(self, user_input: dict[str, Any] | None = None) -> FlowResult:
-        """IOG-Ohme Slots config step."""
-        if user_input is not None:
-            # Create unique ID based on the configuration
-            unique_id = f"iog_slots_{user_input.get('name_prefix', 'iog')}"
-            await self.async_set_unique_id(unique_id)
-            return self.async_create_entry(
-                title=f"{INTEGRATION_TYPES['iog_slots']['name']} - {user_input.get('name_prefix', 'IOG')}",
-                data={**user_input, CONF_INTEGRATION_TYPE: "iog_slots"},
-            )
-
-        schema = vol.Schema({
-            vol.Optional("name_prefix", default="IOG"): selector.TextSelector(
-                selector.TextSelectorConfig(type="text")
-            ),
-            vol.Required("enable_charge_mode_check", default=False): selector.BooleanSelector(
-                selector.BooleanSelectorConfig()
-            ),
-            vol.Required("charge_mode_entity", default="select.ohme_home_pro_charge_mode"): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain="select")
-            ),
-            vol.Required("charge_mode_value", default="smart_charge"): selector.TextSelector(
-                selector.TextSelectorConfig(type="text")
-            ),
-            vol.Required("power_entity", default="sensor.ohme_home_pro_power"): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain="sensor", device_class="power")
-            ),
-            vol.Required("power_threshold", default=1700): selector.NumberSelector(
-                selector.NumberSelectorConfig(min=100, max=10000, mode="box", unit_of_measurement="W")
-            ),
-            vol.Required("activation_threshold", default=5): selector.NumberSelector(
-                selector.NumberSelectorConfig(min=1, max=30, mode="box", unit_of_measurement="min")
-            ),
-            vol.Optional("update_interval", default=10): selector.NumberSelector(
-                selector.NumberSelectorConfig(min=10, max=30, mode="box", unit_of_measurement="seconds")
-            ),
-        })
-        return self.async_show_form(
-            step_id="config_iog_slots",
-            data_schema=schema,
-            description_placeholders={
-                "integration_name": INTEGRATION_TYPES["iog_slots"]["name"]
-            }
-        )
-
     @staticmethod
     def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> config_entries.OptionsFlow:
         return HomeEnergyHubOptionsFlowHandler(config_entry)
@@ -300,8 +249,6 @@ class HomeEnergyHubOptionsFlowHandler(config_entries.OptionsFlow):
             return await self.async_step_geo_ihd(user_input)
         elif integration_type == "seplos_v2":
             return await self.async_step_seplos_v2(user_input)
-        elif integration_type == "iog_slots":
-            return await self.async_step_iog_slots(user_input)
         else:
             return self.async_abort(reason="not_supported")
 
@@ -365,40 +312,3 @@ class HomeEnergyHubOptionsFlowHandler(config_entries.OptionsFlow):
         schema = vol.Schema(schema_fields)
         return self.async_show_form(step_id="seplos_v2", data_schema=schema)
 
-    async def async_step_iog_slots(self, user_input: dict[str, Any] | None = None) -> FlowResult:
-        """Manage IOG-Ohme Slots options."""
-        if user_input is not None:
-            new_data = self._config_entry.data.copy()
-            new_data.update(user_input)
-            self.hass.config_entries.async_update_entry(self._config_entry, data=new_data)
-            
-            # Trigger reload for immediate updates
-            self.hass.async_create_task(
-                self.hass.config_entries.async_reload(self._config_entry.entry_id)
-            )
-                
-            return self.async_create_entry(title="", data=user_input)
-
-        schema = vol.Schema({
-            vol.Optional("name_prefix", default=self._config_entry.data.get("name_prefix", "IOG")): str,
-            vol.Required("enable_charge_mode_check", default=self._config_entry.data.get("enable_charge_mode_check", True)): selector.BooleanSelector(
-                selector.BooleanSelectorConfig()
-            ),
-            vol.Required("charge_mode_entity", default=self._config_entry.data.get("charge_mode_entity", "select.ohme_home_pro_charge_mode")): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain="select")
-            ),
-            vol.Required("charge_mode_value", default=self._config_entry.data.get("charge_mode_value", "smart_charge")): str,
-            vol.Required("power_entity", default=self._config_entry.data.get("power_entity", "sensor.ohme_home_pro_power")): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain="sensor", device_class="power")
-            ),
-            vol.Required("power_threshold", default=self._config_entry.data.get("power_threshold", 1700)): selector.NumberSelector(
-                selector.NumberSelectorConfig(min=100, max=10000, mode="box", unit_of_measurement="W")
-            ),
-            vol.Required("activation_threshold", default=self._config_entry.data.get("activation_threshold", 5)): selector.NumberSelector(
-                selector.NumberSelectorConfig(min=1, max=30, mode="box", unit_of_measurement="min")
-            ),
-            vol.Optional("update_interval", default=self._config_entry.data.get("update_interval", 10)): selector.NumberSelector(
-                selector.NumberSelectorConfig(min=10, max=30, mode="box", unit_of_measurement="seconds")
-            ),
-        })
-        return self.async_show_form(step_id="iog_slots", data_schema=schema)

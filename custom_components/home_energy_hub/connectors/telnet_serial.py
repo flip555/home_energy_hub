@@ -5,7 +5,7 @@ import logging
 import telnetlib
 from typing import List
 
-from ..const import CONF_HOST, CONF_PORT, CONF_BATTERY_ADDRESS, CONF_PACK_MODE
+from ..const import CONF_HOST, CONF_PORT, CONF_BATTERY_ADDRESS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -79,7 +79,6 @@ class SeplosV2TelnetClient:
     async def read_seplos_data(self, config: dict) -> List[str]:
         """Read Seplos V2 data using the protocol from reference file."""
         battery_address = config.get(CONF_BATTERY_ADDRESS, "0x00")
-        pack_mode = config.get(CONF_PACK_MODE, "single")
         
         # Seplos V2 command array from reference file
         V2_COMMAND_ARRAY = {
@@ -90,12 +89,7 @@ class SeplosV2TelnetClient:
         }
         
         commands = V2_COMMAND_ARRAY.get(battery_address, V2_COMMAND_ARRAY["0x00"])
-        
-        if pack_mode == "single":
-            data = await self.send_serial_commands(commands, collect_all=True)
-        else:
-            data = await self.send_serial_commands(commands, collect_all=True)
-            
+        data = await self.send_serial_commands(commands, collect_all=True)
         return data
 
 async def create_client(hass, config: dict, integration_type: str) -> SeplosV2TelnetClient:

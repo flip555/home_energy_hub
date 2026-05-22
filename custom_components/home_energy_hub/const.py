@@ -24,11 +24,7 @@ INTEGRATION_TYPES = {
         "category": "battery_systems",
         "description": "Seplos Battery Management System Version 2"
     },
-    "iog_slots": {
-        "name": "IOG-Ohme Slots",
-        "category": "energy_monitors",
-        "description": "IOG-Ohme charging slot duration tracking"
-    }
+
 }
 
 CONNECTOR_TYPES = {
@@ -46,22 +42,12 @@ CONF_ESP_HOME_DEVICE_ID = "esphome_device_id"  # For ESPHome
 
 # Seplos V2 specific configuration
 CONF_BATTERY_ADDRESS = "battery_address"
-CONF_PACK_MODE = "pack_mode"
 CONF_NAME_PREFIX = "name_prefix"
 CONF_POLL_INTERVAL = "poll_interval"
 
 # Battery addresses for Seplos V2
 BATTERY_ADDRESSES = {
-    "0x00": "Pack 0x00 (Single/Master)",
-    "0x01": "Pack 0x01",
-    "0x02": "Pack 0x02",
-    "0x03": "Pack 0x03"
-}
-
-# Pack modes
-PACK_MODES = {
-    "single": "Single Pack",
-    "parallel": "Parallel Packs"
+    "0x00": "Single Pack (0x00)"
 }
 
 # Seplos V2 sensor definitions
