@@ -21,6 +21,7 @@ The wiki contains detailed guides for:
 - **IOG-Ohme Slots Removed**: The IOG-Ohme Slots integration has been removed. This was a niche feature that relied on Ohme API scraping and was difficult to maintain.
 - **Parallel Packs Removed**: Parallel Seplos V2 BMS support has been removed as it was never functional. Single-pack operation only.
 - **Architecture Cleanup**: Configuration options simplified, dead code removed.
+- **🔴 Required: Delete existing Seplos V2 entries before upgrading.** Entity unique IDs have changed to use stable identifiers. Old entities must be removed before re-adding. Go to Settings → Devices & Services, delete any existing Seplos V2 entries, restart Home Assistant, then add them fresh.
 
 ### v2.0.0+ Architecture
 This major update introduced a modular architecture with clear separation between connectors, integrations, and core components. The platform supports easy extension with new device integrations.
