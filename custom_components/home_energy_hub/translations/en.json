@@ -37,6 +37,20 @@
           "name_prefix": "Name Prefix",
           "poll_interval": "Update Frequency (seconds)"
         }
+      },
+      "config_seplos_v3": {
+        "title": "Configure Seplos BMS V3",
+        "description": "Configure the connection settings for your Seplos BMS V3 (Modbus RTU).",
+        "data": {
+          "connector_type": "Connection Type",
+          "serial_port": "Serial Port",
+          "baud_rate": "Baud Rate",
+          "host": "Host Address",
+          "port": "Port Number",
+          "battery_address": "Battery Address",
+          "name_prefix": "Name Prefix",
+          "poll_interval": "Update Frequency (seconds)"
+        }
       }
     }
   },
@@ -54,6 +68,17 @@
       "seplos_v2": {
         "title": "Configure Seplos BMS V2",
         "description": "Update your Seplos BMS V2 settings.",
+        "data": {
+          "poll_interval": "Update Frequency (seconds)",
+          "serial_port": "Serial Port",
+          "baud_rate": "Baud Rate",
+          "host": "Telnet Host Address",
+          "port": "Telnet Port Number"
+        }
+      },
+      "seplos_v3": {
+        "title": "Configure Seplos BMS V3",
+        "description": "Update your Seplos BMS V3 settings.",
         "data": {
           "poll_interval": "Update Frequency (seconds)",
           "serial_port": "Serial Port",
