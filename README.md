@@ -17,16 +17,14 @@ The wiki contains detailed guides for:
 
 ## ⚠️ Important Notices
 
-### Breaking Changes in v2.0.0+
-This major update introduced significant architectural changes that may break existing configurations:
-
-- **Complete Rewrite**: The entire codebase was restructured with a modular architecture
-- **Configuration Changes**: Setup process and configuration flow have been completely redesigned
-- **Entity Naming**: Sensor and device naming conventions have changed
-- **Integration Removal**: Previous versions are incompatible - complete reinstallation required
+### Breaking Changes in v2.1+
+- **IOG-Ohme Slots Removed**: The IOG-Ohme Slots integration has been removed. This was a niche feature that relied on Ohme API scraping and was difficult to maintain.
+- **Parallel Packs Removed**: Parallel Seplos V2 BMS support has been removed as it was never functional. Single-pack operation only.
+- **Architecture Cleanup**: Configuration options simplified, dead code removed.
+- **🔴 Required: Delete existing Seplos V2 entries before upgrading.** Entity unique IDs have changed to use stable identifiers. Old entities must be removed before re-adding. Go to Settings → Devices & Services, delete any existing Seplos V2 entries, restart Home Assistant, then add them fresh.
 
 ### v2.0.0+ Architecture
-This major update introduced a modular architecture with clear separation between connectors, integrations, and core components. The platform now supports easy extension with new device integrations.
+This major update introduced a modular architecture with clear separation between connectors, integrations, and core components. The platform supports easy extension with new device integrations.
 
 ### Safety Disclaimer
 **Use at Your Own Risk**: This integration is for informational and control purposes only. All electrical installations should be performed by a qualified electrician. Ensure all connected devices have proper safety settings configured.
@@ -35,22 +33,15 @@ This major update introduced a modular architecture with clear separation betwee
 
 ### Key Features
 - **Modular Architecture**: Easy to extend with new integrations
-- **Multiple Connection Methods**: USB-RS485 Serial (✅ tested), Telnet Serial (🧪 untested), HTTP API (✅ tested), Helper Services (✅ tested)
-- **Comprehensive Monitoring**: 167 sensors for Seplos V2 BMS, 18 sensors for GEO IHD, plus charging slot tracking
+- **Multiple Connection Methods**: USB-RS485 Serial (✅ tested), Telnet Serial (✅ tested), HTTP API (✅ tested)
+- **Comprehensive Monitoring**: 167 sensors for Seplos V2 BMS, 18 sensors for GEO IHD
 - **Clean Device Organization**: Separate devices for operational data and settings
-- **Helper Services**: IOG-Ohme Slots for tracking cheap electricity rate activation
 
 ### Supported Devices
 
 #### ✅ Tested & Verified
-- **Seplos V2 BMS** (Single pack via USB-RS485): Advanced battery management with 167 sensors (80 BMS + 87 Settings)
+- **Seplos V2 BMS** (Single pack via USB-RS485 or Telnet Serial): Advanced battery management with 167 sensors (80 BMS + 87 Settings)
 - **GEO IHD**: Energy monitoring via HTTP API with 18 sensors (9 Electricity + 9 Gas)
-- **IOG-Ohme Slots**: Track active charging during cheap electricity slots for Ohme chargers or any power sensor
-
-#### 🧪 Experimental/Untested
-- **Seplos V2 via Telnet Serial**: Network-based serial connection (untested)
-- **Multiple Seplos battery packs**: Parallel battery configurations (untested)
-- **Other connection methods**: Additional protocols and devices (see roadmap)
 
 ## Quick Start
 

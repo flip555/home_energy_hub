@@ -26,7 +26,7 @@ async def async_setup_entry(
             config_entry_id=entry.entry_id,
             identifiers={("home_energy_hub", "geo_ihd", entry.entry_id, username, "electric")},
             manufacturer="Geo Home",
-            name=f"Geo Home IHD - Electricity",
+            name=f"Geo IHD",
             model="Geo IHD",
             sw_version="v1.0",
         )
@@ -34,7 +34,7 @@ async def async_setup_entry(
             config_entry_id=entry.entry_id,
             identifiers={("home_energy_hub", "geo_ihd", entry.entry_id, username, "gas")},
             manufacturer="Geo Home",
-            name=f"Geo Home IHD - Gas",
+            name=f"Geo IHD",
             model="Geo IHD",
             sw_version="v1.0",
         )
@@ -45,7 +45,3 @@ async def async_setup_entry(
 
         coordinator = hass.data[DOMAIN][entry.entry_id]
         async_add_entities([SeplosV2Sensor(coordinator, key, entry) for key in coordinator.data.keys()])
-    elif integration_type == "iog_slots":
-        # IOG-Ohme Slots doesn't use a coordinator, import and call its setup directly
-        from .integrations.iog_slots import async_setup_entry as iog_async_setup_entry
-        await iog_async_setup_entry(hass, entry, async_add_entities)

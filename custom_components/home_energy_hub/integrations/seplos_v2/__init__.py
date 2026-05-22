@@ -27,7 +27,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     
     # Get configuration for device names
     name_prefix = entry.data.get("name_prefix", "Seplos BMS HA")
-    battery_address = entry.data.get("battery_address", "0x00")
     
     # Register devices in device registry (like GEO IHD does)
     device_registry = dr.async_get(hass)
@@ -35,9 +34,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Create BMS device
     device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        identifiers={("home_energy_hub", f"seplos_v2_{entry.entry_id}_{battery_address}")},
+        identifiers={("home_energy_hub", f"seplos_v2_{entry.entry_id}")},
         manufacturer="Seplos",
-        name=f"{name_prefix} {battery_address} BMS",
+        name=f"{name_prefix}",
         model="V2 BMS",
         sw_version=coordinator.data.get("software_version", "Unknown"),
     )
@@ -45,9 +44,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Create Settings device
     device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        identifiers={("home_energy_hub", f"seplos_v2_{entry.entry_id}_{battery_address}_settings")},
+        identifiers={("home_energy_hub", f"seplos_v2_{entry.entry_id}_settings")},
         manufacturer="Seplos",
-        name=f"{name_prefix} {battery_address} Settings",
+        name=f"{name_prefix} Settings",
         model="V2 Settings",
         sw_version=coordinator.data.get("software_version", "Unknown"),
     )
