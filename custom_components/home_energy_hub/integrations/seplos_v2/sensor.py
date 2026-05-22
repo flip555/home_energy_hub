@@ -7,7 +7,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo
 
-from ...const import DOMAIN, SENSOR_UNITS, CONF_BATTERY_ADDRESS, CONF_NAME_PREFIX
+from ...const import DOMAIN, SENSOR_UNITS, CONF_NAME_PREFIX
 
 class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
     """Sensor for Seplos V2 data."""
@@ -19,11 +19,10 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
         
         # Get configuration
         name_prefix = config_entry.data.get(CONF_NAME_PREFIX, "Seplos BMS HA")
-        battery_address = config_entry.data.get(CONF_BATTERY_ADDRESS, "0x00")
-        
-        # Set name for display purposes
+        # Set name for display purposes — just the sensor-specific part.
+        # HA will display it alongside the device name in the UI.
         sensor_display_name = self._get_sensor_name(key)
-        self._attr_name = f"{name_prefix} {battery_address} {sensor_display_name}"
+        self._attr_name = sensor_display_name
         
         # Use stable unique_id based on entry_id — NOT the user-configurable name_prefix.
         # This prevents entity duplication when the prefix is changed.
@@ -31,20 +30,20 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
         
         # Determine device type based on whether key ends with "_settings"
         if key.endswith('_settings'):
-            device_identifier = f"seplos_v2_{config_entry.entry_id}_{battery_address}_settings"
+            device_identifier = f"seplos_v2_{config_entry.entry_id}_settings"
             sensor_base_key = key[:-9]  # Remove "_settings" suffix (9 chars)
             snake_case_sensor_key = self._camel_to_snake(sensor_base_key)
             self._attr_unique_id = f"seplos_v2_{config_entry.entry_id}_{snake_case_sensor_key}"
         else:
-            device_identifier = f"seplos_v2_{config_entry.entry_id}_{battery_address}"
+            device_identifier = f"seplos_v2_{config_entry.entry_id}"
             self._attr_unique_id = f"seplos_v2_{config_entry.entry_id}_{snake_case_key}"
             
         # Set device info to link to the pre-registered device with full details
         if key.endswith('_settings'):
-            device_name = f"{name_prefix} {battery_address} Settings"
+            device_name = f"{name_prefix} Settings"
             model = "V2 Settings"
         else:
-            device_name = f"{name_prefix} {battery_address} BMS"
+            device_name = f"{name_prefix}"
             model = "V2 BMS"
             
         self._attr_device_info = DeviceInfo(

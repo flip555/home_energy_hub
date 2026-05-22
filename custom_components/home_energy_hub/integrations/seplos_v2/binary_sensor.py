@@ -7,7 +7,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo
 
-from ...const import CONF_NAME_PREFIX, CONF_BATTERY_ADDRESS
+from ...const import CONF_NAME_PREFIX
 
 
 class SeplosV2BinarySensor(CoordinatorEntity, BinarySensorEntity):
@@ -20,11 +20,10 @@ class SeplosV2BinarySensor(CoordinatorEntity, BinarySensorEntity):
         
         # Get configuration
         name_prefix = config_entry.data.get(CONF_NAME_PREFIX, "Seplos BMS HA")
-        battery_address = config_entry.data.get(CONF_BATTERY_ADDRESS, "0x00")
-        
-        # Set name for display purposes
+        # Set name for display purposes — just the sensor-specific part.
+        # HA will display it alongside the device name in the UI.
         sensor_display_name = self._get_sensor_name(key)
-        self._attr_name = f"{name_prefix} {battery_address} {sensor_display_name}"
+        self._attr_name = sensor_display_name
         
         # Use stable unique_id based on entry_id — NOT the user-configurable name_prefix.
         # This prevents entity duplication when the prefix is changed.
@@ -33,8 +32,8 @@ class SeplosV2BinarySensor(CoordinatorEntity, BinarySensorEntity):
         
         # Set device info
         self._attr_device_info = DeviceInfo(
-            identifiers={("home_energy_hub", f"seplos_v2_{config_entry.entry_id}_{battery_address}")},
-            name=f"{name_prefix} {battery_address}",
+            identifiers={("home_energy_hub", f"seplos_v2_{config_entry.entry_id}")},
+            name=f"{name_prefix}",
             manufacturer="Seplos",
             model="V2 BMS",
             sw_version=self.coordinator.data.get("software_version", "Unknown"),
