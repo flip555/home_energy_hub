@@ -40,10 +40,11 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
         else:
             self._attr_state_class = ""
         self._attr_icon = sensor_info['icon']
-        # Set device info — name comes from device registry
+        # Set device info — single device for this entry, fuel type in identifiers
         device_type = "electric" if "electric" in key else "gas"
         self._attr_device_info = DeviceInfo(
             identifiers={("home_energy_hub", "geo_ihd", entry_id, username, device_type)},
+            name="Geo IHD",
         )
 
     @property
