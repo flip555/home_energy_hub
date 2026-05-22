@@ -11,8 +11,6 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
         super().__init__(coordinator)
         sensor_info = coordinator.data[key]
         self._key = key
-        # Entity names are device-relative to avoid doubling with device prefix
-        self._attr_has_entity_name = True
         self._attr_name = sensor_info['name']
         self._attr_unique_id = sensor_info['unique_id']
         self._attr_unit_of_measurement = sensor_info['unit_of_measurement']
