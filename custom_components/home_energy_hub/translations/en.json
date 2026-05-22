@@ -37,9 +37,8 @@
           "name_prefix": "Name Prefix",
           "poll_interval": "Update Frequency (seconds)"
         }
-      },
-
-    } 
+      }
+    }
   },
   "options": {
     "step": {
@@ -62,8 +61,7 @@
           "host": "Telnet Host Address",
           "port": "Telnet Port Number"
         }
-      },
-
+      }
     }
   }
 }
