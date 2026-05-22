@@ -169,7 +169,7 @@ class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     translation_key="battery_address"
                 )
             ),
-            vol.Optional(CONF_NAME_PREFIX, default="Seplos BMS HA "): str,
+            vol.Optional(CONF_NAME_PREFIX, default="Seplos BMS HA"): str,
             vol.Optional(CONF_POLL_INTERVAL, default=10): selector.NumberSelector(
                 selector.NumberSelectorConfig(min=5, max=300, mode="box")
             ),

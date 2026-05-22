@@ -21,27 +21,23 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
         name_prefix = config_entry.data.get(CONF_NAME_PREFIX, "Seplos BMS HA")
         battery_address = config_entry.data.get(CONF_BATTERY_ADDRESS, "0x00")
         
-        # Set name and unique_id to match exact previous format
+        # Set name for display purposes
         sensor_display_name = self._get_sensor_name(key)
         self._attr_name = f"{name_prefix} {battery_address} {sensor_display_name}"
         
-        # Convert name prefix to lowercase with underscores for unique_id
-        unique_id_prefix = name_prefix.lower().replace(' ', '_')
-        # Convert key to snake_case for unique_id (e.g., "balancerActiveCell1" -> "balancer_active_cell_1")
+        # Use stable unique_id based on entry_id — NOT the user-configurable name_prefix.
+        # This prevents entity duplication when the prefix is changed.
         snake_case_key = self._camel_to_snake(key)
         
         # Determine device type based on whether key ends with "_settings"
         if key.endswith('_settings'):
-            # Settings device - use settings identifier and unique_id
             device_identifier = f"seplos_v2_{config_entry.entry_id}_{battery_address}_settings"
-            # Remove "_settings" suffix for the actual sensor key in unique_id
-            sensor_base_key = key[:-10]  # Remove "_settings" suffix (10 characters)
+            sensor_base_key = key[:-9]  # Remove "_settings" suffix (9 chars)
             snake_case_sensor_key = self._camel_to_snake(sensor_base_key)
-            self._attr_unique_id = f"{unique_id_prefix}_{battery_address}_{snake_case_sensor_key}"
+            self._attr_unique_id = f"seplos_v2_{config_entry.entry_id}_{snake_case_sensor_key}"
         else:
-            # BMS device - use original identifier and unique_id
             device_identifier = f"seplos_v2_{config_entry.entry_id}_{battery_address}"
-            self._attr_unique_id = f"{unique_id_prefix}_{battery_address}_{snake_case_key}"
+            self._attr_unique_id = f"seplos_v2_{config_entry.entry_id}_{snake_case_key}"
             
         # Set device info to link to the pre-registered device with full details
         if key.endswith('_settings'):

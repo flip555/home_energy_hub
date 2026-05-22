@@ -22,15 +22,14 @@ class SeplosV2BinarySensor(CoordinatorEntity, BinarySensorEntity):
         name_prefix = config_entry.data.get(CONF_NAME_PREFIX, "Seplos BMS HA")
         battery_address = config_entry.data.get(CONF_BATTERY_ADDRESS, "0x00")
         
-        # Set name and unique_id to match exact previous format
+        # Set name for display purposes
         sensor_display_name = self._get_sensor_name(key)
         self._attr_name = f"{name_prefix} {battery_address} {sensor_display_name}"
         
-        # Convert name prefix to lowercase with underscores for unique_id
-        unique_id_prefix = name_prefix.lower().replace(' ', '_')
-        # Convert key to snake_case for unique_id (e.g., "balancerActiveCell1" -> "balancer_active_cell_1")
+        # Use stable unique_id based on entry_id — NOT the user-configurable name_prefix.
+        # This prevents entity duplication when the prefix is changed.
         snake_case_key = self._camel_to_snake(key)
-        self._attr_unique_id = f"{unique_id_prefix}_{battery_address}_{snake_case_key}"
+        self._attr_unique_id = f"seplos_v2_{config_entry.entry_id}_{snake_case_key}"
         
         # Set device info
         self._attr_device_info = DeviceInfo(
