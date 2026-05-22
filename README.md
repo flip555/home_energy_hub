@@ -18,10 +18,17 @@ The wiki contains detailed guides for:
 ## ⚠️ Important Notices
 
 ### Breaking Changes in v2.1+
-- **IOG-Ohme Slots Removed**: The IOG-Ohme Slots integration has been removed. This was a niche feature that relied on Ohme API scraping and was difficult to maintain.
+- **IOG-Ohme Slots Removed**: The IOG-Ohme Slots integration has been removed.
 - **Parallel Packs Removed**: Parallel Seplos V2 BMS support has been removed as it was never functional. Single-pack operation only.
 - **Architecture Cleanup**: Configuration options simplified, dead code removed.
-- **🔴 Required: Delete existing Seplos V2 entries before upgrading.** Entity unique IDs have changed to use stable identifiers. Old entities must be removed before re-adding. Go to Settings → Devices & Services, delete any existing Seplos V2 entries, restart Home Assistant, then add them fresh.
+- **🔴 Required: Delete existing Seplos V2 entries before upgrading.** Entity unique IDs changed. Delete old entries, restart HA, then re-add.
+
+### What's New in v2.2
+- **Seplos BMS V3 support** (🧪 experimental) — Modbus RTU protocol via USB-RS485 or Telnet
+  - Pack Info A: voltage, current, capacity, SOC, SOH, cycle count, temperatures
+  - Pack Info B: 16 cell voltages, 4 cell temperatures, environment & power temps
+  - 22 sensors per entry
+- **Telnet Serial** now available for both V2 and V3 (✅ tested on V2, 🧪 untested on V3)
 
 ### v2.0.0+ Architecture
 This major update introduced a modular architecture with clear separation between connectors, integrations, and core components. The platform supports easy extension with new device integrations.
@@ -33,15 +40,18 @@ This major update introduced a modular architecture with clear separation betwee
 
 ### Key Features
 - **Modular Architecture**: Easy to extend with new integrations
-- **Multiple Connection Methods**: USB-RS485 Serial (✅ tested), Telnet Serial (✅ tested), HTTP API (✅ tested)
-- **Comprehensive Monitoring**: 167 sensors for Seplos V2 BMS, 18 sensors for GEO IHD
+- **Multiple Connection Methods**: USB-RS485 Serial (✅ tested), Telnet Serial (✅ tested V2, 🧪 untested V3), HTTP API (✅ tested)
+- **Comprehensive Monitoring**: 167 sensors for Seplos V2 BMS, 22 sensors for Seplos V3 BMS, 18 sensors for GEO IHD
 - **Clean Device Organization**: Separate devices for operational data and settings
 
 ### Supported Devices
 
 #### ✅ Tested & Verified
-- **Seplos V2 BMS** (Single pack via USB-RS485 or Telnet Serial): Advanced battery management with 167 sensors (80 BMS + 87 Settings)
-- **GEO IHD**: Energy monitoring via HTTP API with 18 sensors (9 Electricity + 9 Gas)
+- **Seplos V2 BMS** (USB-RS485 or Telnet Serial): 167 sensors (80 BMS + 87 Settings)
+- **GEO IHD** (HTTP API): 18 sensors (9 Electricity + 9 Gas)
+
+#### 🧪 Experimental
+- **Seplos V3 BMS** (USB-RS485 or Telnet): Modbus RTU protocol, 22 sensors (pack and cell data)
 
 ## Quick Start
 
