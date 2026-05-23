@@ -200,7 +200,7 @@ def _parse_44h_codes(info_str: str, name_prefix: str) -> Dict[str, Any]:
         cursor += 2
 
     # Add other attributes to the result dictionary
-    for attribute in ['currentAlarm', 'voltageAlarm', 'customAlarms', 'alarmEvent0', 'alarmEvent1', 'alarmEvent2', 'alarmEvent3', 'alarmEvent4', 'alarmEvent5', 'onOffState', 'equilibriumState0', 'equilibriumState1', 'systemState', 'disconnectionState0', 'disconnectionState1', 'alarmEvent6', 'alarmEvent7']:
+    for attribute in ['currentAlarm', 'voltageAlarm', 'customAlarms', 'alarmEvent1', 'alarmEvent2', 'alarmEvent3', 'alarmEvent4', 'alarmEvent5', 'alarmEvent6', 'onOffState', 'equilibriumState0', 'equilibriumState1', 'systemState', 'disconnectionState0', 'disconnectionState1', 'alarmEvent7', 'alarmEvent8']:
         if remaining_length() < 2:
             return result
         result[attribute] = int(info_str[cursor:cursor+2], 16)
@@ -208,7 +208,7 @@ def _parse_44h_codes(info_str: str, name_prefix: str) -> Dict[str, Any]:
 
     # Interpret alarms and states
     interpreted_data = {}
-    for alarm_key in ['currentAlarm', 'voltageAlarm', 'alarmEvent0', 'alarmEvent1', 'alarmEvent2', 'alarmEvent3', 'alarmEvent4', 'alarmEvent5', 'alarmEvent6', 'alarmEvent7', 'onOffState', 'equilibriumState0', 'equilibriumState1', 'systemState', 'disconnectionState0', 'disconnectionState1']:
+    for alarm_key in ['currentAlarm', 'voltageAlarm', 'alarmEvent1', 'alarmEvent2', 'alarmEvent3', 'alarmEvent4', 'alarmEvent5', 'alarmEvent6', 'alarmEvent7', 'alarmEvent8', 'onOffState', 'equilibriumState0', 'equilibriumState1', 'systemState', 'disconnectionState0', 'disconnectionState1']:
         if alarm_key in result:
             interpreted_data[alarm_key] = _interpret_alarm(alarm_key, result[alarm_key])
     

@@ -112,7 +112,6 @@ SENSOR_UNITS = {
     # Alarm sensors (no units - they return strings)
     "currentAlarm": None,
     "voltageAlarm": None,
-    "alarmEvent0": None,
     "alarmEvent1": None,
     "alarmEvent2": None,
     "alarmEvent3": None,
@@ -120,6 +119,7 @@ SENSOR_UNITS = {
     "alarmEvent5": None,
     "alarmEvent6": None,
     "alarmEvent7": None,
+    "alarmEvent8": None,
     "onOffState": None,
     "equilibriumState0": None,
     "equilibriumState1": None,
