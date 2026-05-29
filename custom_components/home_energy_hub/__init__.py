@@ -115,6 +115,51 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
                         model="V2 Settings",
                     )
 
+            # --- Build reverse map for settings keys ---
+            # v2.0.0-alpha had a bug: key[:-10] instead of key[:-9] for _settings
+            # suffix removal, truncating the sensor key by 1 character.
+            # Build mapping from truncated key to correct key for all known
+            # settings sensor keys.
+            _SETTINGS_KEYS = [
+                "monomer_high_voltage_alarm", "monomer_overvoltage_protection",
+                "monomer_overvoltage_recovery", "monomer_undervoltage_protection",
+                "monomer_undervoltage_recovery", "equalization_opening_voltage",
+                "battery_low_voltage_forbidden_charging",
+                "total_voltage_overvoltage_protection", "total_voltage_undervoltage_protection",
+                "total_pressure_undervoltage_recovery", "charging_overvoltage_protection",
+                "charging_overvoltage_recovery", "charging_high_temperature_warning",
+                "charging_high_temperature_recovery", "charging_low_temperature_warning",
+                "charging_low_temperature_recovery", "charging_over_temperature_protection",
+                "charging_over_temperature_recovery", "charging_under_temperature_protection",
+                "charging_under_temperature_recovery", "discharge_high_temperature_warning",
+                "discharge_high_temperature_recovery", "discharge_low_temperature_warning",
+                "discharge_low_temperature_recovery", "discharge_over_temperature_protection",
+                "discharge_over_temperature_recovery", "discharge_under_temperature_protection",
+                "discharge_under_temperature_recovery", "cell_low_temperature_heating",
+                "ambient_high_temperature_alarm", "ambient_high_temperature_recovery",
+                "ambient_low_temperature_alarm", "ambient_low_temperature_recovery",
+                "environment_over_temperature_protection",
+                "environment_over_temperature_recovery",
+                "environment_under_temperature_protection",
+                "environment_under_temperature_recovery",
+                "power_high_temperature_alarm", "power_high_temperature_recovery",
+                "power_over_temperature_protection", "power_over_temperature_recovery",
+                "charging_overcurrent_warning", "charging_overcurrent_recovery",
+                "discharge_overcurrent_warning", "discharge_overcurrent_recovery",
+                "charge_overcurrent_protection", "discharge_overcurrent_protection",
+                "transient_overcurrent_protection", "charge_overcurrent_delay",
+                "discharge_overcurrent_delay", "transient_overcurrent_delay",
+                "overcurrent_delay_recovery", "overcurrent_recovery_times",
+                "charge_current_limit_delay", "soc_ah",
+            ]
+            # Build: truncated_key_bug -> correct_key
+            _settings_reverse_map = {}
+            for key in _SETTINGS_KEYS:
+                key_with_suffix = f"{key}_settings"
+                truncated = key_with_suffix[:-10]  # bug from v2.0.0-alpha
+                truncated_no_suffix = truncated  # already no _settings, already shortened
+                _settings_reverse_map[truncated_no_suffix] = key
+
             # --- Migrate entity registry unique_ids ---
             entity_registry = er.async_get(hass)
 
@@ -126,7 +171,16 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
                     continue
                 if entity.unique_id and entity.unique_id.startswith(old_prefix):
                     snake_case_key = entity.unique_id[len(old_prefix):]
-                    new_unique_id = f"seplos_v2_{config_entry.entry_id}_{snake_case_key}"
+
+                    # Fix the [:-10] truncation bug for settings sensors
+                    corrected_key = _settings_reverse_map.get(snake_case_key, snake_case_key)
+                    if corrected_key != snake_case_key:
+                        _LOGGER.debug(
+                            "Settings key correction: %s -> %s",
+                            snake_case_key, corrected_key,
+                        )
+
+                    new_unique_id = f"seplos_v2_{config_entry.entry_id}_{corrected_key}"
 
                     _LOGGER.info("Migrating entity %s: unique_id %s -> %s",
                                  entity.entity_id, entity.unique_id, new_unique_id)
