@@ -10,6 +10,64 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+# Key stored in config entry data to track that entity_id cleanup has run.
+# This prevents running the cleanup on every HA restart.
+_ENTITY_ID_CLEANUP_KEY = "_entity_id_cleanup_v2"
+
+
+async def _fix_settings_entity_ids(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    name_prefix: str,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Fix doubled entity_ids on Settings device entities.
+
+    In HA 2024+, CoordinatorEntity defaults has_entity_name=True, which
+    causes HA to prefix entity names with the device name. Since entity
+    names already include the full {prefix} {address} prefix, the result
+    is doubled entity_ids like:
+
+      sensor.seplos_bms_ha_settings_seplos_bms_ha_0x00_ambient_high_temperature_alarm
+
+    instead of:
+
+      sensor.seplos_bms_ha_0x00_ambient_high_temperature_alarm
+
+    This cleanup strips the device name prefix from any Settings device
+    entity_ids that have the doubled pattern.
+    """
+    prefix_slug = name_prefix.lower().replace(" ", "_")
+    settings_prefix = f"{prefix_slug}_settings_{prefix_slug}"
+    settings_device_prefix = f"{prefix_slug}_settings_"
+
+    for entity in list(entity_registry.entities.values()):
+        if entity.config_entry_id != config_entry.entry_id:
+            continue
+        if not entity.entity_id:
+            continue
+
+        # Only handle sensor. and binary_sensor. entities
+        domain = entity.entity_id.split(".", 1)[0] if "." in entity.entity_id else None
+        if domain not in ("sensor", "binary_sensor"):
+            continue
+
+        entity_id_part = entity.entity_id.split(".", 1)[1]
+
+        # Check for the full doubled pattern: {prefix}_settings_{prefix}_{address}_...
+        if entity_id_part.startswith(settings_prefix):
+            # Strip the doubled device prefix: {prefix}_settings_ from front
+            corrected = entity_id_part[len(settings_device_prefix):]
+            new_entity_id = f"{domain}.{corrected}"
+
+            _LOGGER.info(
+                "Fixing doubled entity_id: %s -> %s",
+                entity.entity_id, new_entity_id,
+            )
+            entity_registry.async_update_entity(
+                entity.entity_id, new_entity_id=new_entity_id
+            )
+
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Migrate config entry from old version to new version."""
@@ -71,6 +129,10 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
                         new_unique_id=new_unique_id,
                     )
 
+            # --- Fix doubled entity_ids (from HA has_entity_name default) ---
+            entity_registry = er.async_get(hass)
+            await _fix_settings_entity_ids(hass, config_entry, name_prefix, entity_registry)
+
     _LOGGER.info("Migration to version 2 complete for entry %s", config_entry.entry_id)
     return True
 
@@ -100,6 +162,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 "baud_rate": entry.data.get("baud_rate", 9600),
             }
             hass.config_entries.async_update_entry(entry, data=new_data)
+
+    # One-time entity_id cleanup for users who hit the doubled entity_id
+    # issue in an intermediate version (e.g. alpha1 before has_entity_name fix).
+    # Check a flag stored in entry data so this only runs once.
+    if not entry.data.get(_ENTITY_ID_CLEANUP_KEY):
+        integration_type = entry.data.get("integration_type")
+        if integration_type in ("seplos_v2", "seplos_v3"):
+            name_prefix = entry.data.get("name_prefix", "Seplos BMS HA")
+            entity_registry = er.async_get(hass)
+            await _fix_settings_entity_ids(hass, entry, name_prefix, entity_registry)
+
+            # Mark cleanup as done so it doesn't run every restart
+            hass.config_entries.async_update_entry(
+                entry,
+                data={**entry.data, _ENTITY_ID_CLEANUP_KEY: True},
+            )
 
     integration_type = entry.data.get("integration_type")
 
