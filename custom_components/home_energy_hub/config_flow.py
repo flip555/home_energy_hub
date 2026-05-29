@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 class HomeEnergyHubFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle config flow for Home Energy Hub (all under one domain)."""
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """First step: Select category."""
