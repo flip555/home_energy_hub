@@ -12,13 +12,14 @@ _LOGGER = logging.getLogger(__name__)
 
 # Key stored in config entry data to track that entity_id cleanup has run.
 # This prevents running the cleanup on every HA restart.
-_ENTITY_ID_CLEANUP_KEY = "_entity_id_cleanup_v2"
+_ENTITY_ID_CLEANUP_KEY = "_entit…p_v2"
 
 
 async def _fix_settings_entity_ids(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
     name_prefix: str,
+    battery_address: str,
     entity_registry: er.EntityRegistry,
 ) -> None:
     """Fix doubled entity_ids on Settings device entities.
@@ -26,20 +27,22 @@ async def _fix_settings_entity_ids(
     In HA 2024+, CoordinatorEntity defaults has_entity_name=True, which
     causes HA to prefix entity names with the device name. Since entity
     names already include the full {prefix} {address} prefix, the result
-    is doubled entity_ids like:
+    is doubled entity_ids.
 
-      sensor.seplos_bms_ha_settings_seplos_bms_ha_0x00_ambient_high_temperature_alarm
+    Two patterns can occur depending on whether the device name included
+    battery_address (v2.0.0-alpha) or not (current):
 
-    instead of:
+      v2.0.0-alpha: seplos_bms_ha_0x00_settings_seplos_bms_ha_0x00_sensor
+      alpha1:       seplos_bms_ha_settings_seplos_bms_ha_0x00_sensor
 
-      sensor.seplos_bms_ha_0x00_ambient_high_temperature_alarm
+    Both should become: seplos_bms_ha_0x00_sensor
 
-    This cleanup strips the device name prefix from any Settings device
-    entity_ids that have the doubled pattern.
+    This function finds the entity name portion by looking for the
+    {prefix}_{address}_ pattern in the entity_id and keeping the last
+    occurrence.
     """
     prefix_slug = name_prefix.lower().replace(" ", "_")
-    settings_prefix = f"{prefix_slug}_settings_{prefix_slug}"
-    settings_device_prefix = f"{prefix_slug}_settings_"
+    entity_anchor = f"{prefix_slug}_{battery_address}_"
 
     for entity in list(entity_registry.entities.values()):
         if entity.config_entry_id != config_entry.entry_id:
@@ -47,26 +50,29 @@ async def _fix_settings_entity_ids(
         if not entity.entity_id:
             continue
 
-        # Only handle sensor. and binary_sensor. entities
         domain = entity.entity_id.split(".", 1)[0] if "." in entity.entity_id else None
         if domain not in ("sensor", "binary_sensor"):
             continue
 
         entity_id_part = entity.entity_id.split(".", 1)[1]
 
-        # Check for the full doubled pattern: {prefix}_settings_{prefix}_{address}_...
-        if entity_id_part.startswith(settings_prefix):
-            # Strip the doubled device prefix: {prefix}_settings_ from front
-            corrected = entity_id_part[len(settings_device_prefix):]
+        # Find the LAST occurrence of {prefix}_{address}_ in the entity_id.
+        # This marks where the actual entity name begins.
+        # (Anything before it is the device name prefix that got doubled.)
+        last_anchor = entity_id_part.rfind(entity_anchor)
+        if last_anchor > 0:
+            # There's a prefix before the entity name — strip it
+            corrected = entity_id_part[last_anchor:]
             new_entity_id = f"{domain}.{corrected}"
 
-            _LOGGER.info(
-                "Fixing doubled entity_id: %s -> %s",
-                entity.entity_id, new_entity_id,
-            )
-            entity_registry.async_update_entity(
-                entity.entity_id, new_entity_id=new_entity_id
-            )
+            if new_entity_id != entity.entity_id:
+                _LOGGER.info(
+                    "Fixing doubled entity_id: %s -> %s",
+                    entity.entity_id, new_entity_id,
+                )
+                entity_registry.async_update_entity(
+                    entity.entity_id, new_entity_id=new_entity_id
+                )
 
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
@@ -131,7 +137,9 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
 
             # --- Fix doubled entity_ids (from HA has_entity_name default) ---
             entity_registry = er.async_get(hass)
-            await _fix_settings_entity_ids(hass, config_entry, name_prefix, entity_registry)
+            await _fix_settings_entity_ids(
+                hass, config_entry, name_prefix, battery_address, entity_registry
+            )
 
     _LOGGER.info("Migration to version 2 complete for entry %s", config_entry.entry_id)
     return True
@@ -165,18 +173,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # One-time entity_id cleanup for users who hit the doubled entity_id
     # issue in an intermediate version (e.g. alpha1 before has_entity_name fix).
-    # Check a flag stored in entry data so this only runs once.
     if not entry.data.get(_ENTITY_ID_CLEANUP_KEY):
         integration_type = entry.data.get("integration_type")
         if integration_type in ("seplos_v2", "seplos_v3"):
             name_prefix = entry.data.get("name_prefix", "Seplos BMS HA")
+            battery_address = entry.data.get("battery_address", "0x00")
             entity_registry = er.async_get(hass)
-            await _fix_settings_entity_ids(hass, entry, name_prefix, entity_registry)
-
-            # Mark cleanup as done so it doesn't run every restart
+            await _fix_settings_entity_ids(
+                hass, entry, name_prefix, battery_address, entity_registry
+            )
             hass.config_entries.async_update_entry(
                 entry,
-                data={**entry.data, _ENTITY_ID_CLEANUP_KEY: True},
+                data={**entry.data, _ENTITY_ID_CLEANUP_KEY: True}
             )
 
     integration_type = entry.data.get("integration_type")
