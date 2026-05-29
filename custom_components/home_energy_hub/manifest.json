@@ -12,5 +12,5 @@
     "pymodbus>=3.6.0",
     "aiohttp"
   ],
-  "version": "v2.3.0-alpha7"
+  "version": "v2.3.0"
 }
