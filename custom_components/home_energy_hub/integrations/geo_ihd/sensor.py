@@ -9,6 +9,7 @@ class GeoIhdSensor(CoordinatorEntity, RestoreSensor):
 
     def __init__(self, coordinator, key: str, entry_id: str, username: str) -> None:
         super().__init__(coordinator)
+        self._attr_has_entity_name = False
         sensor_info = coordinator.data[key]
         self._key = key
         self._attr_name = sensor_info['name']

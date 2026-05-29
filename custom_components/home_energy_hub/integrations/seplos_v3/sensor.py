@@ -56,6 +56,7 @@ class SeplosV3Sensor(CoordinatorEntity, SensorEntity):
         battery_address = config_entry.data.get("battery_address", "0x00")
         sensor_display_name = sensor_def[1]
 
+        self._attr_has_entity_name = False
         self._attr_name = f"{name_prefix} {battery_address} {sensor_display_name}"
         self._attr_unique_id = f"seplos_v3_{config_entry.entry_id}_{key}"
         self._attr_native_unit_of_measurement = sensor_def[2]
