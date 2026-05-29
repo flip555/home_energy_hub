@@ -154,7 +154,7 @@ SENSOR_UNITS = {
     "discharge_overcurrent_delay": "s",
     "transient_overcurrent_delay": "ms",
     "overcurrent_delay_recovery": "s",
-    "overcurrent_recovery_times": None,
+    "overcurrent_recovery_times": "times",
     "charge_current_limit_delay": "min",
     # Voltage protection sensors
     "monomer_high_voltage_alarm": "mV",
@@ -254,7 +254,7 @@ SENSOR_UNITS = {
     "discharge_overcurrent_delay_settings": "s",
     "transient_overcurrent_delay_settings": "ms",
     "overcurrent_delay_recovery_settings": "s",
-    "overcurrent_recovery_times_settings": None,
+    "overcurrent_recovery_times_settings": "times",
     "charge_current_limit_delay_settings": "min",
     "battery_rated_capacity_settings": "Ah",
     "remaining_capacity_alarm_settings": "%",
