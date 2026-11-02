@@ -50,7 +50,7 @@ See the [Installation Guide](https://github.com/flip555/home_energy_hub/wiki/Ins
 
 - Home Assistant 2023.12.0 or later
 - Python 3.9 or later
-- `pymodbus` and `aiohttp` (installed automatically)
+- `aiohttp` (installed automatically)
 
 ## Getting Help
 
