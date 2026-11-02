@@ -154,16 +154,16 @@ SENSOR_UNITS = {
     "discharge_overcurrent_delay": "s",
     "transient_overcurrent_delay": "ms",
     "overcurrent_delay_recovery": "s",
-    "overcurrent_recovery_times": "times",
+    "overcurrent_recovery_times": None,
     "charge_current_limit_delay": "min",
     # Voltage protection sensors
-    "monomer_high_voltage_alarm": "mV",
-    "monomer_overvoltage_protection": "mV",
-    "monomer_overvoltage_recovery": "mV",
-    "monomer_undervoltage_protection": "mV",
-    "monomer_undervoltage_recovery": "mV",
-    "equalization_opening_voltage": "mV",
-    "battery_low_voltage_forbidden_charging": "mV",
+    "monomer_high_voltage_alarm": "V",
+    "monomer_overvoltage_protection": "V",
+    "monomer_overvoltage_recovery": "V",
+    "monomer_undervoltage_protection": "V",
+    "monomer_undervoltage_recovery": "V",
+    "equalization_opening_voltage": "V",
+    "battery_low_voltage_forbidden_charging": "V",
     "total_voltage_overvoltage_protection": "V",
     "total_voltage_undervoltage_protection": "V",
     "total_pressure_undervoltage_recovery": "V",
@@ -263,6 +263,35 @@ SENSOR_UNITS = {
     "cycle_cumulative_capacity_settings": "%",
     "soc_ah_settings": "Ah",
 }
+
+# Settings units missing from the original map, plus corrections confirmed by
+# the vendor parameter backup (1101-SP76) and captured 0x47 frames.
+SENSOR_UNITS.update({
+    "battery_rated_capacity": "Ah",
+    "output_soft_start_delay": "ms",
+    "cell_invalidation_differential_pressure": "V",
+    "cell_invalidation_recovery": "V",
+    "equalization_opening_pressure_difference": "V",
+    "equalization_closing_pressure_difference": "V",
+    "static_equilibrium_time": None,
+    "battery_number_in_series": None,
+    "charge_activation_delay": "min",
+    "charging_activation_interval": None,
+    "charge_activation_times": None,
+    "work_record_interval": "min",
+    "standby_recording_interval": "min",
+    "standby_shutdown_delay": None,
+    "remaining_capacity_alarm": "%",
+    "remaining_capacity_protection": "%",
+    "interval_charge_capacity": "%",
+    "cycle_cumulative_capacity": "%",
+    "connection_fault_impedance": "mΩ",
+    "compensation_point_1_position": None,
+    "compensation_point_1_impedance": "mΩ",
+    "compensation_point_2_position": None,
+    "compensation_point_2_impedance": "mΩ",
+})
+
 
 # Seplos V2 alarm mappings (from reference file)
 ALARM_MAPPINGS = {

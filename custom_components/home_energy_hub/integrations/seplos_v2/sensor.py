@@ -142,6 +142,22 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
             # These sensors return string values, so no device class or state class
             return
             
+        # Counts and positions have no unit and must not inherit a class
+        # from substrings such as "current" in overcurrent_recovery_times.
+        base_key = key[:-9] if key.endswith("_settings") else key
+        if base_key.endswith(("times", "series", "position")):
+            self._attr_device_class = None
+            self._attr_state_class = None
+            return
+
+        # Durations are measured in s/ms/min and must not inherit the
+        # "current" class from names like overcurrent_delay_recovery.
+        unit = self.native_unit_of_measurement
+        if unit in ("s", "ms", "min", "h"):
+            self._attr_device_class = SensorDeviceClass.DURATION
+            self._attr_state_class = None
+            return
+
         # Set device class for numeric sensors
         if "temperature" in key:
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
@@ -160,6 +176,14 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.BATTERY
         elif "capacity" in key and "ah" in key.lower():
             self._attr_device_class = SensorDeviceClass.ENERGY_STORAGE
+        elif unit == "V":
+            self._attr_device_class = SensorDeviceClass.VOLTAGE
+        elif unit == "A":
+            self._attr_device_class = SensorDeviceClass.CURRENT
+        elif unit == "°C":
+            self._attr_device_class = SensorDeviceClass.TEMPERATURE
+        elif unit == "W":
+            self._attr_device_class = SensorDeviceClass.POWER
         
         # Set state class for numeric sensors
         if any(x in key for x in ["voltage", "current", "power", "temperature", "soc", "capacity"]):
@@ -187,8 +211,13 @@ class SeplosV2Sensor(CoordinatorEntity, SensorEntity):
 
     @property
     def native_unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return SENSOR_UNITS.get(self._key)
+        """Return the unit of measurement.
+
+        Settings keys carry a ``_settings`` suffix, while SENSOR_UNITS is
+        keyed by the bare attribute name.
+        """
+        key = self._key[:-9] if self._key.endswith("_settings") else self._key
+        return SENSOR_UNITS.get(key)
 
 import logging
 
