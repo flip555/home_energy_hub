@@ -5,6 +5,7 @@ import logging
 import serial
 from typing import List
 
+from .v2_commands import build_v2_commands
 from ..const import CONF_SERIAL_PORT, CONF_BAUD_RATE, CONF_BATTERY_ADDRESS
 
 _LOGGER = logging.getLogger(__name__)
@@ -78,14 +79,8 @@ class SeplosV2SerialClient:
         battery_address = config.get(CONF_BATTERY_ADDRESS, "0x00")
         
         # Seplos V2 command array from reference file
-        V2_COMMAND_ARRAY = {
-            "0x00": ["~20004642E00200FD37\r", "~20004644E00200FD35\r", "~20004647E00200FD32\r", "~20004651E00200FD37\r"],
-            "0x01": ["~20004642E00215FD31\r", "~20004644E00200FD35\r", "~20004647E00200FD32\r", "~20004651E00200FD37\r"],
-            "0x02": ["~20004642E00200FD37\r", "~20004644E00200FD35\r", "~20004647E00200FD32\r", "~20004651E00200FD37\r"],
-            "0x03": ["~20004642E00200FD37\r", "~20004644E00200FD35\r", "~20004647E00200FD32\r", "~20004651E00200FD37\r"],
-        }
-        
-        commands = V2_COMMAND_ARRAY.get(battery_address, V2_COMMAND_ARRAY["0x00"])
+                
+        commands = build_v2_commands(battery_address)
         data = await self.send_serial_commands(commands, collect_all=True)
         return data
 
