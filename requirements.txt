@@ -1,3 +1,2 @@
-pymodbus>=3.13.0
 aiohttp
 pyserial

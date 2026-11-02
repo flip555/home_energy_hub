@@ -27,7 +27,7 @@ A comprehensive Home Assistant integration for managing and monitoring various e
 
 - Home Assistant 2023.12.0 or later
 - Python 3.9 or later
-- pymodbus, aiohttp, and pyserial libraries
+- aiohttp and pyserial libraries
 
 ## Installation
 

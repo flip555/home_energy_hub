@@ -18,7 +18,7 @@ jobs:
         uses: "actions/checkout@v7.0.1"
 
       - name: "Set up Python"
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.11"
 
@@ -40,6 +40,6 @@ jobs:
           zip -r home_energy_hub.zip ./
 
       - name: "Upload the ZIP file to the release"
-        uses: softprops/action-gh-release@v3.0.0
+        uses: softprops/action-gh-release@v3.0.3
         with:
           files: ${{ github.workspace }}/custom_components/home_energy_hub/home_energy_hub.zip
