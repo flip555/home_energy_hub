@@ -345,10 +345,10 @@ def _parse_47h_codes(info_str: str, name_prefix: str) -> Dict[str, Any]:
     settings["soc_ah"] = int.from_bytes(datai_bytes[118:120], byteorder='big') / 100.0
     
     # Cell invalidation and equalization settings
-    settings["cell_invalidation_recovery"] = int.from_bytes(datai_bytes[120:121], byteorder='big')
-    settings["cell_invalidation_differential_pressure"] = int.from_bytes(datai_bytes[121:122], byteorder='big')
-    settings["equalization_opening_pressure_difference"] = int.from_bytes(datai_bytes[122:123], byteorder='big')
-    settings["equalization_closing_pressure_difference"] = int.from_bytes(datai_bytes[124:125], byteorder='big')
+    settings["cell_invalidation_recovery"] = int.from_bytes(datai_bytes[122:123], byteorder='big') / 100.0
+    settings["cell_invalidation_differential_pressure"] = int.from_bytes(datai_bytes[121:122], byteorder='big') / 100.0
+    settings["equalization_opening_pressure_difference"] = int.from_bytes(datai_bytes[123:124], byteorder='big') / 1000.0
+    settings["equalization_closing_pressure_difference"] = int.from_bytes(datai_bytes[124:125], byteorder='big') / 1000.0
     settings["static_equilibrium_time"] = int.from_bytes(datai_bytes[125:126], byteorder='big')
     settings["battery_number_in_series"] = int.from_bytes(datai_bytes[126:127], byteorder='big')
     
