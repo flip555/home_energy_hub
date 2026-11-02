@@ -337,7 +337,7 @@ def _parse_47h_codes(info_str: str, name_prefix: str) -> Dict[str, Any]:
     settings["discharge_overcurrent_recovery"] = signed_current(datai_bytes[106:108])
     settings["charge_overcurrent_protection"] = int.from_bytes(datai_bytes[108:110], byteorder='big') / 100.0
     settings["discharge_overcurrent_protection"] = signed_current(datai_bytes[110:112])
-    settings["transient_overcurrent_protection"] = signed_current(datai_bytes[112:114]) / 100.0
+    settings["transient_overcurrent_protection"] = signed_current(datai_bytes[112:114])
     
     # Timing and delay settings
     settings["output_soft_start_delay"] = int.from_bytes(datai_bytes[114:116], byteorder='big')
@@ -345,10 +345,10 @@ def _parse_47h_codes(info_str: str, name_prefix: str) -> Dict[str, Any]:
     settings["soc_ah"] = int.from_bytes(datai_bytes[118:120], byteorder='big') / 100.0
     
     # Cell invalidation and equalization settings
-    settings["cell_invalidation_recovery"] = int.from_bytes(datai_bytes[120:121], byteorder='big')
-    settings["cell_invalidation_differential_pressure"] = int.from_bytes(datai_bytes[121:122], byteorder='big')
-    settings["equalization_opening_pressure_difference"] = int.from_bytes(datai_bytes[122:123], byteorder='big')
-    settings["equalization_closing_pressure_difference"] = int.from_bytes(datai_bytes[124:125], byteorder='big')
+    settings["cell_invalidation_recovery"] = int.from_bytes(datai_bytes[122:123], byteorder='big') / 100.0
+    settings["cell_invalidation_differential_pressure"] = int.from_bytes(datai_bytes[121:122], byteorder='big') / 100.0
+    settings["equalization_opening_pressure_difference"] = int.from_bytes(datai_bytes[123:124], byteorder='big') / 1000.0
+    settings["equalization_closing_pressure_difference"] = int.from_bytes(datai_bytes[124:125], byteorder='big') / 1000.0
     settings["static_equilibrium_time"] = int.from_bytes(datai_bytes[125:126], byteorder='big')
     settings["battery_number_in_series"] = int.from_bytes(datai_bytes[126:127], byteorder='big')
     
@@ -406,8 +406,10 @@ def _parse_51h_codes(info_str: str, name_prefix: str) -> Dict[str, Any]:
     software_version = software_version_bytes.decode('ascii', errors='ignore').strip('\x00')
     manufacturer_name = manufacturer_name_bytes.decode('ascii', errors='ignore').strip('\x00')
 
-    software_version = int.from_bytes(software_version_bytes, byteorder='big') / 1000 * 4
-    software_version = "{:.1f}".format(software_version)
+    # Two bytes: major, minor (0x10 0x06 -> 16.6). The old /1000*4
+    # formula mapped both 16.4 and 16.6 to "16.4".
+    version_raw = int.from_bytes(software_version_bytes, byteorder="big")
+    software_version = f"{version_raw >> 8}.{version_raw & 0xFF}"
     
     return {
         'device_name': device_name,

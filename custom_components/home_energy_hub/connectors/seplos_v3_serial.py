@@ -12,8 +12,8 @@ Ported from bms_connector with full RS485 half-duplex handling:
 import asyncio
 import logging
 import serial
+import socket
 import struct
-import telnetlib
 import time
 from typing import List
 
@@ -178,55 +178,69 @@ def send_serial_commands(commands: List[str], port: str,
 # Telnet transport
 # ---------------------------------------------------------------------------
 
+def _read_bytes_until_silence(sock, timeout: float, silence: float = 0.9) -> bytes:
+    """Collect bytes until the link goes quiet or the deadline expires."""
+    chunks = []
+    deadline = time.monotonic() + timeout
+    last_data = time.monotonic()
+
+    while True:
+        now = time.monotonic()
+        if now - last_data > silence or now >= deadline:
+            break
+
+        sock.settimeout(min(silence, max(0.01, deadline - now)))
+        try:
+            chunk = sock.recv(4096)
+        except TimeoutError:
+            continue
+        except OSError:
+            break
+
+        if not chunk:
+            break
+
+        chunks.append(chunk)
+        last_data = time.monotonic()
+
+    return b"".join(chunks)
+
+
 def send_telnet_commands(commands: List[str], host: str, port: int = 23,
                          timeout: int = 8) -> List[str]:
-    """Send Modbus RTU commands via Telnet and return hex-string responses."""
-    responses = []
+    """Send Modbus RTU commands over TCP and return hex-string responses."""
+    responses: List[str] = []
     _LOGGER.debug("send_telnet_commands: connecting to %s:%s", host, port)
 
+    sock = None
     try:
-        tn = telnetlib.Telnet(host, port, timeout=5)
+        sock = socket.create_connection((host, port), timeout=5)
 
-        try:
-            for command in commands:
-                try:
-                    cmd_bytes = bytes.fromhex(command)
-                except Exception as e:
-                    _LOGGER.error("Invalid command: %s — %s", command, e)
-                    responses.append("")
-                    continue
+        for command in commands:
+            try:
+                cmd_bytes = bytes.fromhex(command)
+            except Exception as e:
+                _LOGGER.error("Invalid command: %s - %s", command, e)
+                responses.append("")
+                continue
 
-                tn.write(cmd_bytes)
-                time.sleep(0.5)
+            sock.sendall(cmd_bytes)
+            time.sleep(0.5)
 
-                chunks = []
-                last_data = time.monotonic()
-                deadline_time = last_data + timeout
+            raw = _read_bytes_until_silence(sock, timeout)
+            responses.append(raw.hex())
+            _LOGGER.debug("Telnet response for %s: %d bytes",
+                          command[:20], len(raw))
 
-                while time.monotonic() < deadline_time:
-                    try:
-                        chunk = tn.read_very_eager()
-                        if chunk:
-                            chunks.append(chunk)
-                            last_data = time.monotonic()
-                        else:
-                            if time.monotonic() - last_data > 0.9:
-                                break
-                    except EOFError:
-                        break
-                    time.sleep(0.03)
-
-                raw = b"".join(chunks)
-                responses.append(raw.hex())
-                _LOGGER.debug("Telnet response for %s: %d bytes",
-                              command[:20], len(raw))
-
-        finally:
-            tn.close()
-
-    except Exception as e:
-        _LOGGER.error("Telnet error on %s:%s — %s", host, port, e)
+    except OSError as e:
+        _LOGGER.error("Telnet error on %s:%s - %s", host, port, e)
         return [""] * len(commands)
+    finally:
+        if sock is not None:
+            try:
+                sock.close()
+            except OSError:
+                pass
 
     return responses
 
