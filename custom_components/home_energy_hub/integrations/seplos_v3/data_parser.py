@@ -238,7 +238,10 @@ def decode_spa_response(response):
         raw = int.from_bytes(data[off:off + 2], "big")
         if field["signed"] and raw >= 0x8000:
             raw -= 0x10000
-        spa.values[field["addr"]] = raw * field["scale"]
+        value = raw * field["scale"]
+        if field["unit"] == "°C":
+            value -= 273.15
+        spa.values[field["addr"]] = value
     return spa
 
 
