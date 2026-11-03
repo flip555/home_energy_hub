@@ -8,6 +8,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo
 
 from ...const import DOMAIN, CONF_NAME_PREFIX
+from .vendor_spec import SPA_FIELDS
 import logging
 
 
@@ -31,6 +32,9 @@ V3_SENSORS = [
     ("extern_voltage", "External Voltage", "V", SensorDeviceClass.VOLTAGE, SensorStateClass.MEASUREMENT),
     ("max_discharge_current", "Max Discharge Current", "A", SensorDeviceClass.CURRENT, SensorStateClass.MEASUREMENT),
     ("max_charge_current", "Max Charge Current", "A", SensorDeviceClass.CURRENT, SensorStateClass.MEASUREMENT),
+    ("manufacturer", "Manufacturer", None, None, None),
+    ("model", "Model", None, None, None),
+    ("serial", "Serial Number", None, None, None),
 ]
 
 # Cell voltage sensors (16 cells)
@@ -44,6 +48,23 @@ for i in range(1, 9):
 # Environment & power temperature
 V3_SENSORS.append(("environment_temperature", "Environment Temperature", "°C", SensorDeviceClass.TEMPERATURE, SensorStateClass.MEASUREMENT))
 V3_SENSORS.append(("power_temperature", "Power Temperature", "°C", SensorDeviceClass.TEMPERATURE, SensorStateClass.MEASUREMENT))
+
+for _field in SPA_FIELDS:
+    _unit = _field["unit"]
+    if _unit == "V":
+        _dc = SensorDeviceClass.VOLTAGE
+    elif _unit in ("A", "mA"):
+        _dc = SensorDeviceClass.CURRENT
+    elif _unit == "°C":
+        _dc = SensorDeviceClass.TEMPERATURE
+    elif _unit in ("s", "ms", "min", "h", "µs"):
+        _dc = SensorDeviceClass.DURATION
+    else:
+        _dc = None
+    V3_SENSORS.append((
+        f"spa_{_field['addr']}", _field["name"], _unit, _dc,
+        SensorStateClass.MEASUREMENT if _unit else None,
+    ))
 
 
 class SeplosV3Sensor(CoordinatorEntity, SensorEntity):
@@ -65,11 +86,20 @@ class SeplosV3Sensor(CoordinatorEntity, SensorEntity):
         self._attr_device_class = sensor_def[3]
         self._attr_state_class = sensor_def[4]
 
+        settings = key.startswith("spa_")
+        if settings:
+            identifiers = {("home_energy_hub", f"seplos_v3_{config_entry.entry_id}_settings")}
+            device_name = f"{name_prefix} Settings"
+            model = "V3 Settings"
+        else:
+            identifiers = {("home_energy_hub", f"seplos_v3_{config_entry.entry_id}")}
+            device_name = f"{name_prefix}"
+            model = "V3 BMS"
         self._attr_device_info = DeviceInfo(
-            identifiers={("home_energy_hub", f"seplos_v3_{config_entry.entry_id}")},
-            name=f"{name_prefix}",
+            identifiers=identifiers,
+            name=device_name,
             manufacturer="Seplos",
-            model="V3 BMS",
+            model=model,
             sw_version="Unknown",
         )
 

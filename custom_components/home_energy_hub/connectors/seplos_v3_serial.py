@@ -22,7 +22,15 @@ _LOGGER = logging.getLogger(__name__)
 # Known data-byte counts for V3 Modbus responses
 # PIA : 18 registers × 2 = 36 = 0x24
 # PIB : 26 registers × 2 = 52 = 0x34
+_VALID_DATA_LENS_BY_FUNCTION = {
+    0x04: (0x24, 0x34, 0x66, 0xd4, 0x14),
+    0x01: (0x12, 0x0a),
+}
 _VALID_DATA_LENS = (0x24, 0x34)
+
+
+def _valid_data_lens(function_code: int) -> tuple:
+    return _VALID_DATA_LENS_BY_FUNCTION.get(function_code, _VALID_DATA_LENS)
 
 # ---------------------------------------------------------------------------
 # CRC-16 Modbus
@@ -54,7 +62,10 @@ def _expected_data_len(command_hex: str) -> int:
     """Derive the expected response data byte count from a Modbus command."""
     try:
         raw = bytes.fromhex(command_hex)
+        function = raw[1]
         count = (raw[4] << 8) | raw[5]
+        if function == 0x01:
+            return (count + 7) // 8
         return count * 2
     except Exception:
         return 0
@@ -65,7 +76,7 @@ def _expected_data_len(command_hex: str) -> int:
 # ---------------------------------------------------------------------------
 
 def _read_modbus_frame(ser, expected_addr: int, expected_data_len: int,
-                       sync_timeout: float = 2.0) -> bytes:
+                       sync_timeout: float = 2.0, function_code: int = 0x04) -> bytes:
     """Read one Modbus RTU response frame with byte-level synchronisation."""
     deadline = time.monotonic() + sync_timeout
 
@@ -80,7 +91,7 @@ def _read_modbus_frame(ser, expected_addr: int, expected_data_len: int,
         cmd_byte = ser.read(1)
         if not cmd_byte:
             continue
-        if cmd_byte[0] != 0x04:
+        if cmd_byte[0] != function_code:
             continue
 
         # Phase 2 — read LEN byte
@@ -89,9 +100,10 @@ def _read_modbus_frame(ser, expected_addr: int, expected_data_len: int,
             continue
         data_len = len_byte[0]
 
-        if data_len not in _VALID_DATA_LENS:
+        valid_lens = _valid_data_lens(function_code)
+        if data_len not in valid_lens:
             _LOGGER.debug("Sync false-positive — LEN=0x%02X not in %s, resyncing",
-                          data_len, _VALID_DATA_LENS)
+                          data_len, valid_lens)
             continue
 
         if data_len != expected_data_len:
@@ -101,7 +113,7 @@ def _read_modbus_frame(ser, expected_addr: int, expected_data_len: int,
             continue
 
         # Phase 3 — read data + CRC
-        frame = bytes([expected_addr, 0x04, data_len]) + ser.read(data_len + 2)
+        frame = bytes([expected_addr, function_code, data_len]) + ser.read(data_len + 2)
 
         if len(frame) < 3 + data_len + 2:
             _LOGGER.warning("Incomplete frame — got %d bytes, expected %d",
@@ -162,7 +174,7 @@ def send_serial_commands(commands: List[str], port: str,
                     _LOGGER.debug("Partial echo (%d/%d bytes)", len(echo), len(cmd_bytes))
 
                 # Read Modbus response frame
-                raw = _read_modbus_frame(ser, expected_addr, expected_data_len)
+                raw = _read_modbus_frame(ser, expected_addr, expected_data_len, function_code=cmd_bytes[1])
                 responses.append(raw.hex() if raw else "")
 
                 time.sleep(0.3)  # Gap between commands
