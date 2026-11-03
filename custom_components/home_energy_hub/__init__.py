@@ -169,8 +169,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if coordinator is not None:
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
-    # Forward to sensor platform
-    await hass.config_entries.async_forward_entry_setups(entry, ["sensor"])
+    # Forward to the platforms used by this integration type
+    platforms = ["sensor", "binary_sensor"] if integration_type == "seplos_v3" else ["sensor"]
+    await hass.config_entries.async_forward_entry_setups(entry, platforms)
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -178,4 +179,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Remove coordinator
     hass.data[DOMAIN].pop(entry.entry_id, None)
 
-    return await hass.config_entries.async_unload_platforms(entry, ["sensor"])
+    platforms = ["sensor", "binary_sensor"] if entry.data.get("integration_type") == "seplos_v3" else ["sensor"]
+    return await hass.config_entries.async_unload_platforms(entry, platforms)
