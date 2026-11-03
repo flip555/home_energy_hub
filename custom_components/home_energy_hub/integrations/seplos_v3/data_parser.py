@@ -78,6 +78,7 @@ class V3PIA:
         self.soc = 0.0
         self.soh = 0.0
         self.cycle = 0
+        self.system_events = 0
         self.avg_cell_voltage = 0.0
         self.avg_cell_temperature = 0.0
         self.max_cell_voltage = 0.0
@@ -86,6 +87,7 @@ class V3PIA:
         self.min_cell_temperature = 0.0
         self.max_discharge_current = 0.0
         self.max_charge_current = 0.0
+        self.extern_voltage = 0.0
 
 
 class V3PIB:
@@ -112,6 +114,10 @@ class V3PIB:
         self.cell_temperature_2 = 0.0
         self.cell_temperature_3 = 0.0
         self.cell_temperature_4 = 0.0
+        self.cell_temperature_5 = 0.0
+        self.cell_temperature_6 = 0.0
+        self.cell_temperature_7 = 0.0
+        self.cell_temperature_8 = 0.0
         self.environment_temperature = 0.0
         self.power_temperature = 0.0
 
@@ -125,6 +131,7 @@ def decode_pia_response(response: str):
 
     if not verify_crc(response):
         _LOGGER.warning("PIA CRC invalid for %s", response)
+        return None
 
     try:
         raw = bytes.fromhex(response)
@@ -157,6 +164,10 @@ def decode_pia_response(response: str):
             pia.max_discharge_current = convert_bytes_to_data("UINT16", data[30], data[31])
         if len(data) >= 34:
             pia.max_charge_current    = convert_bytes_to_data("UINT16", data[32], data[33])
+        if len(data) >= 30:
+            pia.system_events         = convert_bytes_to_data("UINT16", data[28], data[29])
+        if len(data) >= 36:
+            pia.extern_voltage        = convert_bytes_to_data("UINT16", data[34], data[35]) * 0.001
     except IndexError:
         return None
 
@@ -172,6 +183,7 @@ def decode_pib_response(response: str):
 
     if not verify_crc(response):
         _LOGGER.warning("PIB CRC invalid for %s", response)
+        return None
 
     try:
         raw = bytes.fromhex(response)
@@ -206,6 +218,11 @@ def decode_pib_response(response: str):
         pib.cell_temperature_2 = convert_bytes_to_data("UINT16", data[34], data[35]) * 0.1 - 273.15
         pib.cell_temperature_3 = convert_bytes_to_data("UINT16", data[36], data[37]) * 0.1 - 273.15
         pib.cell_temperature_4 = convert_bytes_to_data("UINT16", data[38], data[39]) * 0.1 - 273.15
+        if len(data) >= 48:
+            pib.cell_temperature_5 = convert_bytes_to_data("UINT16", data[40], data[41]) * 0.1 - 273.15
+            pib.cell_temperature_6 = convert_bytes_to_data("UINT16", data[42], data[43]) * 0.1 - 273.15
+            pib.cell_temperature_7 = convert_bytes_to_data("UINT16", data[44], data[45]) * 0.1 - 273.15
+            pib.cell_temperature_8 = convert_bytes_to_data("UINT16", data[46], data[47]) * 0.1 - 273.15
         if len(data) >= 50:
             pib.environment_temperature = convert_bytes_to_data("UINT16", data[48], data[49]) * 0.1 - 273.15
         if len(data) >= 52:

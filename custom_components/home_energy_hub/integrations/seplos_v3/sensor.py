@@ -27,6 +27,8 @@ V3_SENSORS = [
     ("min_cell_voltage", "Min Cell Voltage", "V", SensorDeviceClass.VOLTAGE, SensorStateClass.MEASUREMENT),
     ("max_cell_temperature", "Max Cell Temperature", "°C", SensorDeviceClass.TEMPERATURE, SensorStateClass.MEASUREMENT),
     ("min_cell_temperature", "Min Cell Temperature", "°C", SensorDeviceClass.TEMPERATURE, SensorStateClass.MEASUREMENT),
+    ("system_events", "System Events", None, None, None),
+    ("extern_voltage", "External Voltage", "V", SensorDeviceClass.VOLTAGE, SensorStateClass.MEASUREMENT),
     ("max_discharge_current", "Max Discharge Current", "A", SensorDeviceClass.CURRENT, SensorStateClass.MEASUREMENT),
     ("max_charge_current", "Max Charge Current", "A", SensorDeviceClass.CURRENT, SensorStateClass.MEASUREMENT),
 ]
@@ -35,8 +37,8 @@ V3_SENSORS = [
 for i in range(1, 17):
     V3_SENSORS.append((f"cell{i}_voltage", f"Cell {i} Voltage", "V", SensorDeviceClass.VOLTAGE, SensorStateClass.MEASUREMENT))
 
-# Cell temperature sensors (4 sensors)
-for i in range(1, 5):
+# Cell temperature sensors (8 sensors)
+for i in range(1, 9):
     V3_SENSORS.append((f"cell_temperature_{i}", f"Cell Temperature {i}", "°C", SensorDeviceClass.TEMPERATURE, SensorStateClass.MEASUREMENT))
 
 # Environment & power temperature
